@@ -380,10 +380,10 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 .icon-btn svg.mail { overflow: visible; }
 svg.mail .body { fill: var(--fg); }
 svg.mail * { transform-box: view-box; }
-svg.mail .fly { animation: mail-fly 3.6s ease-in-out infinite; }
-svg.mail .flap { transform-origin: 12px 8px; animation: mail-flap 3.6s ease-in-out infinite; }
-svg.mail .flap-open { transform-origin: 12px 8px; animation: mail-flap-open 3.6s ease-in-out infinite; }
-svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 3.6s ease-in infinite; }
+svg.mail .fly { animation: mail-fly 6.5s ease-in-out infinite; }
+svg.mail .flap { transform-origin: 12px 8px; animation: mail-flap 6.5s ease-in-out infinite; }
+svg.mail .flap-open { transform-origin: 12px 8px; animation: mail-flap-open 6.5s ease-in-out infinite; }
+svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 6.5s ease-in infinite; }
 @keyframes mail-flap { 0%, 10% { transform: scaleY(1); } 18%, 56% { transform: scaleY(0); } 64%, 100% { transform: scaleY(1); } }
 @keyframes mail-flap-open { 0%, 18% { transform: scaleY(0); } 26%, 48% { transform: scaleY(1); } 56%, 100% { transform: scaleY(0); } }
 @keyframes mail-heart {
@@ -394,13 +394,15 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 3.6s ease-
   48%, 100% { transform: translateY(5px) scale(1); opacity: 0; }
 }
 @keyframes mail-fly {
-  0%, 66% { transform: translate(0, 0) rotate(0); opacity: 1; }
-  70% { transform: translate(-2px, 0.5px) rotate(4deg); }
-  80% { transform: translate(30px, -6px) rotate(-12deg); opacity: 1; }
-  80.1% { transform: translate(-30px, 0) rotate(0); opacity: 0; }
-  82% { opacity: 1; }
-  94%, 100% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  0%, 64% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  67% { transform: translate(-2px, 0.5px) rotate(4deg); }
+  74% { transform: translate(30px, -6px) rotate(-12deg); opacity: 1; }
+  74.1%, 88% { transform: translate(30px, -6px); opacity: 0; }
+  88.1% { transform: translate(-30px, 0) rotate(0); opacity: 0; }
+  89% { opacity: 1; }
+  97%, 100% { transform: translate(0, 0) rotate(0); opacity: 1; }
 }
+
 @media (prefers-reduced-motion: reduce) { svg.mail *, svg.mail .fly { animation: none !important; } svg.mail .flap-open, svg.mail .heart { opacity: 0; } }
 .snake-over .icon-btn { border: 0; cursor: pointer; }
 .snake-over .icon-btn svg { width: 58%; height: 58%; }
