@@ -28,8 +28,8 @@ window.PAGES = [
     image: "img/vier-weekenden.jpg",
     text: "Het verhaal van een jonge twintiger die verward na een relatie met een psychopaat op zoek gaat naar de perfecte liefde en een uitweg. Een uitweg van zijn kutbaan, zijn uitzichtloze leven, zijn doelloze bestaan.",
     links: [
-      { text: "Luister op Spotify", icon: "spotify", href: "" },
-      { text: "Luister op Apple Podcasts", icon: "apple", href: "" },
+      { text: "Luister op Spotify", icon: "spotify", href: "https://open.spotify.com/episode/0zR4Ko0c84NDSKU3PSaGiI" },
+      { text: "Luister op Apple Podcasts", icon: "apple", href: "https://podcasts.apple.com/nl/podcast/vier-weekenden-h1/id1673680848?i=1000602239982" },
     ],
   },
   {
