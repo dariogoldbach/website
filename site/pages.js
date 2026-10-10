@@ -36,7 +36,7 @@ window.PAGES = [
     id: "dario-in-oekraine", type: "podcast",
     bg: "#ffd700", fg: "#0057b7", accent: "#0057b7",
     title: "Dario in Oekraïne",
-    image: "img/dario-in-oekraine-afl2.jpg", showTitle: true,
+    covers: ["img/dario-in-oekraine-01.jpg", "img/dario-in-oekraine-02.jpg", "img/dario-in-oekraine-03.jpg", "img/dario-in-oekraine-04.jpg", "img/dario-in-oekraine-05.jpg"], showTitle: true,
     text: "Een DM op Instagram, en twee weken later rijdt Dario mee in een konvooi met hulpgoederen naar het front. Een podcast in vijf delen over angst, idealisme en morele keuzes.",
     links: [
       { text: "Luister op Spotify", icon: "spotify", href: "https://open.spotify.com/episode/4qeBgAVwyytXE0RwZSksH7" },
