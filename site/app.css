@@ -302,18 +302,33 @@ html[data-knop="c"] .btn:active { transform: scale(0.97); }
 /* Video, schermvullend zoals op TikTok */
 .card:has(.vid) { padding: 0; }
 .vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; pointer-events: none; }
-.vid-sound {
-  position: absolute; z-index: 2; top: calc(5cqw + env(safe-area-inset-top, 0px)); right: 5cqw;
-  width: 11cqw; height: 11cqw; min-width: 2.6rem; min-height: 2.6rem; border: 0; border-radius: 50%;
-  display: grid; place-items: center; background: rgba(0,0,0,.4); color: #fff; cursor: pointer;
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-}
-.vid-sound svg { width: 55%; height: 55%; }
+.vid-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 70%, rgba(0,0,0,.55)); }
 .vid-play {
   position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; color: rgba(255,255,255,.85);
   opacity: 0; transition: opacity 150ms ease;
 }
 .vid-play svg { width: 22cqw; height: 22cqw; filter: drop-shadow(0 2px 8px rgba(0,0,0,.4)); }
 .card.paused .vid-play { opacity: 1; }
+.vid-side {
+  position: absolute; z-index: 2; right: 3cqw; bottom: calc(8cqw + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; align-items: center; gap: 5cqw;
+}
+.vid-avatar { display: block; width: 12.5cqw; height: 12.5cqw; border-radius: 50%; border: 2px solid #fff; overflow: hidden; }
+.vid-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 20%; display: block; }
+.vid-act {
+  display: flex; flex-direction: column; align-items: center; gap: 1cqw; border: 0; background: none; padding: 0;
+  color: #fff; cursor: pointer; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
+}
+.vid-act svg { width: 10cqw; height: 10cqw; min-width: 2rem; min-height: 2rem; }
+.vid-act span { font-family: var(--display); font-weight: 700; font-size: max(0.7rem, 3cqw); }
+.vid-act.on svg { color: #fe2c55; }
+.vid-act.pop svg { animation: pop 420ms var(--ease); }
+@keyframes pop { 30% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.card.centered .vid-info, .vid-info {
+  position: absolute; z-index: 2; left: 4cqw; right: 22cqw; bottom: calc(7cqw + env(safe-area-inset-bottom, 0px));
+  color: #fff; text-align: left; text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.vid-account { color: #fff; text-decoration: none; font-weight: 800; font-size: max(0.95rem, 4.3cqw); }
+.vid-caption { margin-top: 1.2cqw; font-size: max(0.85rem, 3.7cqw); line-height: 1.35; }
 .vid-bar { position: absolute; left: 0; right: 0; bottom: env(safe-area-inset-bottom, 0px); height: 3px; background: rgba(255,255,255,.25); z-index: 2; }
 .vid-bar i { display: block; height: 100%; width: 0; background: #fff; }

@@ -44,6 +44,8 @@
     apple: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M7.8 15.4a6 6 0 1 1 8.4 0"/><path d="M5 18a9.6 9.6 0 1 1 14 0"/><circle cx="12" cy="10.6" r="2.4" fill="currentColor" stroke="none"/><path d="M10.7 14.6h2.6l-.6 6.4h-1.4z" fill="currentColor" stroke="none"/></svg>',
     muted: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     sound: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    heart: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.2l-1.4-1.3C5.4 15.2 2 12.1 2 8.3 2 5.2 4.4 2.8 7.5 2.8c1.7 0 3.4.8 4.5 2.1 1.1-1.3 2.8-2.1 4.5-2.1 3.1 0 5.5 2.4 5.5 5.5 0 3.8-3.4 6.9-8.6 11.6L12 21.2z"/></svg>',
+    share: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 4.5v4C6.8 9.2 3.5 13.6 2.5 19.5c2.6-3.4 6-5 11-5v4.1L21.5 11.5l-8-7z"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>',
     tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>'
@@ -109,11 +111,19 @@
         '<div class="icons">' + p.links.map(iconLink).join("") + "</div></div>";
     },
     video: function (p) {
-      // Schermvullend, zoals op TikTok: speelt meteen zonder geluid, tik voor geluid, tik nog eens voor pauze.
+      // Schermvullend met een overlay zoals op TikTok: account, caption, like en delen.
       return '<video class="vid" src="' + esc(p.video) + '"' + (p.poster ? ' poster="' + esc(p.poster) + '"' : "") +
-        (still ? "" : " autoplay") + ' muted loop playsinline preload="metadata"></video>' +
-        '<button class="vid-sound" type="button" aria-pressed="false" aria-label="Geluid aan">' + ICONS.muted + "</button>" +
+        ' loop playsinline preload="auto"></video>' +
+        '<div class="vid-shade" aria-hidden="true"></div>' +
         '<div class="vid-play" aria-hidden="true">' + ICONS.play + "</div>" +
+        '<div class="vid-side">' +
+        (p.avatar ? '<a class="vid-avatar" href="' + esc(p.profile) + '" target="_blank" rel="noopener" aria-label="Naar @' + esc(p.account) + '"><img src="' + esc(p.avatar) + '" alt=""></a>' : "") +
+        '<button class="vid-act" type="button" data-like aria-pressed="false" aria-label="Vind ik leuk">' + ICONS.heart + "<span>Like</span></button>" +
+        '<button class="vid-act" type="button" data-share aria-label="Delen">' + ICONS.share + "<span>Deel</span></button>" +
+        '<button class="vid-act" type="button" data-sound aria-pressed="true" aria-label="Geluid uit">' + ICONS.sound + "<span>Geluid</span></button>" +
+        "</div>" +
+        '<div class="vid-info"><a class="vid-account" href="' + esc(p.profile) + '" target="_blank" rel="noopener">@' + esc(p.account) + "</a>" +
+        '<p class="vid-caption">' + esc(p.caption) + "</p></div>" +
         '<div class="vid-bar" aria-hidden="true"><i></i></div>';
     },
     game: function () {
@@ -139,19 +149,42 @@
       return function () { stop(); clearInterval(timer); };
     },
     game: function (card) { return runner(card); },
-    video: function (card) {
-      var v = card.querySelector("video"), b = card.querySelector(".vid-sound"), bar = card.querySelector(".vid-bar i");
+    video: function (card, p) {
+      var v = card.querySelector("video"), b = card.querySelector("[data-sound]"), bar = card.querySelector(".vid-bar i");
+      var like = card.querySelector("[data-like]"), liked = false;
+      try { liked = localStorage.getItem("dg-like-" + p.id) === "1"; } catch (e) {}
+      function showLike() { like.classList.toggle("on", liked); like.setAttribute("aria-pressed", String(liked)); }
+      showLike();
       function sound(on) {
-        v.muted = !on; b.setAttribute("aria-pressed", String(on));
-        b.setAttribute("aria-label", on ? "Geluid uit" : "Geluid aan"); b.innerHTML = on ? ICONS.sound : ICONS.muted;
-        if (on) v.play().catch(function () {});
+        v.muted = !on; b.setAttribute("aria-pressed", String(on)); b.classList.toggle("off", !on);
+        b.setAttribute("aria-label", on ? "Geluid uit" : "Geluid aan");
+        b.querySelector("svg").outerHTML = on ? ICONS.sound : ICONS.muted;
       }
-      b.addEventListener("click", function () { sound(v.muted); });
-      // Tik op de video: eerst geluid aan, daarna pauze en verder.
+      // Meteen met geluid. Als de browser dat niet toestaat (nog niet op de site getikt), dan eerst zonder.
+      function start() {
+        if (still) return;
+        sound(true);
+        v.play().catch(function () { sound(false); v.play().catch(function () {}); });
+      }
+      start();
+      b.addEventListener("click", function () { sound(v.muted); if (!v.muted) v.play().catch(function () {}); });
+      like.addEventListener("click", function () {
+        liked = !liked; showLike();
+        if (liked) { like.classList.remove("pop"); void like.offsetWidth; like.classList.add("pop"); }
+        try { localStorage.setItem("dg-like-" + p.id, liked ? "1" : "0"); } catch (e) {}
+      });
+      card.querySelector("[data-share]").addEventListener("click", function () {
+        var url = location.href.split("#")[0] + "#" + p.id;
+        if (navigator.share) return navigator.share({ title: p.title, text: p.caption, url: url }).catch(function () {});
+        var done = function () { toast("Link gekopieerd"); };
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { toast(url); });
+        else toast(url);
+      });
+      // Tik op de video: pauze en verder (en geluid aan als het nog uit stond).
       // (De klik komt binnen op het frame, omdat dat de aanwijzer vasthoudt tijdens het vegen.)
       function tap(e) {
         if (!state.current || state.current.el !== card || e.target.closest("button, a")) return;
-        if (v.muted) return sound(true);
+        if (v.muted) { sound(true); return v.play().catch(function () {}); }
         if (v.paused) v.play().catch(function () {}); else v.pause();
       }
       frame.addEventListener("click", tap);

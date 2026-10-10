@@ -37,7 +37,7 @@ window.PAGES = [
     text: "Een DM op Instagram, en twee weken later rijdt Dario mee in een konvooi met hulpgoederen naar het front. Een podcast in vijf delen over angst, idealisme en morele keuzes.",
     links: [
       { text: "Luister op Spotify", icon: "spotify", href: "https://open.spotify.com/episode/4qeBgAVwyytXE0RwZSksH7" },
-      { text: "Luister op Apple Podcasts", icon: "apple", href: "" },
+      { text: "Luister op Apple Podcasts", icon: "apple", href: "https://podcasts.apple.com/nl/podcast/dario-in-oekra%C3%AFne-aflevering-1/id1673680848?i=1000708951234" },
     ],
   },
   {
@@ -81,6 +81,8 @@ window.PAGES = [
     bg: "#000000", fg: "#ffffff",
     title: "Dario leest voor",
     video: "media/voorlezen.mp4", poster: "img/voorlezen-poster.jpg",
+    account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/dario.jpg",
+    caption: "Een column, voorgelezen.",
   },
   {
     id: "spel", type: "game",
