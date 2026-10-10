@@ -10,7 +10,7 @@ window.PAGES = [
     title: "Dario Goldbach",
     image: "img/dario.jpg",
     credit: "Foto: Jelle Stokhof",
-    text: "Dario Goldbach is schrijver. Misschien zag je hem op Lowlands, Wildeburg, Crossing Border of in je lokale club. Maandelijks gaat hij viraal met zijn columns voor FHM en The Beat op 3FM. Hij is mede-oprichter van literair platform De Situatie, schreef drie romans en werkt momenteel aan de vierde.",
+    text: "Dario Goldbach is schrijver. Misschien zag je hem op Lowlands, Wildeburg, Crossing Border of in je lokale club. Maandelijks gaat hij viraal met zijn columns voor FHM en The Beat op 3FM. Hij is mede-oprichter van literair platform De Situatie, schreef drie boeken en werkt momenteel aan de vierde.",
   },
   {
     id: "de-situatie", type: "platform",
