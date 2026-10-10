@@ -35,6 +35,14 @@
   // ---------- Pagina-sjablonen ----------
   var TEMPLATES = {
     bio: function (p) {
+      if (p.image) {
+        return '<img class="bio-bg" src="' + esc(p.image) + '" alt="Portret van Dario Goldbach">' +
+          top("Bio", p) + '<div class="mid"></div>' +
+          '<div class="end"><h1 class="xl">' + esc(p.title).replace(" ", "<br>") + "</h1>" +
+          '<p class="roles">' + esc(p.roles) + "</p>" +
+          '<p class="txt">' + esc(p.text) + "</p>" +
+          (p.credit ? '<p class="small">' + esc(p.credit) + "</p>" : "") + "</div>";
+      }
       return top("Bio", p) +
         '<div class="mid"><div class="portrait">Hier komt<br>je foto</div>' +
         '<h1 class="xl">' + esc(p.title).replace(" ", "<br>") + "</h1>" +

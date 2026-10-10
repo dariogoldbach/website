@@ -5,11 +5,13 @@
 */
 window.PAGES = [
   {
-    id: "bio", type: "bio", placeholder: true,
+    id: "bio", type: "bio",
     bg: "#111111", fg: "#f5f1e8", accent: "#ff5a36",
     title: "Dario Goldbach",
     roles: "Schrijver · columnist · organisator",
-    text: "Hier komt een korte bio van twee of drie zinnen. Wie je bent, waar je over schrijft en waar mensen je van kennen.",
+    image: "img/dario.jpg",
+    credit: "Foto: Jelle Stokhof",
+    text: "Dario Goldbach is schrijver. Maandelijks gaat hij viraal met zijn column over het nachtleven bij The Beat op 3FM. In 2023 debuteerde hij met De Man die Alles Had.",
   },
   {
     id: "de-situatie", type: "platform", placeholder: true,
