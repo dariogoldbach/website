@@ -680,7 +680,7 @@
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
     speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
     usb: "een USB-stick", stuc: "een zak Goldband-stuc", vunk: "David Vunk", robijn: "een robijn", steen: "een steen",
-    schilderij: "een schilderij" };
+    schilderij: "kunst" };
   var IMG = null;
 
   // Titellogo in 16-bit letters: geel naar rood, donkere rand en een schaduw eronder.
