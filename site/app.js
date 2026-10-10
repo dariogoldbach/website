@@ -676,7 +676,7 @@
       g.r(1, 19, 14, 5, C.black); g.r(1, 19, 14, 1, C.grey5); g.r(3, 21, 3, 1, C.red); g.r(10, 21, 3, 1, C.grey4);
     });
   }
-  var NAMES = { boeken: "Infinite Jest", wijnglas: "een glas wijn", fles: "een flesje rood", microfoon: "een microfoon",
+  var NAMES = { boeken: "Infinite Jest", wijnglas: "een glaasje rood", fles: "een flesje rood", microfoon: "een microfoon",
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
     speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
     usb: "een USB-stick", stuc: "een zak Goldband-stuc", vunk: "David Vunk", robijn: "een robijn", steen: "een steen",
