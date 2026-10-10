@@ -51,8 +51,10 @@
     },
     platform: function (p) {
       return top(p.label, p) +
-        '<div class="mid"><p class="situatie-mark">' + esc(p.title).replace(" ", "<br>") + "</p>" +
-        '<p class="txt ph">' + esc(p.text) + "</p></div>" +
+        '<div class="mid"><p class="situatie-mark" aria-label="' + esc(p.title) + '"><span class="sit-de">De</span>' +
+        '<span class="sit-word">Situatie</span></p>' +
+        (p.tag ? '<p class="sit-tag"><span>' + esc(p.tag) + "</span></p>" : "") +
+        '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p></div>" +
         '<div class="end"><div class="row">' + link(p.link) + "</div></div>";
     },
     podcast: function (p) {
@@ -76,6 +78,7 @@
         '<div class="f pages"></div><div class="f top"></div><div class="f bottom"></div></div></div>' +
         '<h2 class="lg">' + esc(p.title) + "</h2>" +
         (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
+        (p.quote ? '<p class="quote">‘' + esc(p.quote.text) + "’ <span>" + esc(p.quote.by) + "</span></p>" : "") +
         '<p class="small' + (p.images ? "" : " ph") + '">' + esc(p.meta) + " · sleep het boek om het te draaien</p></div>" +
         '<div class="end"><div class="row">' + link(p.link) + "</div></div>";
     },
