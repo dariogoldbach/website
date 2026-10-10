@@ -55,7 +55,7 @@ button { font: inherit; color: inherit; }
 
 /* Pijltjeskruis (desktop) */
 .dpad {
-  display: grid; grid-template-columns: repeat(3, 3.25rem); grid-template-rows: repeat(3, 3.25rem);
+  display: grid; grid-template-columns: repeat(3, 3.25rem); grid-template-rows: repeat(2, 3.25rem);
   place-items: center;
 }
 .dpad button {
@@ -72,7 +72,8 @@ button { font: inherit; color: inherit; }
 .dpad svg .lip { fill: color-mix(in srgb, var(--ink) 30%, #ffffff); }
 .dpad button:active svg .lip { fill: #ffffff; }
 .dpad .up { grid-area: 1 / 2; } .dpad .left { grid-area: 2 / 1; }
-.dpad .right { grid-area: 2 / 3; } .dpad .down { grid-area: 3 / 2; }
+.dpad .right { grid-area: 2 / 3; } .dpad .down { grid-area: 2 / 2; }
+.dpad .count { display: none; }
 .dpad .count {
   grid-area: 2 / 2; font-family: var(--mono); font-size: 0.7rem; color: var(--page-ink);
   text-align: center; line-height: 1.2; font-variant-numeric: tabular-nums;
