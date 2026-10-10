@@ -67,7 +67,7 @@ window.PAGES = [
   },
   {
     id: "volg-me", type: "social",
-    bg: "#000000", fg: "#ffffff", accent: "#ffffff",
+    bg: "#f5f1e8", fg: "#111111", accent: "#ff5a36",
     links: [
       { text: "Instagram", icon: "instagram", href: "https://www.instagram.com/dariogoldbach/" },
       { text: "TikTok", icon: "tiktok", href: "https://www.tiktok.com/@dariogoldbach" },
