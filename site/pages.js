@@ -85,8 +85,8 @@ window.PAGES = [
     bg: "#000000", fg: "#ffffff",
     title: "Dario leest voor",
     video: "media/voorlezen.mp4", poster: "img/voorlezen-poster.jpg",
-    account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
-    caption: "‘Gezondheid is uit!’ voor FHM.",
+    account: "dariogoldbach & @fhm_nederland", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Gezondheid is uit! 🚬🍷🍺",
   },
   {
     id: "steven-leest-goldband", type: "video",
