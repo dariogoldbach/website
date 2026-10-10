@@ -449,17 +449,33 @@
     run2: function () { return art(34, 47, function (g) { dario(g, "run2"); }); },
     jump: function () { return art(34, 43, function (g) { dario(g, "jump"); }); },
     duck: function () { return art(32, 28, function (g) { dario(g, "duck"); }); },
-    // Infinite Jest: dikke paperback met de blauwe wolkenlucht, plat op de grond.
+    // Infinite Jest, isometrisch: de blauwe wolkenkaft bovenop, een dik papierblok en de rug met de titel.
     boeken: function () {
-      return art(26, 16, function (g) {
-        g.r(1, 0, 24, 4, C.sky2); g.r(0, 1, 26, 2, C.sky2); g.r(2, 0, 10, 1, C.cloud2);
-        g.r(0, 4, 26, 12, C.sky); g.r(0, 14, 26, 2, C.sky3); g.r(0, 4, 26, 1, C.sky3);
-        [[4, 8, 3], [7, 7, 3], [10, 9, 2.4], [18, 11, 3], [21, 10, 3.2], [24, 12, 2]].forEach(function (q) {
-          g.d(q[0], q[1] + 1, q[2], C.cloud2); g.d(q[0], q[1], q[2], C.cloud);
-        });
-        // De titel als witte streepjes over de rug.
-        [3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 19, 21].forEach(function (xx) { g.p(xx, 12, C.white); });
-        g.r(3, 13, 1, 1, C.white); g.r(13, 13, 1, 1, C.white);
+      var D = 7;
+      return art(32, 16 + D, function (g) {
+        // Kaft: elk pixel terugrekenen naar een plek (u, v) op de voorkant van het boek.
+        function cover(u, v) {
+          var cl = Math.sin(u * 9 + v * 3) + Math.sin(v * 14 - u * 4) + Math.sin((u + v) * 7);
+          if (v > 0.1 && v < 0.24 && u > 0.12 && u < 0.88) return (Math.floor(u * 22) % 3 && Math.floor(v * 40) % 4) ? C.white : C.sky;
+          if (v > 0.84 && v < 0.9 && u > 0.2 && u < 0.8) return "#2f5a86";
+          if (cl > 1.3) return C.cloud;
+          if (cl > 1.0) return C.cloud2;
+          return v < 0.4 ? C.sky2 : C.sky;
+        }
+        for (var y = 0; y < 16 + D; y++) for (var x = 0; x < 32; x++) {
+          var px = x + 0.5, py = y + 0.5, dx = px, dy = py - 6;
+          var u = (dx * 10 - dy * 20) / 240, v = (12 * dy + 6 * dx) / 240;
+          if (u >= -0.02 && u <= 1.02 && v >= -0.02 && v <= 1.02) { g.p(x, y, cover(Math.min(1, Math.max(0, u)), Math.min(1, Math.max(0, v)))); continue; }
+          if (px <= 20) {
+            // Papierblok aan de lange kant.
+            var top = 6 + px / 2;
+            if (py >= top && py <= top + D) g.p(x, y, (y - 6 - Math.floor(x / 2)) % 2 ? C.cream : "#ddd3b8");
+          } else {
+            // De rug, met de titel in witte streepjes.
+            var top2 = 16 - (px - 20) / 2, k = py - top2;
+            if (py >= top2 && py <= top2 + D) g.p(x, y, Math.round(k) === 3 && x % 3 ? C.white : C.sky3);
+          }
+        }
       });
     },
     wijnglas: function () {
@@ -652,9 +668,10 @@
       musicBtn.setAttribute("aria-pressed", String(musicOn)); musicBtn.setAttribute("aria-label", musicOn ? "Muziek uit" : "Muziek aan");
       musicBtn.innerHTML = musicOn ? ICONS.sound : ICONS.muted;
     }
-    function music() {
+    function music(fromStart) {
       if (!musicOn) { if (song) song.pause(); return; }
       if (!song) { song = new Audio("audio/vier-weekenden-club.mp3"); song.loop = true; song.volume = 0.7; }
+      if (fromStart) song.currentTime = 0;
       song.play().catch(function () {});
     }
     musicIcon();
@@ -801,7 +818,7 @@
       if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); if (playing) jump(); else start(); }
     }
     function start() {
-      size(); reset(); over.hidden = true; form.hidden = true; playing = true; state.locked = control; hideHint(); music();
+      size(); reset(); over.hidden = true; form.hidden = true; playing = true; state.locked = control; hideHint(); music(true);
       last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(safe);
     }
     // Scorebord: haalt de top 10 op, en na een potje kun je je naam invullen.
