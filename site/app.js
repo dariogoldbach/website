@@ -263,14 +263,12 @@
 
   // ---------- Ren, Dario! Een springspel zoals het dino-spel van Chrome ----------
   // Pixelplaatjes: elke letter is een kleur, een punt is doorzichtig.
-  // Alles in tinten van rood, van bijna zwart tot bijna wit.
-  var RED = ["#2b0306", "#5c0a10", "#8f1018", "#c4161f", "#e8202a", "#ff5a52", "#ff8f86", "#ffc2bb", "#ffe6e2"];
   var PAL = {
-    H: RED[0], h: RED[1], S: RED[7], s: RED[6], G: RED[0], L: RED[5], M: RED[3],
-    T: RED[2], P: RED[1], K: RED[0], W: RED[8],
-    p: RED[6], v: RED[3], e: RED[5], r: RED[4], l: RED[7], w: RED[8], Y: RED[4], y: RED[6], g: RED[7],
-    B: RED[2], k: RED[0], q: RED[1], R: RED[4], o: RED[8], m: RED[6], n: RED[1],
-    d: RED[1], a: RED[6], b: RED[4], i: RED[7]
+    H: "#2a1a10", h: "#5b3a22", S: "#f0c39c", s: "#d49a74", G: "#111111", L: "#bfe0f2", M: "#a8483c",
+    T: "#1b1b1b", P: "#2c2c35", K: "#111111", W: "#ffffff",
+    p: "#f7a8c8", v: "#8e1b2c", e: "#8d989e", r: "#e8202a", l: "#c7f06a", w: "#fff8e8", Y: "#f3b61f", y: "#ffd76a", g: "#cfd8dc",
+    B: "#2f6b3a", k: "#151515", q: "#3a3a3a", R: "#e8202a", o: "#f2eee3", m: "#a0a0a0", n: "#5a5a5a",
+    d: "#2b2b2b", a: "#c9c9c9", b: "#ff5a36", i: "#f4f4f4"
   };
   var HEAD = [
     "..H.HHh.HH.H.H..", ".HHHhHHHHhHHHHH.", "HHhHHHhHHHHhHHHH", ".HHHHhHHHHHHHhHH", "HHhHHHHHhHHhHHH.",
@@ -299,8 +297,8 @@
       "daaaaaaaaaaaaaad", "dddddddddddddddd"],
     speaker: ["kkkkkkkkkk", "kqqqqqqqqk", "kqqaaaaqqk", "kqaqqqqaqk", "kqaqbbqaqk", "kqaqqqqaqk", "kqqaaaaqqk",
       "kqqqqqqqqk", "kqqqaaqqqk", "kqqaqqaqqk", "kqqaqqaqqk", "kqqqaaqqqk", "kqqqqqqqqk", "kkkkkkkkkk"],
-    discobal: ["....k....", "....k....", "..rrirr..", ".riririr.", "ririririr", "iriririri", "ririririr", ".riririr.", "..rrirr.."],
-    discobal2: ["....k....", "....k....", "..iirii..", ".iririri.", "iriririri", "ririririr", "iriririri", ".iririri.", "..iirii.."],
+    discobal: ["....k....", "....k....", "..mmnmm..", ".mnmnmnm.", "mnmnmnmnm", "nmnmnmnmn", "mnmnmnmnm", ".mnmnmnm.", "..mmnmm.."],
+    discobal2: ["....k....", "....k....", "..nnmnn..", ".nmnmnmn.", "nmnmnmnmn", "mnmnmnmnm", "nmnmnmnmn", ".nmnmnmn.", "..nnmnn.."],
     vuur: ["...b....", "..bb..b.", "..bbb.bb", ".bbybbbb", ".byyybb.", "bbyyyybb", "byywyyyb", "byywwyyb", ".bywwyb.",
       "kkkkkkkk", "kqqqqqqk"],
     vuur2: ["....b...", ".b..bb..", "bb.bbb..", "bbbbybb.", ".bbyyyb.", "bbyyyybb", "byyyywyb", "byywwyyb", ".bywwyb.",
@@ -399,12 +397,12 @@
       ctx.fillStyle = PAL.o; ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.setTransform(k, 0, 0, k, 0, 0); ctx.imageSmoothingEnabled = false;
       // Grond met steentjes die meeschuiven.
-      ctx.fillStyle = RED[1]; ctx.fillRect(0, ground, VW, 1);
+      ctx.fillStyle = "#1b1b1b"; ctx.fillRect(0, ground, VW, 1);
       var off = (dist || 0) % 40;
-      ctx.fillStyle = RED[6];
+      ctx.fillStyle = "#8a8578";
       for (var x = -off; x < VW; x += 40) { ctx.fillRect(x + 6, ground + 4, 3, 1); ctx.fillRect(x + 25, ground + 8, 2, 1); ctx.fillRect(x + 34, ground + 5, 1, 1); }
       // Muzieknootjes als wolken.
-      ctx.fillStyle = RED[7];
+      ctx.fillStyle = "#c9c2b0";
       for (var n = 0; n < 2; n++) {
         var nx = ((n * 55 + 30) - (dist || 0) * 0.25) % (VW + 30); if (nx < -10) nx += VW + 30;
         var ny = ground - 60 - n * 16;
