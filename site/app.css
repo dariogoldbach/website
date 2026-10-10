@@ -277,3 +277,22 @@ h1, h2, p { margin: 0; }
 .card.centered .row, .card.centered .icons { justify-content: center; }
 .card.centered .txt { margin-inline: auto; }
 .card.centered .sheet-close { align-self: flex-end; }
+
+/* Knoppen: hoekig en in hoofdletters. Stijl B en C staan klaar om te vergelijken (html data-knop="b" of "c"). */
+.btn {
+  border-radius: 0; text-transform: uppercase; font-family: var(--mono); font-weight: 700; font-stretch: 100%;
+  font-size: max(0.8rem, 3.6cqw); letter-spacing: 0.08em; padding: 0.9em 1.4em;
+  box-shadow: 1.2cqw 1.2cqw 0 color-mix(in srgb, var(--fg) 35%, transparent);
+}
+.btn:active { transform: translate(1.2cqw, 1.2cqw); box-shadow: none; }
+.btn.ghost { box-shadow: none; }
+html[data-knop="b"] .btn {
+  font-family: var(--display); font-stretch: 62%; font-weight: 900; font-size: max(1.15rem, 6cqw); letter-spacing: 0.01em;
+  padding: 0.35em 0.7em 0.3em; box-shadow: none; border-width: 3px;
+}
+html[data-knop="b"] .btn:active { transform: scale(0.97); }
+html[data-knop="c"] .btn {
+  font-family: "Instrument Serif", Georgia, serif; font-style: italic; font-weight: 400; text-transform: none;
+  font-size: max(1.2rem, 6.2cqw); letter-spacing: 0; padding: 0.3em 0.9em; box-shadow: none; border-width: 1.5px;
+}
+html[data-knop="c"] .btn:active { transform: scale(0.97); }

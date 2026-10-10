@@ -2,6 +2,8 @@
 (function () {
   "use strict";
   var PAGES = window.PAGES || [];
+  // Knopstijl: "b" = hoekig en in de kopletter. "a" (mono) en "c" (schreefletter) blijven beschikbaar om te vergelijken.
+  if (!document.documentElement.dataset.knop) document.documentElement.dataset.knop = "b";
   var frame = document.getElementById("frame");
   var countEl = document.getElementById("count");
   var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
