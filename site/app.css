@@ -374,3 +374,33 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 @keyframes hobbel { 0%, 100% { transform: translate(0, 0) rotate(-8deg); } 50% { transform: translate(0.8px, -1.2px) rotate(-3deg); } }
 @keyframes zoef { 0% { transform: translateX(1.5px); opacity: 1; } 100% { transform: translateX(-2.5px); opacity: 0.2; } }
 @media (prefers-reduced-motion: reduce) { .icon-btn svg.cart .body, .icon-btn svg.cart .lines { animation: none; } }
+
+/* Mailknop: envelop gaat open, er valt een hartje in, hij gaat dicht en vliegt weg naar rechts */
+.icon-btn:has(svg.mail) { overflow: hidden; }
+.icon-btn svg.mail { overflow: visible; }
+svg.mail .body { fill: var(--fg); }
+svg.mail * { transform-box: view-box; }
+svg.mail .fly { animation: mail-fly 3.6s ease-in-out infinite; }
+svg.mail .flap { transform-origin: 12px 8px; animation: mail-flap 3.6s ease-in-out infinite; }
+svg.mail .flap-open { transform-origin: 12px 8px; animation: mail-flap-open 3.6s ease-in-out infinite; }
+svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 3.6s ease-in infinite; }
+@keyframes mail-flap { 0%, 10% { transform: scaleY(1); } 18%, 56% { transform: scaleY(0); } 64%, 100% { transform: scaleY(1); } }
+@keyframes mail-flap-open { 0%, 18% { transform: scaleY(0); } 26%, 48% { transform: scaleY(1); } 56%, 100% { transform: scaleY(0); } }
+@keyframes mail-heart {
+  0%, 24% { transform: translateY(-12px) scale(0.5); opacity: 0; }
+  30% { transform: translateY(-11px) scale(1.35); opacity: 1; }
+  36% { transform: translateY(-10px) scale(1.25); opacity: 1; }
+  46% { transform: translateY(5px) scale(1); opacity: 1; }
+  48%, 100% { transform: translateY(5px) scale(1); opacity: 0; }
+}
+@keyframes mail-fly {
+  0%, 66% { transform: translate(0, 0) rotate(0); opacity: 1; }
+  70% { transform: translate(-2px, 0.5px) rotate(4deg); }
+  80% { transform: translate(30px, -6px) rotate(-12deg); opacity: 1; }
+  80.1% { transform: translate(-30px, 0) rotate(0); opacity: 0; }
+  82% { opacity: 1; }
+  94%, 100% { transform: translate(0, 0) rotate(0); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) { svg.mail *, svg.mail .fly { animation: none !important; } svg.mail .flap-open, svg.mail .heart { opacity: 0; } }
+.snake-over .icon-btn { border: 0; cursor: pointer; }
+.snake-over .icon-btn svg { width: 62%; height: 62%; margin-left: 6%; }

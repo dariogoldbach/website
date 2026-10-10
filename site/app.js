@@ -40,7 +40,7 @@
   }
 
   var ICONS = {
-    mail: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg>',
+    mail: '<svg class="mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><g class="fly"><path class="flap-open" d="M3 8 12 2.5 21 8"/><path class="heart" fill="currentColor" stroke="none" d="M12 11.6 8.9 8.6a1.9 1.9 0 0 1 3.1-2.4 1.9 1.9 0 0 1 3.1 2.4z"/><rect class="body" x="3" y="8" width="18" height="12" rx="1.5"/><path class="flap" d="M3 8 12 14.5 21 8"/></g></svg>',
     cart: '<svg class="cart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><g class="lines"><path d="M1 9.5h3.5"/><path d="M0.5 13h4"/><path d="M2 16.5h3"/></g><g class="body" transform="rotate(-8 14 12)"><path d="M6 4h2.6l2.1 9.6a1.5 1.5 0 0 0 1.5 1.2h6.6a1.5 1.5 0 0 0 1.5-1.1L22 7.5H9.4"/><circle cx="12.6" cy="19.4" r="1.5" fill="currentColor"/><circle cx="19" cy="19.4" r="1.5" fill="currentColor"/></g></svg>',
     spotify: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>',
     apple: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M7.8 15.4a6 6 0 1 1 8.4 0"/><path d="M5 18a9.6 9.6 0 1 1 14 0"/><circle cx="12" cy="10.6" r="2.4" fill="currentColor" stroke="none"/><path d="M10.7 14.6h2.6l-.6 6.4h-1.4z" fill="currentColor" stroke="none"/></svg>',
@@ -135,7 +135,7 @@
         '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
         '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
-        '</p><button class="btn" type="button" data-play>Speel</button></div></div>' +
+        '</p><button class="icon-btn" type="button" data-play aria-label="Speel">' + ICONS.play + '</button></div></div>' +
         '<p class="small" data-best>Je record: 0</p>';
     },
   };
@@ -425,8 +425,8 @@
       playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
       if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
       bestEl.textContent = "Je record: " + best;
-      msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Veeg verder of start een new game.";
-      card.querySelector("[data-play]").textContent = "New game";
+      msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Druk op play voor een new game, of veeg verder.";
+      card.querySelector("[data-play]").setAttribute("aria-label", "New game");
       over.hidden = false;
     }
     function control(d) { if (d === "up") jump(); else if (d === "down") duck(); }
