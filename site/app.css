@@ -63,9 +63,14 @@ button { font: inherit; color: inherit; }
   display: grid; place-items: center; color: var(--page-ink); border-radius: 50%;
   transition: transform 120ms ease, color 120ms ease;
 }
-.dpad button:hover { color: var(--ink); transform: scale(1.12); }
-.dpad button:active { transform: scale(0.92); }
-.dpad svg { width: 1.9rem; height: 1.9rem; fill: currentColor; }
+/* 8-bit pijltjestoetsen */
+.dpad button { border-radius: 0; color: var(--ink); }
+.dpad button:hover { transform: translateY(-2px); }
+.dpad button:active { transform: translateY(3px); }
+.dpad svg { width: 3rem; height: 3rem; fill: currentColor; image-rendering: pixelated; }
+.dpad svg .face { fill: #ffffff; }
+.dpad svg .lip { fill: color-mix(in srgb, var(--ink) 30%, #ffffff); }
+.dpad button:active svg .lip { fill: #ffffff; }
 .dpad .up { grid-area: 1 / 2; } .dpad .left { grid-area: 2 / 1; }
 .dpad .right { grid-area: 2 / 3; } .dpad .down { grid-area: 3 / 2; }
 .dpad .count {
@@ -347,7 +352,5 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 .card:has(.situatie-mark) .top { justify-content: center; }
 .card:has(.situatie-mark) .end .row { justify-content: center; }
 
-/* Volg me: alleen grote witte logo's op zwart */
-.social-icons { gap: 14cqw; }
-.social-icons .icon-btn { width: 24cqw; height: 24cqw; background: none; color: var(--fg); border-radius: 0; }
-.social-icons .icon-btn svg { width: 100%; height: 100%; }
+/* Volg me: alleen de logo's, op zwart */
+/* (zelfde kleine witte rondjes als de andere logoknoppen) */
