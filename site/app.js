@@ -172,21 +172,21 @@
       function centerOf(im) { return im.offsetLeft + im.offsetWidth / 2 - row.clientWidth / 2; }
       function glide(to) {
         cancelAnimationFrame(anim);
-        var from = row.scrollLeft, t0 = performance.now(), dur = 320;
+        var from = row.scrollLeft, t0 = performance.now(), dur = 480 + Math.min(260, Math.abs(to - from) * 0.6);
         (function tick(now) {
-          var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+          var k = Math.min(1, (now - t0) / dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
           row.scrollLeft = from + (to - from) * e;
           anim = k < 1 ? requestAnimationFrame(tick) : null;
         })(t0);
       }
       row._stop = function () { cancelAnimationFrame(anim); anim = null; clearTimeout(idle); };
       row._snap = function (v) {
-        var at = row.scrollLeft - (v || 0) * 180, best = 0, bd = Infinity;
+        var at = row.scrollLeft - (v || 0) * 60, best = 0, bd = Infinity;
         imgs.forEach(function (im, i) { var d = Math.abs(centerOf(im) - at); if (d < bd) { bd = d; best = i; } });
         // Een snelle veeg, of een stukje slepen, gaat altijd minstens één cover verder.
         var cur = row._index || 0, moved = cur >= 0 ? row.scrollLeft - centerOf(imgs[cur]) : 0;
-        if (cur >= 0 && best === cur && (Math.abs(v || 0) > 0.3 || Math.abs(moved) > imgs[0].offsetWidth * 0.2)) {
-          var dir = Math.abs(v || 0) > 0.3 ? (v < 0 ? 1 : -1) : (moved > 0 ? 1 : -1);
+        if (cur >= 0 && best === cur && (Math.abs(v || 0) > 0.5 || Math.abs(moved) > imgs[0].offsetWidth * 0.25)) {
+          var dir = Math.abs(v || 0) > 0.5 ? (v < 0 ? 1 : -1) : (moved > 0 ? 1 : -1);
           best = Math.max(0, Math.min(imgs.length - 1, cur + dir));
         }
         row._index = best;
@@ -569,7 +569,7 @@
     var over = card.querySelector(".snake-over"), msg = card.querySelector("[data-msg]");
     var scoreEl = card.querySelector("[data-score]"), bestEl = card.querySelector("[data-best]");
     var VW = 100, VH = 200, k = 1, ground = 150;
-    var me, obs, speed, dist, score, nextGap, lastKind = null, raf = null, last = 0, t = 0, duckUntil = 0, playing = false;
+    var me, obs, speed, dist, score, nextGap, lastKind = null, duckTold = false, duckTip = 0, raf = null, last = 0, t = 0, duckUntil = 0, playing = false;
     var best = 0;
     try { best = +localStorage.getItem("dg-run-best") || 0; } catch (e) {}
     bestEl.textContent = "Je record: " + best;
@@ -622,6 +622,8 @@
         else if (score > 150 && r0 < 0.42) kind = "vliegplaat";
       } while (look(kind) === lastKind && ++tries < 20);
       lastKind = look(kind);
+      // De eerste keer dat er iets hangt of vliegt: even laten zien dat je kunt bukken.
+      if (!duckTold && (kind === "discobal" || kind === "vliegplaat")) { duckTold = true; duckTip = t + 2.2; }
       var img = IMG[kind === "vliegplaat" || kind === "stuiterplaat" ? "plaat" : kind];
       var y = kind === "vliegplaat" ? ground - 25 : kind === "discobal" ? ground - 26 : ground - img.height;
       obs.push({ kind: kind, img: img, x: VW + 4, y: y, base: y, ph: Math.random() * 6 });
@@ -716,6 +718,11 @@
       else if (!onGround()) img = IMG.jump;
       else img = playing && Math.floor((dist || 0) / 7) % 2 ? IMG.run2 : IMG.run1;
       put(img, 18, ground + me.y - img.height);
+      if (playing && t < duckTip) {
+        var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+        ctx.fillStyle = INK; ctx.font = "bold 5px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+        ctx.fillText(fine ? "↓ pijltje omlaag = bukken!" : "↓ veeg omlaag = bukken!", VW / 2, ground - 52);
+      }
     }
     function key(e) {
       if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); if (playing) jump(); else start(); }
@@ -986,7 +993,7 @@
         if (im.decode) im.decode().catch(function () {});
       });
   }
-  if (document.readyState === "complete") setTimeout(preload, 50);
-  else window.addEventListener("load", function () { setTimeout(preload, 50); });
+  // Meteen beginnen, niet wachten tot de video of de lettertypes binnen zijn.
+  setTimeout(preload, 0);
   frame.appendChild(hint);
 })();

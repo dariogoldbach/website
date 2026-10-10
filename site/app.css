@@ -428,3 +428,5 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
   display: grid; place-items: center; background: var(--fg); color: var(--bg); cursor: pointer; }
 .run-sound svg { width: 55%; height: 55%; }
 .run-credit { opacity: .6; margin-top: -1cqw; }
+.book3d.has-img .front, .book3d.has-img .back, .book3d.has-img .spine { background-color: var(--cover); }
+.sit-icons .icon-btn { background: var(--accent); color: var(--fg); }
