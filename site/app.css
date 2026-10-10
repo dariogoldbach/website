@@ -278,7 +278,7 @@ h1, h2, p { margin: 0; }
 .card.centered .mid, .card.centered .end, .card.centered .sheet { align-items: center; }
 .card.centered .row, .card.centered .icons { justify-content: center; }
 .card.centered .txt { margin-inline: auto; }
-.card.centered .sheet-close { align-self: flex-end; }
+.card.centered .sheet-close { align-self: center; margin: -4cqw 0 0; }
 
 /* Knoppen: hoekig en in hoofdletters. Stijl B en C staan klaar om te vergelijken (html data-knop="b" of "c"). */
 .btn {
@@ -299,6 +299,15 @@ html[data-knop="c"] .btn {
   border-width: 1.5px; border-radius: 0.4em;
 }
 html[data-knop="c"] .btn:active { transform: scale(0.97); }
+/* Stijl 1: onderstreepte schuine schreef, geen kader. */
+html[data-knop="1"] .btn {
+  font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 600; text-transform: none;
+  font-size: max(1.1rem, 5.2cqw); letter-spacing: 0; padding: 0.15em 0.1em; min-height: 0; box-shadow: none;
+  background: none; color: var(--fg); border: 0; border-radius: 0;
+  text-decoration: underline; text-decoration-thickness: 0.09em; text-underline-offset: 0.22em;
+}
+html[data-knop="1"] .btn:active { transform: none; opacity: 0.6; }
+html[data-knop="1"] .row { column-gap: 1.6em; }
 
 /* Video, schermvullend zoals op TikTok */
 .card:has(.vid) { padding: 0; }
@@ -333,3 +342,12 @@ html[data-knop="c"] .btn:active { transform: scale(0.97); }
 .vid-caption { margin-top: 1.2cqw; font-size: max(0.85rem, 3.7cqw); line-height: 1.35; }
 .vid-bar { position: absolute; left: 0; right: 0; bottom: env(safe-area-inset-bottom, 0px); height: 3px; background: rgba(255,255,255,.25); z-index: 2; }
 .vid-bar i { display: block; height: 100%; width: 0; background: #fff; }
+
+/* De Situatie: tekst links, maar kopje en knop in het midden */
+.card:has(.situatie-mark) .top { justify-content: center; }
+.card:has(.situatie-mark) .end .row { justify-content: center; }
+
+/* Volg me: alleen grote witte logo's op zwart */
+.social-icons { gap: 14cqw; }
+.social-icons .icon-btn { width: 24cqw; height: 24cqw; background: none; color: var(--fg); border-radius: 0; }
+.social-icons .icon-btn svg { width: 100%; height: 100%; }

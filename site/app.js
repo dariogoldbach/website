@@ -3,7 +3,7 @@
   "use strict";
   var PAGES = window.PAGES || [];
   // Knopstijl: "c" = halfvette schuine schreefletter met licht ronde hoeken (Dario koos C). "a" en "b" staan nog in app.css.
-  if (!document.documentElement.dataset.knop) document.documentElement.dataset.knop = "c";
+  if (!document.documentElement.dataset.knop) document.documentElement.dataset.knop = "1";
   var frame = document.getElementById("frame");
   var countEl = document.getElementById("count");
   var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -107,8 +107,8 @@
         '<div class="row"><a class="btn" href="mailto:' + esc(p.email) + '">Stuur een mail</a></div></div>';
     },
     social: function (p) {
-      return '<div class="mid"><p class="mail-big">Stalk<br><em>me.</em></p>' +
-        '<div class="icons">' + p.links.map(iconLink).join("") + "</div></div>";
+      return '<div class="mid">' +
+        '<div class="icons social-icons">' + p.links.map(iconLink).join("") + "</div></div>";
     },
     video: function (p) {
       // Schermvullend met een overlay zoals op TikTok: account, caption, like en delen.
