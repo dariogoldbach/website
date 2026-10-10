@@ -569,7 +569,7 @@
     var over = card.querySelector(".snake-over"), msg = card.querySelector("[data-msg]");
     var scoreEl = card.querySelector("[data-score]"), bestEl = card.querySelector("[data-best]");
     var VW = 100, VH = 200, k = 1, ground = 150;
-    var me, obs, speed, dist, score, nextGap, raf = null, last = 0, t = 0, duckUntil = 0, playing = false;
+    var me, obs, speed, dist, score, nextGap, lastKind = null, raf = null, last = 0, t = 0, duckUntil = 0, playing = false;
     var best = 0;
     try { best = +localStorage.getItem("dg-run-best") || 0; } catch (e) {}
     bestEl.textContent = "Je record: " + best;
@@ -610,17 +610,25 @@
     function duck() { if (!playing) return; duckUntil = performance.now() + 520; if (!onGround()) me.vy = Math.max(me.vy, 260); }
     function spawn() {
       var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel", "speaker", "vuur"];
-      var kind = kinds[Math.floor(Math.random() * kinds.length)], r0 = Math.random();
-      // Hoe verder je komt, hoe gekker het wordt: discoballen om onderdoor te duiken, stuiterende en vliegende platen.
-      if (score > 60 && r0 < 0.18) kind = "discobal";
-      else if (score > 120 && r0 < 0.32) kind = "stuiterplaat";
-      else if (score > 150 && r0 < 0.42) kind = "vliegplaat";
+      // Nooit twee keer hetzelfde ding achter elkaar (alle platen tellen als hetzelfde).
+      function look(k) { return k === "vliegplaat" || k === "stuiterplaat" ? "plaat" : k; }
+      var kind, tries = 0;
+      do {
+        var r0 = Math.random();
+        kind = kinds[Math.floor(Math.random() * kinds.length)];
+        // Hoe verder je komt, hoe gekker het wordt: moving heads om onderdoor te duiken, stuiterende en vliegende platen.
+        if (score > 60 && r0 < 0.18) kind = "discobal";
+        else if (score > 120 && r0 < 0.32) kind = "stuiterplaat";
+        else if (score > 150 && r0 < 0.42) kind = "vliegplaat";
+      } while (look(kind) === lastKind && ++tries < 20);
+      lastKind = look(kind);
       var img = IMG[kind === "vliegplaat" || kind === "stuiterplaat" ? "plaat" : kind];
       var y = kind === "vliegplaat" ? ground - 25 : kind === "discobal" ? ground - 26 : ground - img.height;
       obs.push({ kind: kind, img: img, x: VW + 4, y: y, base: y, ph: Math.random() * 6 });
       // Soms twee kleine dingen vlak achter elkaar.
       if (score > 100 && Math.random() < 0.2 && (kind === "wijnglas" || kind === "fles" || kind === "microfoon")) {
-        var k2 = Math.random() < 0.5 ? "wijnglas" : "fles", img2 = IMG[k2];
+        var k2 = kind === "wijnglas" ? "fles" : kind === "fles" ? "wijnglas" : Math.random() < 0.5 ? "wijnglas" : "fles", img2 = IMG[k2];
+        lastKind = k2;
         obs.push({ kind: k2, img: img2, x: VW + 4 + img.width + 4, y: ground - img2.height, base: ground - img2.height, ph: 0 });
       }
       // Altijd genoeg ruimte om te landen en weer af te zetten.
