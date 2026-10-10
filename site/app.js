@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   var PAGES = window.PAGES || [];
-  // Knopstijl: "c" = halfvette schreefletter met licht ronde hoeken (Dario koos C). "a" en "b" staan nog in app.css.
+  // Knopstijl: "c" = halfvette schuine schreefletter met licht ronde hoeken (Dario koos C). "a" en "b" staan nog in app.css.
   if (!document.documentElement.dataset.knop) document.documentElement.dataset.knop = "c";
   var frame = document.getElementById("frame");
   var countEl = document.getElementById("count");

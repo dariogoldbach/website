@@ -293,7 +293,7 @@ html[data-knop="b"] .btn {
 }
 html[data-knop="b"] .btn:active { transform: scale(0.97); }
 html[data-knop="c"] .btn {
-  font-family: "Source Serif 4", Georgia, serif; font-style: normal; font-weight: 600; text-transform: none;
+  font-family: "Source Serif 4", Georgia, serif; font-style: italic; font-weight: 600; text-transform: none;
   font-size: max(0.95rem, 4.2cqw); letter-spacing: 0; padding: 0.4em 0.95em 0.45em; min-height: 0; box-shadow: none;
   border-width: 1.5px; border-radius: 0.4em;
 }
