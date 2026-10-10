@@ -140,12 +140,13 @@
     },
     game: function () {
       var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span></div>' +
+      return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span>' +
+        '<button class="run-sound" type="button" data-music aria-pressed="true" aria-label="Muziek uit">' + ICONS.sound + "</button></div>" +
         '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
         '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
         '</p><button class="icon-btn" type="button" data-play aria-label="Speel">' + ICONS.playc + '</button></div></div>' +
-        '<p class="small" data-best>Je record: 0</p>';
+        '<p class="small" data-best>Je record: 0</p><p class="small run-credit">Muziek door Sjamsoedin</p>';
     },
   };
 
@@ -267,66 +268,207 @@
   }
 
   // ---------- Ren, Dario! Een springspel zoals het dino-spel van Chrome ----------
-  // Pixelplaatjes: elke letter is een kleur, een punt is doorzichtig.
-  var PAL = {
-    H: "#2a1a10", h: "#5b3a22", S: "#f0c39c", s: "#d49a74", G: "#111111", L: "#bfe0f2", M: "#a8483c",
-    T: "#1b1b1b", P: "#2c2c35", K: "#111111", W: "#ffffff",
-    p: "#f7a8c8", v: "#8e1b2c", e: "#8d989e", r: "#e8202a", l: "#c7f06a", w: "#fff8e8", Y: "#f3b61f", y: "#ffd76a", g: "#cfd8dc",
-    B: "#2f6b3a", k: "#151515", q: "#3a3a3a", R: "#e8202a", o: "#f2eee3", m: "#a0a0a0", n: "#5a5a5a",
-    d: "#2b2b2b", a: "#c9c9c9", b: "#ff5a36", i: "#f4f4f4", u: "#7fb3dc"
+  // 16-bit plaatjes: elk plaatje wordt op dubbele resolutie getekend (R pixels per spel-eenheid),
+  // met schaduw, glimlichtjes en een donkere rand eromheen.
+  var R = 2, INK = "#1b1b1b", BG = "#f2eee3";
+  var C = {
+    hair: "#2a1a10", hair2: "#4a2e1a", hair3: "#74502f", skin: "#f0c39c", skin2: "#d49a74", skin3: "#fbdcc0",
+    lens: "#bfe0f2", mouth: "#a8483c", shirt: "#1d1d1f", shirt2: "#38383c", pants: "#2c2c35", pants2: "#1c1c22",
+    pants3: "#45455a", white: "#ffffff", grey1: "#e8e8e8", grey2: "#c9c9c9", grey3: "#a0a0a0", grey4: "#6e6e6e",
+    grey5: "#4a4a4a", grey6: "#2e2e2e", black: "#121212", red: "#e8202a", red2: "#a8141c", wine: "#8e1b2c",
+    wine2: "#5e0f1c", wine3: "#c23a4f", green: "#1f4d2a", green2: "#2f6b3a", green3: "#5c9a64", cream: "#f6eccf",
+    gold: "#d9a43a", sky: "#7fb3dc", sky2: "#a9cdea", sky3: "#5d93c0", cloud: "#ffffff", cloud2: "#dbe8f3",
+    fire: "#ff5a36", fire2: "#ff9a2e", fire3: "#ffd76a", fire4: "#fff6d0"
   };
-  var HEAD = [
-    "..H.HHh.HH.H.H..", ".HHHhHHHHhHHHHH.", "HHhHHHhHHHHhHHHH", ".HHHHhHHHHHHHhHH", "HHhHHHHHhHHhHHH.",
-    "HHHHSSSSSSSSHHHH", "HHHSGGGSSGGGSHHH", ".HHSGLGGGGLGSHH.", "..HSGGGSSGGGSH..", "...SSSSssSSSS...",
-    "...SSSMMMMSSS...", "....SSSSSSSS...."
-  ];
-  // Alles onder het hoofd is 14 breed; met een punt links en rechts wordt het 16.
-  function pad(rows) { return rows.map(function (r) { return "." + r + "."; }); }
-  var BODY = pad([".....SSSS.....", "...TTTTTTTT...", "..TTTTTTTTTT..", ".STTTTTTTTTTS.", ".STTTTTTTTTTS.",
-    "...TTTTTTTT...", "...PPPPPPPP..."]);
-  var SPR = {
-    run1: HEAD.concat(BODY, pad(["...PPP..PPP...", "...PPP...PPP..", "..KWKK...KWKK."])),
-    run2: HEAD.concat(BODY, pad(["....PPPPPP....", "....PPP.PPP...", "...KWKK.KWKK.."])),
-    jump: HEAD.concat(BODY, pad(["..PPP....PPP..", ".KWKK....KWKK.", ".............."])),
-    duck: HEAD.concat(pad(["TTTTTTTTTTTTTT", "KWKKPPPPPPKWKK"])),
-    // Infinite Jest: de dikke paperback met de blauwe wolkenlucht, rug naar voren.
-    boeken: ["uuuuuuuuuuuu", "uwwuuuuuwwuu", "wwwwuuuwwwwu", "uukwkwkkwkuu", "uwwwuuuuwwwu", "wwwwwuuuuwwu",
-      "uuwwuuuuuuuu", "uuuuuuuuuuuu"],
-    wijnglas: ["e.....e", "e.....e", "evvvvve", "evvvvve", ".evvve.", "..eee..", "...e...", "...e...", "...e...",
-      "...e...", ".eeeee."],
-    fles: [".kk.", ".BB.", ".BB.", ".BB.", "BBBB", "BBBB", "BwwB", "BwwB", "BBBB", "BBBB", "BBBB"],
-    microfoon: [".mmm.", "mnmnm", "mmnmm", ".mmm.", "..k..", "..k..", "..k..", "..k..", "..k..", "..k..",
-      "..k..", ".kkk.", "kkkkk"],
-    plaat: ["...kkkk...", ".kkkkkkkk.", ".kqkkkkqk.", "kkkRRRRkkk", "kqkRooRkqk", "kqkRooRkqk", "kkkRRRRkkk",
-      ".kqkkkkqk.", ".kkkkkkkk.", "...kkkk..."],
-    draaitafel: [".kkkkkkkk...a...", "ddddddddddddaddd", "daaaaaaaaaaaaaad", "dabababaaaaababd",
-      "daaaaaaaaaaaaaad", "dddddddddddddddd"],
-    // Funktion One: zwarte kast met een grote ronde hoorn, logo, en de bas eronder.
-    speaker: ["kkkkkkkkkkkk", "kqnnnnnnnnqk", "kqnmmmmmmnqk", "kqnmnddnmnqk", "kqnmddddmnqk", "kqnmnddnmnqk",
-      "kqnmmmmmmnqk", "kqnnnnnnnnqk", "kqwwwqqqqqqk", "kkkkkkkkkkkk", "kqddddddddqk", "kqqqqqqqqqqk", "kqddddddddqk",
-      "kkkkkkkkkkkk"],
-    discobal: ["....k....", "....k....", "..mmnmm..", ".mnmnmnm.", "mnmnmnmnm", "nmnmnmnmn", "mnmnmnmnm", ".mnmnmnm.", "..mmnmm.."],
-    discobal2: ["....k....", "....k....", "..nnmnn..", ".nmnmnmn.", "nmnmnmnmn", "mnmnmnmnm", "nmnmnmnmn", ".nmnmnmn.", "..nnmnn.."],
-    vuur: ["...b....", "..bb..b.", "..bbb.bb", ".bbybbbb", ".byyybb.", "bbyyyybb", "byywyyyb", "byywwyyb", ".bywwyb.",
-      "kkkkkkkk", "kqqqqqqk"],
-    vuur2: ["....b...", ".b..bb..", "bb.bbb..", "bbbbybb.", ".bbyyyb.", "bbyyyybb", "byyyywyb", "byywwyyb", ".bywwyb.",
-      "kkkkkkkk", "kqqqqqqk"]
+  function art(w, h, draw, noLine) {
+    var c = document.createElement("canvas"), x = c.getContext("2d");
+    c.width = w + 2; c.height = h + 2;
+    var g = {
+      r: function (a, b, ww, hh, col) { x.fillStyle = col; x.fillRect(a + 1, b + 1, ww, hh); },
+      clear: function (a, b, ww, hh) { x.clearRect(a + 1, b + 1, ww, hh); },
+      p: function (a, b, col) { x.fillStyle = col; x.fillRect(a + 1, b + 1, 1, 1); },
+      // Rondje of ovaal zonder vervaging, pixel voor pixel.
+      d: function (cx, cy, rx, col, ry, from) {
+        ry = ry || rx; x.fillStyle = col;
+        for (var yy = Math.max(Math.floor(cy - ry), from || -99); yy <= cy + ry; yy++) for (var xx = Math.floor(cx - rx); xx <= cx + rx; xx++) {
+          var dx = (xx + 0.5 - cx) / rx, dy = (yy + 0.5 - cy) / ry;
+          if (dx * dx + dy * dy <= 1) x.fillRect(xx + 1, yy + 1, 1, 1);
+        }
+      }
+    };
+    draw(g);
+    if (!noLine) {
+      // Donkere rand om alles wat niet doorzichtig is: het 16-bit randje.
+      var im = x.getImageData(0, 0, c.width, c.height), s = im.data, o = new Uint8ClampedArray(s);
+      for (var yy = 0; yy < c.height; yy++) for (var xx = 0; xx < c.width; xx++) {
+        var i = (yy * c.width + xx) * 4;
+        if (s[i + 3]) continue;
+        var near = (xx > 0 && s[i - 1]) || (xx < c.width - 1 && s[i + 7]) ||
+          (yy > 0 && s[i - c.width * 4 + 3]) || (yy < c.height - 1 && s[i + c.width * 4 + 3]);
+        if (near) { o[i] = 27; o[i + 1] = 27; o[i + 2] = 27; o[i + 3] = 255; }
+      }
+      x.putImageData(new ImageData(o, c.width, c.height), 0, 0);
+    }
+    // width/height in spel-eenheden; de rand valt er net buiten.
+    return { c: c, width: w / R, height: h / R };
+  }
+
+  // Dario: krullen, bril, zwart shirt.
+  function dario(g, pose) {
+    var duck = pose === "duck", top = duck ? 1 : 0;
+    var curls = [[6, 6], [10, 4], [14, 3], [18, 3], [22, 4], [26, 6], [4, 10], [28, 10], [4, 14], [28, 14], [8, 6], [24, 6], [16, 5]];
+    curls.forEach(function (q) { g.d(q[0], q[1] + top, 3.6, C.hair); });
+    curls.forEach(function (q, i) { if (i % 2 === 0) g.d(q[0] - 1, q[1] - 1 + top, 1.6, C.hair2); });
+    [[9, 3], [15, 2], [21, 3], [26, 5]].forEach(function (q) { g.p(q[0], q[1] + top, C.hair3); g.p(q[0] + 1, q[1] + top, C.hair3); });
+    // Gezicht met schaduw rechts en onder.
+    g.r(7, 10 + top, 18, 12, C.skin); g.r(8, 22 + top, 16, 1, C.skin); g.r(23, 11 + top, 2, 11, C.skin2);
+    g.r(9, 22 + top, 14, 1, C.skin2); g.r(8, 11 + top, 2, 3, C.skin3);
+    g.r(5, 14 + top, 2, 4, C.skin); g.r(25, 14 + top, 2, 4, C.skin2);
+    // Pony.
+    [[9, 9], [13, 8], [17, 9], [21, 8], [24, 10]].forEach(function (q) { g.d(q[0], q[1] + top, 2.4, C.hair); });
+    // Bril.
+    g.r(8, 13 + top, 7, 5, INK); g.r(17, 13 + top, 7, 5, INK); g.r(15, 14 + top, 2, 1, INK);
+    g.r(9, 14 + top, 5, 3, C.lens); g.r(18, 14 + top, 5, 3, C.lens);
+    g.p(9, 14 + top, C.white); g.p(18, 14 + top, C.white);
+    g.r(11, 15 + top, 2, 2, C.black); g.r(20, 15 + top, 2, 2, C.black);
+    g.r(16, 18 + top, 1, 2, C.skin2);
+    g.r(13, 20 + top, 6, 1, C.mouth); g.p(12, 19 + top, C.mouth); g.p(19, 19 + top, C.mouth);
+    if (duck) {
+      g.r(2, 24, 28, 3, C.shirt); g.r(4, 24, 6, 1, C.shirt2);
+      g.r(0, 26, 6, 2, C.black); g.r(26, 26, 6, 2, C.black); g.r(0, 27, 6, 1, C.white); g.r(26, 27, 6, 1, C.white);
+      return;
+    }
+    // Hals, shirt, armen.
+    g.r(13, 23, 6, 2, C.skin2);
+    g.r(8, 24, 16, 1, C.shirt); g.r(6, 25, 20, 11, C.shirt); g.r(8, 26, 2, 8, C.shirt2); g.r(12, 25, 8, 1, C.shirt2);
+    g.r(3, 25, 4, 5, C.shirt); g.r(25, 25, 4, 5, C.shirt); g.r(4, 25, 1, 4, C.shirt2);
+    g.r(3, 30, 3, 4, C.skin); g.r(26, 30, 3, 4, C.skin); g.r(5, 30, 1, 4, C.skin2); g.r(28, 30, 1, 4, C.skin2);
+    g.r(3, 34, 3, 1, C.skin2); g.r(26, 34, 3, 1, C.skin2);
+    g.r(7, 35, 18, 1, C.black); g.r(15, 35, 2, 1, C.grey3);
+    g.r(7, 36, 18, 1, C.pants); g.r(8, 36, 3, 1, C.pants3);
+    function leg(x, y, len) {
+      g.r(x, 37, 5, y - 37 + len, C.pants); g.r(x + 4, 37, 1, y - 37 + len, C.pants2); g.r(x, 37, 1, y - 37 + len, C.pants3);
+      var sy = y + len;
+      g.r(x - 1, sy, 7, 2, C.black); g.r(x, sy, 2, 1, C.grey5); g.r(x - 1, sy + 2, 7, 1, C.white);
+    }
+    if (pose === "run1") { leg(7, 37, 4); leg(20, 36, 4); }
+    else if (pose === "run2") { leg(11, 36, 4); leg(16, 37, 4); }
+    else { leg(5, 37, 2); leg(22, 37, 2); }
+  }
+
+  var ART = {
+    run1: function () { return art(32, 44, function (g) { dario(g, "run1"); }); },
+    run2: function () { return art(32, 44, function (g) { dario(g, "run2"); }); },
+    jump: function () { return art(32, 42, function (g) { dario(g, "jump"); }); },
+    duck: function () { return art(32, 28, function (g) { dario(g, "duck"); }); },
+    // Infinite Jest: dikke paperback met de blauwe wolkenlucht, plat op de grond.
+    boeken: function () {
+      return art(26, 16, function (g) {
+        g.r(1, 0, 24, 4, C.sky2); g.r(0, 1, 26, 2, C.sky2); g.r(2, 0, 10, 1, C.cloud2);
+        g.r(0, 4, 26, 12, C.sky); g.r(0, 14, 26, 2, C.sky3); g.r(0, 4, 26, 1, C.sky3);
+        [[4, 8, 3], [7, 7, 3], [10, 9, 2.4], [18, 11, 3], [21, 10, 3.2], [24, 12, 2]].forEach(function (q) {
+          g.d(q[0], q[1] + 1, q[2], C.cloud2); g.d(q[0], q[1], q[2], C.cloud);
+        });
+        // De titel als witte streepjes over de rug.
+        [3, 4, 6, 7, 8, 10, 11, 13, 14, 15, 17, 18, 19, 21].forEach(function (xx) { g.p(xx, 12, C.white); });
+        g.r(3, 13, 1, 1, C.white); g.r(13, 13, 1, 1, C.white);
+      });
+    },
+    wijnglas: function () {
+      return art(14, 22, function (g) {
+        g.d(7, 5, 6.5, C.grey1, 7); g.d(7, 5, 5.5, "#fafafa", 6); g.clear(0, 0, 14, 2);
+        g.d(7, 5, 5.5, C.wine, 6, 5); g.r(2, 5, 10, 1, C.wine3); g.r(3, 8, 1, 2, C.wine2); g.r(10, 7, 1, 3, C.wine2);
+        g.r(2, 2, 1, 5, C.white);
+        g.r(6, 12, 2, 7, C.grey2); g.p(6, 13, C.white);
+        g.d(7, 20.5, 6, C.grey2, 1.5); g.r(3, 20, 4, 1, C.white);
+      });
+    },
+    // Een flesje rood: donkergroen glas, crème etiket, rode capsule.
+    fles: function () {
+      return art(10, 24, function (g) {
+        g.r(3, 0, 4, 4, C.red2); g.r(3, 0, 1, 4, C.red);
+        g.r(3, 4, 4, 4, C.green); g.r(2, 8, 6, 2, C.green); g.r(1, 10, 8, 14, C.green);
+        g.r(2, 10, 1, 13, C.green3); g.r(4, 4, 1, 5, C.green2); g.r(7, 11, 1, 12, "#143820");
+        g.r(1, 14, 8, 6, C.cream); g.r(1, 19, 8, 1, C.gold); g.r(3, 15, 4, 2, C.wine); g.r(3, 18, 4, 1, C.grey3);
+      });
+    },
+    microfoon: function () {
+      return art(12, 26, function (g) {
+        g.d(6, 4.5, 4.5, C.grey3); g.d(5.2, 3.8, 3.2, C.grey2);
+        for (var yy = 1; yy < 9; yy += 2) for (var xx = 2; xx < 11; xx += 2) g.p(xx + (yy % 4 === 1 ? 0 : 1), yy, C.grey4);
+        g.p(4, 2, C.white); g.p(3, 3, C.white);
+        g.r(3, 9, 6, 2, C.grey5); g.r(4, 11, 4, 4, C.black); g.r(4, 11, 1, 4, C.grey5);
+        g.r(5, 15, 2, 8, C.grey6); g.r(5, 15, 1, 8, C.grey4);
+        g.r(1, 23, 10, 3, C.black); g.r(2, 23, 4, 1, C.grey5);
+      });
+    },
+    plaat: function () {
+      return art(20, 20, function (g) {
+        g.d(10, 10, 10, C.black); g.d(10, 10, 8.4, C.grey6); g.d(10, 10, 7.6, C.black);
+        g.d(10, 10, 6, C.grey6); g.d(10, 10, 5.3, C.black);
+        g.d(10, 10, 3.6, C.red); g.d(9.4, 9.4, 2.4, "#ff4b52"); g.d(10, 10, 0.9, BG);
+        g.r(3, 5, 1, 2, C.grey3); g.r(4, 4, 1, 1, C.grey3); g.r(15, 14, 1, 2, C.grey4);
+      });
+    },
+    draaitafel: function () {
+      return art(32, 13, function (g) {
+        g.r(24, 0, 2, 2, C.grey2); g.r(25, 2, 1, 2, C.grey3); g.r(20, 3, 6, 1, C.grey3); g.r(19, 3, 2, 2, C.grey4);
+        g.d(12, 4.5, 10, C.black, 1.8); g.d(12, 4.3, 7, C.grey6, 1.2); g.d(12, 4.3, 2.4, C.red, 0.9);
+        g.r(0, 5, 32, 7, C.grey5); g.r(0, 5, 32, 1, C.grey3); g.r(0, 11, 32, 1, C.grey6);
+        g.r(26, 7, 2, 2, C.red); g.r(28, 7, 1, 2, C.fire3); g.d(4, 8.5, 1.6, C.grey2); g.r(2, 12, 3, 1, C.black); g.r(27, 12, 3, 1, C.black);
+      });
+    },
+    // Funktion One: zwarte kast, grote ronde hoorn, logo, en de baskast eronder.
+    speaker: function () {
+      return art(24, 30, function (g) {
+        g.r(0, 0, 24, 30, C.black); g.r(0, 0, 24, 1, C.grey5); g.r(0, 0, 1, 30, C.grey6);
+        g.d(12, 8.5, 9.5, C.grey6); g.d(12, 8.5, 8, C.grey5); g.d(12, 8.5, 6, C.grey4);
+        g.d(12, 8.5, 4.2, C.grey6); g.d(12, 8.5, 2.6, C.black); g.d(11, 7.5, 1, C.grey3);
+        g.r(5, 3, 1, 2, C.grey3); g.r(4, 5, 1, 2, C.grey3);
+        g.r(3, 19, 7, 1, C.white); g.r(11, 19, 3, 1, C.grey2);
+        g.r(0, 21, 24, 1, C.grey6);
+        for (var yy = 23; yy < 29; yy += 2) { g.r(2, yy, 20, 1, C.grey6); }
+        g.r(2, 29, 3, 1, C.grey5); g.r(19, 29, 3, 1, C.grey5);
+      });
+    },
+    discobal: function () { return ball(0); },
+    discobal2: function () { return ball(1); },
+    vuur: function () { return pyro(0); },
+    vuur2: function () { return pyro(1); }
   };
+  function ball(f) {
+    return art(18, 22, function (g) {
+      g.r(8, 0, 2, 4, C.grey6);
+      g.d(9, 13, 9, C.grey4);
+      for (var yy = 4; yy < 22; yy += 2) for (var xx = 0; xx < 18; xx += 2) {
+        var dx = xx + 1 - 9, dy = yy + 1 - 13;
+        if (dx * dx + dy * dy > 72) continue;
+        var v = ((xx + yy) / 2 + f) % 3, light = dx + dy < -4;
+        g.r(xx, yy, 2, 2, light ? (v ? C.grey1 : C.white) : v === 0 ? C.grey3 : v === 1 ? C.grey2 : C.grey4);
+        g.p(xx + 1, yy + 1, C.grey5);
+      }
+      var sp = f ? [[5, 8], [12, 16]] : [[4, 10], [13, 9]];
+      sp.forEach(function (q) { g.p(q[0], q[1], C.white); g.p(q[0] - 1, q[1], C.white); g.p(q[0] + 1, q[1], C.white); g.p(q[0], q[1] - 1, C.white); g.p(q[0], q[1] + 1, C.white); });
+    });
+  }
+  // Pyrotechniek: een vuurstraal uit een zwart podiumkastje.
+  function pyro(f) {
+    return art(16, 24, function (g) {
+      var s = f ? 1 : -1;
+      g.d(8, 13, 7, C.fire, 8); g.d(8 + s, 5, 4, C.fire, 5); g.d(8 - s * 2, 2, 2, C.fire, 2.5);
+      g.d(8, 14, 5, C.fire2, 6); g.d(8 + s, 8, 3, C.fire2, 4);
+      g.d(8, 15, 3.4, C.fire3, 4.5); g.d(8, 17, 2, C.fire4, 3);
+      g.p(3 - s, 6, C.fire3); g.p(13 + s, 9, C.fire3); g.p(2, 12 + f, C.fire2);
+      g.r(1, 19, 14, 5, C.black); g.r(1, 19, 14, 1, C.grey5); g.r(3, 21, 3, 1, C.red); g.r(10, 21, 3, 1, C.grey4);
+    });
+  }
   var NAMES = { boeken: "Infinite Jest", wijnglas: "een glas wijn", fles: "een flesje rood", microfoon: "een microfoon",
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
     speaker: "een Funktion One speaker", discobal: "een discobal", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat" };
-  function sprite(rows) {
-    var c = document.createElement("canvas"), x = c.getContext("2d");
-    c.width = rows[0].length; c.height = rows.length;
-    rows.forEach(function (row, y) {
-      for (var i = 0; i < row.length; i++) if (row[i] !== ".") { x.fillStyle = PAL[row[i]]; x.fillRect(i, y, 1, 1); }
-    });
-    return c;
-  }
   var IMG = null;
 
   function runner(card) {
-    if (!IMG) { IMG = {}; Object.keys(SPR).forEach(function (k) { IMG[k] = sprite(SPR[k]); }); }
+    if (!IMG) { IMG = {}; Object.keys(ART).forEach(function (k) { IMG[k] = ART[k](); }); }
     var wrap = card.querySelector(".run-wrap"), canvas = card.querySelector("canvas"), ctx = canvas.getContext("2d");
     var over = card.querySelector(".snake-over"), msg = card.querySelector("[data-msg]");
     var scoreEl = card.querySelector("[data-score]"), bestEl = card.querySelector("[data-best]");
@@ -335,6 +477,25 @@
     var best = 0;
     try { best = +localStorage.getItem("dg-run-best") || 0; } catch (e) {}
     bestEl.textContent = "Je record: " + best;
+    // Muziek: begint bij de eerste keer spelen (dan mag de browser geluid afspelen) en loopt door tot je wegveegt.
+    var musicBtn = card.querySelector("[data-music]"), musicOn = true, song = null;
+    try { musicOn = localStorage.getItem("dg-run-music") !== "uit"; } catch (e) {}
+    function musicIcon() {
+      musicBtn.setAttribute("aria-pressed", String(musicOn)); musicBtn.setAttribute("aria-label", musicOn ? "Muziek uit" : "Muziek aan");
+      musicBtn.innerHTML = musicOn ? ICONS.sound : ICONS.muted;
+    }
+    function music() {
+      if (!musicOn) { if (song) song.pause(); return; }
+      if (!song) { song = new Audio("audio/vier-weekenden-club.mp3"); song.loop = true; song.volume = 0.7; }
+      song.play().catch(function () {});
+    }
+    musicIcon();
+    musicBtn.addEventListener("click", function () {
+      musicOn = !musicOn; musicIcon();
+      try { localStorage.setItem("dg-run-music", musicOn ? "aan" : "uit"); } catch (e) {}
+      if (musicOn && !song && !playing) return;
+      music();
+    });
 
     function size() {
       var r = canvas.getBoundingClientRect();
@@ -359,7 +520,7 @@
       else if (score > 120 && r0 < 0.32) kind = "stuiterplaat";
       else if (score > 150 && r0 < 0.42) kind = "vliegplaat";
       var img = IMG[kind === "vliegplaat" || kind === "stuiterplaat" ? "plaat" : kind];
-      var y = kind === "vliegplaat" ? ground - 25 : kind === "discobal" ? ground - 24 : ground - img.height;
+      var y = kind === "vliegplaat" ? ground - 25 : kind === "discobal" ? ground - 26 : ground - img.height;
       obs.push({ kind: kind, img: img, x: VW + 4, y: y, base: y, ph: Math.random() * 6 });
       // Soms twee kleine dingen vlak achter elkaar.
       if (score > 100 && Math.random() < 0.2 && (kind === "wijnglas" || kind === "fles" || kind === "microfoon")) {
@@ -399,16 +560,37 @@
       draw();
       raf = requestAnimationFrame(step);
     }
+    // Plaatjes op halve eenheden neerzetten, met de rand van 1 pixel eromheen.
+    function put(a, x, y) {
+      x = Math.round(x * R) / R; y = Math.round(y * R) / R;
+      ctx.drawImage(a.c, x - 1 / R, y - 1 / R, a.c.width / R, a.c.height / R);
+    }
     function draw() {
       if (!canvas.width) return;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = PAL.o; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.setTransform(k, 0, 0, k, 0, 0); ctx.imageSmoothingEnabled = false;
-      // Grond met steentjes die meeschuiven.
+      // Festivalterrein in de verte: podium, tenten en lichtmasten, die langzaam meeschuiven.
+      var far = ((dist || 0) * 0.15) % 140;
+      for (var fx = -far; fx < VW; fx += 140) {
+        ctx.fillStyle = "#e7e0cf";
+        ctx.fillRect(fx + 8, ground - 30, 44, 30); ctx.fillRect(fx + 4, ground - 34, 52, 5);
+        ctx.fillRect(fx + 70, ground - 12, 24, 12); ctx.fillRect(fx + 74, ground - 16, 16, 4); ctx.fillRect(fx + 79, ground - 19, 6, 3);
+        ctx.fillRect(fx + 110, ground - 44, 2, 44); ctx.fillRect(fx + 106, ground - 46, 10, 3);
+        ctx.fillStyle = "#ddd4bf";
+        ctx.fillRect(fx + 14, ground - 26, 32, 14); ctx.fillRect(fx + 98, ground - 9, 30, 9); ctx.fillRect(fx + 102, ground - 12, 22, 3);
+        ctx.fillStyle = "#f3c9b8";
+        for (var lx = 0; lx < 5; lx++) ctx.fillRect(fx + 10 + lx * 10, ground - 33, 2, 2);
+        ctx.fillRect(fx + 107, ground - 45, 2, 1); ctx.fillRect(fx + 113, ground - 45, 2, 1);
+      }
+      // Grond: een randje, een band met een ruitjespatroon en steentjes die meeschuiven.
+      ctx.fillStyle = "#e3dbc7"; ctx.fillRect(0, ground, VW, VH - ground);
+      var off = (dist || 0) % 40, tile = (dist || 0) % 4;
+      ctx.fillStyle = "#d6ccb4";
+      for (var tx = -tile; tx < VW; tx += 4) { ctx.fillRect(tx, ground + 1, 2, 1.5); ctx.fillRect(tx + 2, ground + 2.5, 2, 1.5); }
       ctx.fillStyle = "#1b1b1b"; ctx.fillRect(0, ground, VW, 1);
-      var off = (dist || 0) % 40;
-      ctx.fillStyle = "#8a8578";
-      for (var x = -off; x < VW; x += 40) { ctx.fillRect(x + 6, ground + 4, 3, 1); ctx.fillRect(x + 25, ground + 8, 2, 1); ctx.fillRect(x + 34, ground + 5, 1, 1); }
+      ctx.fillStyle = "#b9ae95";
+      for (var x = -off; x < VW; x += 40) { ctx.fillRect(x + 6, ground + 6, 3, 1); ctx.fillRect(x + 25, ground + 10, 2, 1); ctx.fillRect(x + 34, ground + 7, 1, 1); }
       // Muzieknootjes als wolken.
       ctx.fillStyle = "#c9c2b0";
       for (var n = 0; n < 2; n++) {
@@ -416,19 +598,19 @@
         var ny = ground - 60 - n * 16;
         ctx.fillRect(nx, ny + 6, 3, 2); ctx.fillRect(nx + 2, ny, 1, 7); ctx.fillRect(nx + 3, ny, 3, 1); ctx.fillRect(nx + 5, ny, 1, 3);
       }
-      (obs || []).forEach(function (o) { ctx.drawImage(o.img, Math.round(o.x), Math.round(o.y)); });
+      (obs || []).forEach(function (o) { put(o.img, o.x, o.y); });
       if (!me) me = { y: 0, vy: 0 };
       var img;
       if (performance.now() < duckUntil && onGround()) img = IMG.duck;
       else if (!onGround()) img = IMG.jump;
       else img = playing && Math.floor((dist || 0) / 7) % 2 ? IMG.run2 : IMG.run1;
-      ctx.drawImage(img, 18, Math.round(ground + me.y - img.height));
+      put(img, 18, ground + me.y - img.height);
     }
     function key(e) {
       if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); if (playing) jump(); else start(); }
     }
     function start() {
-      size(); reset(); over.hidden = true; playing = true; state.locked = control; hideHint();
+      size(); reset(); over.hidden = true; playing = true; state.locked = control; hideHint(); music();
       last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(step);
     }
     function end(o) {
@@ -453,6 +635,7 @@
     requestAnimationFrame(size);
     return function () {
       playing = false; cancelAnimationFrame(raf); document.removeEventListener("keydown", key);
+      if (song) { song.pause(); song = null; }
       if (state.locked === control) state.locked = null;
     };
   }
