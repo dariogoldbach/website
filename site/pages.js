@@ -31,17 +31,20 @@ window.PAGES = [
   },
   {
     id: "dario-in-oekraine", type: "podcast",
-    bg: "#000000", fg: "#ffffff", accent: "#ebe33a",
+    bg: "#0057b7", fg: "#ffffff", accent: "#ffd700",
     title: "Dario in Oekraïne",
     image: "img/dario-in-oekraine-afl2.jpg", showTitle: true,
     text: "Een DM op Instagram, en twee weken later rijdt Dario mee in een konvooi met hulpgoederen naar het front. Een podcast in vijf delen over angst, idealisme en morele keuzes.",
-    links: [{ text: "Luister op Spotify", href: "https://open.spotify.com/episode/4qeBgAVwyytXE0RwZSksH7" }, { text: "Apple Podcasts", href: "" }],
+    links: [
+      { text: "Luister op Spotify", icon: "spotify", href: "https://open.spotify.com/episode/4qeBgAVwyytXE0RwZSksH7" },
+      { text: "Luister op Apple Podcasts", icon: "apple", href: "" },
+    ],
   },
   {
     id: "de-man-die-alles-had", type: "boek",
     bg: "#e8202a", fg: "#ffffff", cover: "#ffffff", coverInk: "#111111",
     title: "De Man die Alles Had",
-    images: { front: "img/de-man-front.jpg", spine: "img/de-man-spine.jpg", back: "img/de-man-back.jpg", ratio: 1.536, depth: 0.139 },
+    images: { front: "img/de-man-front.jpg", spine: "img/de-man-spine.jpg", back: "img/de-man-back.jpg", ratio: 1.536, depth: 0.155 },
     text: "Dario’s literaire debuut over een techgigant, een groeiende leugen en een onbereikbare liefde.",
     link: { text: "Bestel nu", href: "https://demandiealleshad.nl/" },
   },

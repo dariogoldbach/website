@@ -29,12 +29,19 @@
     var href = l.href ? ' href="' + esc(l.href) + '" target="_blank" rel="noopener"' : ' href="#" data-later';
     return '<a class="btn ' + (cls || "") + '"' + href + ">" + esc(l.text) + "</a>";
   }
+  // Ronde knop met alleen een logo.
+  function iconLink(l) {
+    var href = l.href ? ' href="' + esc(l.href) + '" target="_blank" rel="noopener"' : ' href="#" data-later';
+    return '<a class="icon-btn"' + href + ' aria-label="' + esc(l.text) + '">' + ICONS[l.icon] + "</a>";
+  }
   function top(label, p) {
     return '<div class="top"><span class="label">' + esc(label) + "</span>" +
       (p.placeholder ? '<span class="ph-tag">voorbeeldtekst</span>' : "") + "</div>";
   }
 
   var ICONS = {
+    spotify: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>',
+    apple: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M7.8 15.4a6 6 0 1 1 8.4 0"/><path d="M5 18a9.6 9.6 0 1 1 14 0"/><circle cx="12" cy="10.6" r="2.4" fill="currentColor" stroke="none"/><path d="M10.7 14.6h2.6l-.6 6.4h-1.4z" fill="currentColor" stroke="none"/></svg>',
     muted: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     sound: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
@@ -73,7 +80,9 @@
         '<div class="eq" aria-hidden="true">' + bars + "</div>" +
         (p.showTitle ? '<h2 class="lg pod-title">' + esc(p.title) + "</h2>" : "") +
         (p.text ? '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p>" : "") + "</div>" +
-        '<div class="end"><div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>";
+        '<div class="end">' + (p.links[0] && p.links[0].icon
+          ? '<div class="icons">' + p.links.map(iconLink).join("") + "</div>"
+          : '<div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div>") + "</div>";
     },
     boek: function (p) {
       return top("Boek", p) +
@@ -97,9 +106,7 @@
     },
     social: function (p) {
       return '<div class="mid"><p class="mail-big">Stalk<br><em>me.</em></p>' +
-        '<div class="icons">' + p.links.map(function (l) {
-          return '<a class="icon-btn" href="' + esc(l.href) + '" target="_blank" rel="noopener" aria-label="' + esc(l.text) + '">' + ICONS[l.icon] + "</a>";
-        }).join("") + "</div></div>";
+        '<div class="icons">' + p.links.map(iconLink).join("") + "</div></div>";
     },
     video: function (p) {
       // Schermvullend, zoals op TikTok: speelt meteen zonder geluid, tik voor geluid, tik nog eens voor pauze.
