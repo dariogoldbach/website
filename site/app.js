@@ -143,6 +143,7 @@
       return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span>' +
         '<button class="run-sound" type="button" data-music aria-pressed="true" aria-label="Muziek uit">' + ICONS.sound + "</button></div>" +
         '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
+        '<canvas class="logo" data-logo role="img" aria-label="Dario\'s Great Adventure"></canvas>' +
         '<div class="go" data-go hidden><b class="go-title">GAME OVER</b><canvas class="go-img" data-go-img></canvas><span class="go-name" data-go-name></span></div>' +
         '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
@@ -450,11 +451,9 @@
     run2: function () { return art(34, 47, function (g) { dario(g, "run2"); }); },
     jump: function () { return art(34, 43, function (g) { dario(g, "jump"); }); },
     duck: function () { return art(32, 28, function (g) { dario(g, "duck"); }); },
-    // Infinite Jest, isometrisch: de blauwe wolkenkaft bovenop, een dik papierblok en de rug met de titel.
+    // Infinite Jest, rechtop: de blauwe wolkenkaft voor, de rug met de titel links en het papierblok bovenop.
     boeken: function () {
-      var D = 7;
-      return art(32, 16 + D, function (g) {
-        // Kaft: elk pixel terugrekenen naar een plek (u, v) op de voorkant van het boek.
+      return art(20, 29, function (g) {
         function cover(u, v) {
           var cl = Math.sin(u * 9 + v * 3) + Math.sin(v * 14 - u * 4) + Math.sin((u + v) * 7);
           if (v > 0.1 && v < 0.24 && u > 0.12 && u < 0.88) return (Math.floor(u * 22) % 3 && Math.floor(v * 40) % 4) ? C.white : C.sky;
@@ -463,20 +462,15 @@
           if (cl > 1.0) return C.cloud2;
           return v < 0.4 ? C.sky2 : C.sky;
         }
-        for (var y = 0; y < 16 + D; y++) for (var x = 0; x < 32; x++) {
-          var px = x + 0.5, py = y + 0.5, dx = px, dy = py - 6;
-          var u = (dx * 10 - dy * 20) / 240, v = (12 * dy + 6 * dx) / 240;
-          if (u >= -0.02 && u <= 1.02 && v >= -0.02 && v <= 1.02) { g.p(x, y, cover(Math.min(1, Math.max(0, u)), Math.min(1, Math.max(0, v)))); continue; }
-          if (px <= 20) {
-            // Papierblok aan de lange kant.
-            var top = 6 + px / 2;
-            if (py >= top && py <= top + D) g.p(x, y, (y - 6 - Math.floor(x / 2)) % 2 ? C.cream : "#ddd3b8");
-          } else {
-            // De rug, met de titel in witte streepjes.
-            var top2 = 16 - (px - 20) / 2, k = py - top2;
-            if (py >= top2 && py <= top2 + D) g.p(x, y, Math.round(k) === 3 && x % 3 ? C.white : C.sky3);
-          }
-        }
+        // Voorkant
+        for (var y = 4; y < 29; y++) for (var x = 6; x < 20; x++) g.p(x, y, cover((x - 6 + 0.5) / 14, (y - 4 + 0.5) / 25));
+        // Rug: schuin naar achteren, met de titel in witte streepjes van boven naar beneden.
+        g.poly([[0, 1], [6, 4], [6, 29], [0, 26]], C.sky3);
+        for (var yy = 6; yy < 22; yy++) if (yy % 3) g.p(3, yy, C.white);
+        g.r(1, 23, 4, 1, "#2f5a86");
+        // Bovenkant: het dikke papierblok.
+        g.poly([[0, 1], [14, 1], [20, 4], [6, 4]], C.cream);
+        g.line(3, 2, 15, 2, 1, "#ddd3b8"); g.line(5, 3, 17, 3, 1, "#ddd3b8");
       });
     },
     wijnglas: function () {
@@ -629,17 +623,28 @@
         g.p(3, 6, R2); g.p(9, 8, R3); g.p(13, 6, R3); g.p(6, 10, R3); g.p(11, 2, "#ff8a80"); g.p(15, 1, R1);
       });
     },
-    // Een schilderij van een abstracte vrouw in een gouden lijst.
+    // Een abstract schilderij van een vrouw op een schildersezel.
     schilderij: function () {
-      var G1 = "#d9a43a", G2 = "#f3cf6a", G3 = "#9a6d1c";
-      return art(22, 26, function (g) {
-        g.r(0, 0, 22, 26, G1); g.r(0, 0, 22, 1, G2); g.r(0, 0, 1, 26, G2); g.r(21, 1, 1, 25, G3); g.r(1, 25, 21, 1, G3);
-        g.r(2, 2, 18, 22, "#f1e6d2");
-        g.r(2, 2, 9, 22, "#9cc6e6"); g.d(13, 10, 5, "#ff9ac8", 6); g.d(9, 9, 3.4, "#f0c39c", 4);
-        g.r(8, 7, 2, 2, INK); g.r(14, 8, 3, 1, INK); g.p(16, 9, INK);
-        g.d(11, 4.5, 4, INK, 2.2); g.r(5, 3, 3, 6, INK);
-        g.poly([[6, 15], [16, 14], [19, 24], [3, 24]], C.red); g.poly([[10, 16], [14, 16], [12, 24]], "#f3b61f");
-        g.d(15, 19, 2, "#1f4d2a"); g.r(2, 23, 18, 1, "#3a3a3a");
+      var W1 = "#a0703c", W2 = "#6e4a24", W3 = "#c99560";
+      return art(24, 34, function (g) {
+        // Ezel: twee poten voor, één achter, en een plankje waar het doek op staat.
+        g.line(12, 0, 11, 33, 2, W2);
+        g.line(9, 0, 2, 33, 2, W1); g.line(14, 0, 21, 33, 2, W1);
+        g.r(10, 0, 4, 2, W3);
+        // Het doek
+        g.r(2, 3, 20, 20, "#fbf6ea");
+        g.poly([[2, 3], [13, 3], [2, 17]], "#2f6fd6");
+        g.poly([[22, 3], [22, 15], [12, 23], [22, 23]], "#f3b61f");
+        g.d(13, 11, 6, "#ff8cc0", 7.5);
+        g.poly([[13, 4], [19, 9], [13, 18]], "#f05a28");
+        g.d(9, 9, 2.4, C.white); g.d(9.5, 9, 1, INK);
+        g.d(16, 13, 1.6, C.white); g.p(16, 13, INK);
+        g.line(5, 20, 12, 15, 1, INK); g.line(12, 15, 18, 21, 1, INK);
+        g.r(11, 17, 3, 2, C.red);
+        g.r(17, 5, 3, 3, "#1f4d2a"); g.d(5, 20, 1.6, C.red);
+        // Lijstje en plankje
+        g.r(2, 3, 20, 1, W2); g.r(2, 22, 20, 1, W2); g.r(2, 3, 1, 20, W2); g.r(21, 3, 1, 20, W2);
+        g.r(0, 23, 24, 2, W1); g.r(0, 23, 24, 1, W3);
       });
     },
     discobal: function () { return ball(0); },
@@ -678,6 +683,63 @@
     schilderij: "een schilderij" };
   var IMG = null;
 
+  // Titellogo in 16-bit letters: geel naar rood, donkere rand en een schaduw eronder.
+  var FONT = {
+    D: ["11110", "11011", "11011", "11011", "11011", "11011", "11110"],
+    A: ["01110", "11011", "11011", "11111", "11011", "11011", "11011"],
+    R: ["11110", "11011", "11011", "11110", "11011", "11011", "11011"],
+    I: ["11", "11", "11", "11", "11", "11", "11"],
+    O: ["01110", "11011", "11011", "11011", "11011", "11011", "01110"],
+    "'": ["11", "11", "01", "00", "00", "00", "00"],
+    S: ["01111", "11000", "11000", "01110", "00011", "00011", "11110"],
+    G: ["01111", "11000", "11000", "11011", "11011", "11011", "01111"],
+    E: ["11111", "11000", "11000", "11110", "11000", "11000", "11111"],
+    T: ["111111", "001100", "001100", "001100", "001100", "001100", "001100"],
+    V: ["11011", "11011", "11011", "11011", "11011", "01110", "00100"],
+    N: ["110011", "111011", "111111", "110111", "110011", "110011", "110011"],
+    U: ["11011", "11011", "11011", "11011", "11011", "11011", "01110"],
+    " ": ["000", "000", "000", "000", "000", "000", "000"]
+  };
+  var LOGO_COLS = ["#fff6c2", "#ffe066", "#ffc93c", "#ff9f1c", "#ff6b1a", "#f2392b", "#c81d25"];
+  function logo() {
+    var lines = [["DARIO'S", 4], ["GREAT ADVENTURE", 2]];
+    function width(t, sc) { var w = 0; for (var i = 0; i < t.length; i++) w += (FONT[t[i]][0].length + 1) * sc; return w - sc; }
+    var W = 0; lines.forEach(function (l) { W = Math.max(W, width(l[0], l[1])); });
+    var pad = 4, gap = 6, H = pad * 2 + 7 * 4 + gap + 7 * 2 + 2;
+    W += pad * 2;
+    var c = document.createElement("canvas"); c.width = W; c.height = H;
+    var x = c.getContext("2d"), y = pad;
+    lines.forEach(function (l) {
+      var t = l[0], sc = l[1], cx = Math.round((W - width(t, sc)) / 2);
+      for (var i = 0; i < t.length; i++) {
+        var gl = FONT[t[i]];
+        for (var r = 0; r < 7; r++) for (var q = 0; q < gl[r].length; q++) if (gl[r][q] === "1") {
+          for (var sy = 0; sy < sc; sy++) {
+            // Kleur per pixelrij: bovenaan licht, onderaan rood.
+            x.fillStyle = LOGO_COLS[Math.min(6, Math.floor((r * sc + sy) * 7 / (7 * sc)))];
+            x.fillRect(cx + q * sc, y + r * sc + sy, sc, 1);
+          }
+        }
+        cx += (gl[0].length + 1) * sc;
+      }
+      y += 7 * sc + gap;
+    });
+    // Donkere rand rondom (ook schuin), daarna een schaduw twee pixels lager.
+    var im = x.getImageData(0, 0, W, H), d = im.data, o = new Uint8ClampedArray(d);
+    function on(a, b) { return a >= 0 && b >= 0 && a < W && b < H && d[(b * W + a) * 4 + 3]; }
+    for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+      var k = (yy * W + xx) * 4;
+      if (d[k + 3]) continue;
+      if (on(xx - 1, yy) || on(xx + 1, yy) || on(xx, yy - 1) || on(xx, yy + 1) || on(xx - 1, yy - 1) || on(xx + 1, yy - 1) || on(xx - 1, yy + 1) || on(xx + 1, yy + 1)) {
+        o[k] = 27; o[k + 1] = 27; o[k + 2] = 27; o[k + 3] = 255;
+      } else if (on(xx, yy - 2) || on(xx - 1, yy - 2) || on(xx - 1, yy - 3)) {
+        o[k] = 110; o[k + 1] = 14; o[k + 2] = 20; o[k + 3] = 255;
+      }
+    }
+    im.data.set(o); x.putImageData(im, 0, 0);
+    return c;
+  }
+
   function runner(card) {
     if (!IMG) { IMG = {}; Object.keys(ART).forEach(function (k) { IMG[k] = ART[k](); }); }
     var wrap = card.querySelector(".run-wrap"), canvas = card.querySelector("canvas"), ctx = canvas.getContext("2d");
@@ -705,9 +767,33 @@
     musicBtn.addEventListener("click", function () {
       musicOn = !musicOn; musicIcon();
       try { localStorage.setItem("dg-run-music", musicOn ? "aan" : "uit"); } catch (e) {}
-      if (musicOn && !song && !playing) return;
-      music();
+      if (!musicOn) { if (song) song.pause(); } else if (playing) music();
     });
+    // Doodgaan: een Pac-Man-achtig wegzakkend deuntje, met Web Audio gemaakt.
+    var actx = null;
+    function wakeAudio() {
+      try { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) { actx = null; }
+    }
+    function deathSound() {
+      if (!musicOn || !actx) return;
+      try {
+        var t0 = actx.currentTime + 0.05, out = actx.createGain();
+        out.gain.value = 0.16; out.connect(actx.destination);
+        function blip(at, f0, f1, dur) {
+          var o = actx.createOscillator(), gn = actx.createGain();
+          o.type = "square"; o.frequency.setValueAtTime(f0, at); o.frequency.exponentialRampToValueAtTime(f1, at + dur);
+          gn.gain.setValueAtTime(1, at); gn.gain.setValueAtTime(0, at + dur);
+          o.connect(gn); gn.connect(out); o.start(at); o.stop(at + dur + 0.02);
+        }
+        // Telkens een golfje omhoog en weer omlaag, steeds een beetje lager.
+        for (var i = 0; i < 9; i++) {
+          var hi = 1000 - i * 75, at = t0 + i * 0.13;
+          blip(at, hi * 0.55, hi, 0.065); blip(at + 0.065, hi, hi * 0.5, 0.065);
+        }
+        var end = t0 + 9 * 0.13 + 0.08;
+        blip(end, 220, 70, 0.11); blip(end + 0.16, 220, 70, 0.11);
+      } catch (e) {}
+    }
 
     function size() {
       var r = canvas.getBoundingClientRect();
@@ -845,7 +931,7 @@
       if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); if (playing) jump(); else start(); }
     }
     function start() {
-      size(); reset(); over.hidden = true; go.hidden = true; form.hidden = true; playing = true; state.locked = control; hideHint(); music(true);
+      size(); reset(); over.hidden = true; go.hidden = true; logoEl.hidden = true; form.hidden = true; playing = true; state.locked = control; hideHint(); wakeAudio(); music(true);
       last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(safe);
     }
     // Scorebord: haalt de top 10 op, en na een potje kun je je naam invullen.
@@ -890,6 +976,8 @@
     loadBoard();
     function end(o) {
       playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
+      if (song) song.pause();
+      deathSound();
       if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
       bestEl.textContent = "Je record: " + best;
       showCulprit(o);
@@ -902,6 +990,9 @@
       over.hidden = false;
     }
     // Game over: groot in beeld waar je over struikelde, met de naam erbij.
+    var logoEl = card.querySelector("[data-logo]"), lg = logo();
+    logoEl.width = lg.width; logoEl.height = lg.height; logoEl.getContext("2d").drawImage(lg, 0, 0);
+    logoEl.style.aspectRatio = lg.width + " / " + lg.height;
     var go = card.querySelector("[data-go]"), goImg = card.querySelector("[data-go-img]"), goName = card.querySelector("[data-go-name]");
     function showCulprit(o) {
       var c = o.img.c;
@@ -926,6 +1017,7 @@
     return function () {
       playing = false; cancelAnimationFrame(raf); document.removeEventListener("keydown", key);
       if (song) { song.pause(); song = null; }
+      if (actx) { try { actx.close(); } catch (e) {} actx = null; }
       if (state.locked === control) state.locked = null;
     };
   }

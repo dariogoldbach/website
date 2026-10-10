@@ -452,3 +452,5 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 .go-img { position: static !important; width: auto !important; height: 26cqw !important; max-width: 60cqw; image-rendering: pixelated; }
 .go-name { font-family: var(--mono); font-size: max(0.85rem, 4.4cqw); font-weight: 700; }
 .snake-over > * { flex-shrink: 0; }
+.logo { position: static !important; width: 82cqw !important; height: auto !important; image-rendering: pixelated; }
+.logo[hidden] { display: none; }
