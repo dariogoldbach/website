@@ -556,15 +556,24 @@
         g.r(3, 10, 4, 4, C.red); g.r(3, 10, 2, 1, "#ff6b6b"); g.p(7, 16, C.red);
       });
     },
-    // Een zak Goldband-stuc: gele papieren zak met de omgevouwen bovenkant.
+    // Een zak Knauf Goldband: witte zak, blauw logo, lichtblauw vlak en de oranje band onderaan.
     stuc: function () {
-      var Y1 = "#f2c230", Y2 = "#d9a21c", Y3 = "#ffe07a";
-      return art(22, 22, function (g) {
-        g.poly([[3, 0], [19, 0], [21, 4], [1, 4]], Y2); g.r(3, 0, 16, 1, Y3);
-        g.r(0, 4, 22, 18, Y1); g.r(0, 4, 22, 1, Y3); g.r(0, 4, 2, 18, Y3); g.r(19, 5, 3, 17, Y2);
-        g.r(2, 9, 18, 6, INK); g.r(2, 9, 18, 1, "#3a3a3a");
-        [3, 4, 6, 7, 9, 10, 11, 13, 14, 16, 17, 18].forEach(function (xx) { g.r(xx, 11, 1, 2, C.white); });
-        g.r(4, 17, 6, 1, Y2); g.r(4, 19, 10, 1, Y2); g.r(0, 21, 22, 1, Y2);
+      var W1 = "#ffffff", W2 = "#e3e8ec", B1 = "#1f5fae", B2 = "#bcd9ef", O1 = "#ee6a1f", O2 = "#c4500f";
+      return art(22, 28, function (g) {
+        g.poly([[1, 1], [21, 1], [22, 27], [0, 27]], W1);
+        g.r(1, 0, 20, 2, W2); for (var xx = 1; xx < 21; xx += 2) g.p(xx, 0, "#c9d0d6");
+        g.r(20, 2, 2, 25, W2); g.r(0, 2, 1, 25, W2);
+        g.r(15, 2, 1, 2, INK); g.r(17, 2, 1, 2, INK); g.r(18, 2, 1, 2, INK); g.r(20, 2, 1, 2, INK);
+        // KNAUF in blauwe pixelletters.
+        var F = { K: ["X.X", "XX.", "X..", "XX.", "X.X"], N: ["X.X", "XXX", "XXX", "X.X", "X.X"], A: [".X.", "X.X", "XXX", "X.X", "X.X"],
+          U: ["X.X", "X.X", "X.X", "X.X", "XXX"], Fa: ["XXX", "X..", "XX.", "X..", "X.."] };
+        ["K", "N", "A", "U", "Fa"].forEach(function (L, i) {
+          F[L].forEach(function (row, yy) { for (var k = 0; k < 3; k++) if (row[k] === "X") g.p(2 + i * 4 + k, 5 + yy, B1); });
+        });
+        g.r(2, 11, 18, 7, B2); g.r(6, 13, 6, 3, "#7fb3dc"); g.r(12, 12, 2, 2, C.skin); g.p(5, 12, B1); g.r(15, 12, 3, 1, B1); g.r(15, 14, 3, 1, B1);
+        g.r(0, 19, 22, 8, O1); g.r(0, 19, 22, 1, "#ff8a3d"); g.r(0, 26, 22, 1, O2);
+        [2, 3, 5, 6, 8, 10, 11, 13, 14, 16, 17, 19].forEach(function (x2) { g.r(x2, 21, 1, 2, W1); });
+        g.r(14, 24, 5, 1, W1);
       });
     },
     // David Vunk achter zijn draaitafels, koptelefoon op, handen in de lucht.
