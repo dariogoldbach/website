@@ -450,6 +450,18 @@
     countEl.textContent = n + "/" + PAGES.length;
     countEl.title = n + " van de " + PAGES.length + " pagina's gezien";
     try { history.replaceState(null, "", "#" + c.page.id); } catch (e) {}
+    tint(c.page.bg);
+  }
+
+  // Laat de balken van de browser (Safari, Chrome op de telefoon) meekleuren met de pagina.
+  var themeMeta = document.querySelector('meta[name="theme-color"]');
+  var mobile = window.matchMedia("(max-width: 700px), (max-aspect-ratio: 3/4) and (max-width: 900px)");
+  if (mobile.addEventListener) mobile.addEventListener("change", function () { if (state.current) tint(state.current.page.bg); });
+  function tint(bg) {
+    if (!mobile.matches || !bg) bg = "";
+    if (themeMeta) themeMeta.content = bg || "#fafaf8";
+    document.documentElement.style.background = bg;
+    document.body.style.background = bg;
   }
 
   // Schuif naar een nieuwe pagina. offset = hoe ver de vinger de kaart al had meegenomen.
