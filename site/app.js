@@ -99,8 +99,8 @@
         (p.quotes ? '<div class="quotes" data-quotes>' + p.quotes.map(function (q, i) {
           return '<p class="quote' + (i ? "" : " on") + '"' + (i ? ' aria-hidden="true"' : "") + ">‘" + esc(q.text) + "’ <span>" + esc(q.by) + "</span></p>";
         }).join("") + "</div>" : "") +
-        "</div>" +
-        '<div class="end"><div class="row">' + link(p.link) + (p.listen ? link(p.listen, "ghost") : "") + "</div></div>";
+        // De knop staat direct onder de tekst, niet onderaan de pagina.
+        '<div class="row">' + link(p.link) + (p.listen ? link(p.listen, "ghost") : "") + "</div></div>";
     },
     contact: function (p) {
       return '<div class="mid"><p class="mail-big">Contact</p><p class="txt">' + esc(p.text) + "</p>" +
