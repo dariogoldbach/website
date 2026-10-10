@@ -85,7 +85,7 @@ window.PAGES = [
     title: "Dario leest voor",
     video: "media/voorlezen.mp4", poster: "img/voorlezen-poster.jpg",
     account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/dario.jpg",
-    caption: "Een column, voorgelezen.",
+    caption: "‘Gezondheid is uit!’ voor FHM.",
   },
   {
     id: "spel", type: "game",
