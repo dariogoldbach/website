@@ -49,7 +49,7 @@ window.PAGES = [
     title: "De Man die Alles Had",
     images: { front: "img/de-man-front.jpg", spine: "img/de-man-spine.jpg", back: "img/de-man-back.jpg", ratio: 1.536, depth: 0.155 },
     text: "Dario’s literaire debuut over een techgigant, een groeiende leugen en een onbereikbare liefde.",
-    link: { text: "Bestel nu", icon: "cart", href: "https://demandiealleshad.nl/" },
+    link: { text: "Bestel nu", icon: "cart", href: "https://libris.nl/singeluitgeverijen/a/dario-goldbach/de-man-die-alles-had/501538703#paperback-9789029546683" },
   },
   {
     id: "goldband-net-echt", type: "boek",
