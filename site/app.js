@@ -340,7 +340,7 @@
 
   function make(page) {
     var el = document.createElement("section");
-    el.className = "card";
+    el.className = "card" + (page.type === "platform" ? "" : " centered");
     el.setAttribute("aria-label", page.title || page.id);
     el.style.setProperty("--bg", page.bg); el.style.setProperty("--fg", page.fg);
     el.style.setProperty("--accent", page.accent || page.fg);

@@ -269,3 +269,11 @@ h1, h2, p { margin: 0; }
 
 .quote { transition: opacity 300ms ease; }
 .quote.fade { opacity: 0; }
+
+/* Alles gecentreerd, behalve De Situatie */
+.card.centered { text-align: center; }
+.card.centered .top { justify-content: center; }
+.card.centered .mid, .card.centered .end, .card.centered .sheet { align-items: center; }
+.card.centered .row, .card.centered .icons { justify-content: center; }
+.card.centered .txt { margin-inline: auto; }
+.card.centered .sheet-close { align-self: flex-end; }
