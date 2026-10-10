@@ -444,3 +444,11 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 .lb-form button { font-family: var(--mono); font-size: max(0.7rem, 3cqw); font-weight: 700; padding: 0 3cqw;
   border: 0; background: var(--fg); color: var(--bg); cursor: pointer; }
 .lb-form button:disabled { opacity: .5; }
+/* Game over: groot het object waar je over struikelde */
+.snake-over { overflow-y: auto; justify-content: safe center; }
+.go { display: flex; flex-direction: column; align-items: center; gap: 2.5cqw; }
+.go[hidden] { display: none; }
+.go-title { font-family: var(--mono); font-size: 13cqw; font-weight: 700; letter-spacing: -0.03em; line-height: 0.9; color: var(--accent); }
+.go-img { position: static !important; width: auto !important; height: 26cqw !important; max-width: 60cqw; image-rendering: pixelated; }
+.go-name { font-family: var(--mono); font-size: max(0.85rem, 4.4cqw); font-weight: 700; }
+.snake-over > * { flex-shrink: 0; }

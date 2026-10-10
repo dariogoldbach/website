@@ -143,6 +143,7 @@
       return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span>' +
         '<button class="run-sound" type="button" data-music aria-pressed="true" aria-label="Muziek uit">' + ICONS.sound + "</button></div>" +
         '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
+        '<div class="go" data-go hidden><b class="go-title">GAME OVER</b><canvas class="go-img" data-go-img></canvas><span class="go-name" data-go-name></span></div>' +
         '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
         '</p><button class="icon-btn" type="button" data-play aria-label="Speel">' + ICONS.playc + "</button>" +
@@ -674,7 +675,7 @@
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
     speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
     usb: "een USB-stick", stuc: "een zak Goldband-stuc", vunk: "David Vunk", robijn: "een robijn", steen: "een steen",
-    schilderij: "een schilderij van een abstracte vrouw" };
+    schilderij: "een schilderij" };
   var IMG = null;
 
   function runner(card) {
@@ -844,7 +845,7 @@
       if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); if (playing) jump(); else start(); }
     }
     function start() {
-      size(); reset(); over.hidden = true; form.hidden = true; playing = true; state.locked = control; hideHint(); music(true);
+      size(); reset(); over.hidden = true; go.hidden = true; form.hidden = true; playing = true; state.locked = control; hideHint(); music(true);
       last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(safe);
     }
     // Scorebord: haalt de top 10 op, en na een potje kun je je naam invullen.
@@ -891,13 +892,25 @@
       playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
       if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
       bestEl.textContent = "Je record: " + best;
-      msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Nog een keer? Of veeg verder.";
+      showCulprit(o);
+      msg.textContent = "Score " + score + ". Nog een keer? Of veeg verder.";
       var pb = card.querySelector("[data-play]");
       pb.setAttribute("aria-label", "New game"); pb.innerHTML = ICONS.replay;
       mine = score; lastSecs = t; sent = false;
       form.hidden = !fits(score);
-      if (!form.hidden) msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Dat is goed voor het scorebord!";
+      if (!form.hidden) msg.textContent = "Score " + score + ". Dat is goed voor het scorebord!";
       over.hidden = false;
+    }
+    // Game over: groot in beeld waar je over struikelde, met de naam erbij.
+    var go = card.querySelector("[data-go]"), goImg = card.querySelector("[data-go-img]"), goName = card.querySelector("[data-go-name]");
+    function showCulprit(o) {
+      var c = o.img.c;
+      goImg.width = c.width; goImg.height = c.height;
+      var gx = goImg.getContext("2d"); gx.imageSmoothingEnabled = false; gx.clearRect(0, 0, c.width, c.height); gx.drawImage(c, 0, 0);
+      goImg.style.aspectRatio = c.width + " / " + c.height;
+      var n = NAMES[o.kind] || "";
+      goName.textContent = n.charAt(0).toUpperCase() + n.slice(1);
+      go.hidden = false;
     }
     function control(d) { if (d === "up") jump(); else if (d === "down") duck(); }
     // Tikken = springen. Vegen gaat via state.locked (omhoog springt, omlaag bukt).
