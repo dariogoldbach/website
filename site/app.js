@@ -645,5 +645,23 @@
   setPos(c.el, 0, 0, false);
   frame.appendChild(c.el);
   show(c);
+
+  // Alle afbeeldingen alvast op de achtergrond laden en uitpakken, zodat elke pagina meteen klaarstaat bij het vegen.
+  var preloaded = [];
+  function preload() {
+    var urls = {};
+    PAGES.forEach(function (p) {
+      [p.image, p.poster, p.avatar].forEach(function (u) { if (u) urls[u] = 1; });
+      if (p.images) ["front", "spine", "back"].forEach(function (k) { if (p.images[k]) urls[p.images[k]] = 1; });
+    });
+    // Boeken eerst, die zijn het grootst en worden in 3D getekend.
+    Object.keys(urls).sort(function (a, b) { return (/front|spine|back/.test(b) ? 1 : 0) - (/front|spine|back/.test(a) ? 1 : 0); })
+      .forEach(function (u) {
+        var im = new Image(); im.decoding = "async"; im.src = u; preloaded.push(im);
+        if (im.decode) im.decode().catch(function () {});
+      });
+  }
+  if (document.readyState === "complete") setTimeout(preload, 50);
+  else window.addEventListener("load", function () { setTimeout(preload, 50); });
   frame.appendChild(hint);
 })();
