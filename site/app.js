@@ -165,8 +165,8 @@
         var mid = row.scrollLeft + row.clientWidth / 2;
         imgs.forEach(function (im) {
           var w = im.offsetWidth, off = im.offsetLeft + w / 2 - mid, d = Math.min(1, Math.abs(off) / w), sc = 1 - 0.22 * d;
-          // Kleinere covers schuiven iets naar het midden, zodat het randje rechts zichtbaar blijft.
-          im.style.transform = "translateX(" + (-Math.sign(off) * (1 - sc) * w / 2).toFixed(1) + "px) scale(" + sc.toFixed(3) + ")";
+          im.style.transform = "scale(" + sc.toFixed(3) + ")";
+          im.style.zIndex = String(Math.round((1 - d) * 10));
         });
       }
       function soon() { if (!raf) raf = requestAnimationFrame(fit); }
@@ -188,8 +188,8 @@
         imgs.forEach(function (im, i) { var d = Math.abs(centerOf(im) - at); if (d < bd) { bd = d; best = i; } });
         // Een snelle veeg, of een stukje slepen, gaat altijd minstens één cover verder.
         var cur = row._index || 0, moved = cur >= 0 ? row.scrollLeft - centerOf(imgs[cur]) : 0;
-        if (cur >= 0 && best === cur && (Math.abs(v || 0) > 0.5 || Math.abs(moved) > imgs[0].offsetWidth * 0.25)) {
-          var dir = Math.abs(v || 0) > 0.5 ? (v < 0 ? 1 : -1) : (moved > 0 ? 1 : -1);
+        if (cur >= 0 && best === cur && (Math.abs(v || 0) > 0.35 || Math.abs(moved) > imgs[0].offsetWidth * 0.15)) {
+          var dir = Math.abs(v || 0) > 0.35 ? (v < 0 ? 1 : -1) : (moved > 0 ? 1 : -1);
           best = Math.max(0, Math.min(imgs.length - 1, cur + dir));
         }
         row._index = best;
