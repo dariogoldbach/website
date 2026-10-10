@@ -10,7 +10,7 @@ window.PAGES = [
     title: "Dario Goldbach",
     image: "img/dario.jpg",
     credit: "Foto: Jelle Stokhof",
-    text: "Dario Goldbach is schrijver. Tijdens de pandemie publiceerde hij in samenwerking met het Haagse cultuurbordeel PIP de novelle Vier Weekenden. Als mede-initiator van literair platform De Situatie stond hij op Writers Unlimited en Crossing Border. Maandelijks gaat hij viraal met zijn column over het nachtleven bij The Beat op 3FM. De Man die Alles Had (2023) was zijn literaire romandebuut.",
+    text: "Dario Goldbach is schrijver. Misschien zag je hem op Lowlands, Wildeburg, Crossing Border of in je lokale club. Maandelijks gaat hij viraal met zijn columns voor FHM en The Beat op 3FM. Hij is mede-oprichter van literair platform De Situatie, schreef drie romans en werkt momenteel aan de vierde.",
   },
   {
     id: "de-situatie", type: "platform",
