@@ -30,10 +30,10 @@ window.PAGES = [
     links: [{ text: "Spotify", href: "" }, { text: "Apple Podcasts", href: "" }],
   },
   {
-    id: "dario-in-oekraine", type: "podcast", placeholder: true,
+    id: "dario-in-oekraine", type: "podcast",
     bg: "#ffd23f", fg: "#0b1d4a", accent: "#2a5bd7",
     title: "Dario in Oekraïne",
-    text: "Waar gaat de podcast over? Eén of twee zinnen die mensen nieuwsgierig maken.",
+    text: "Het begint met een DM op Instagram. Twee weken later rijdt Dario mee in een konvooi van Protect Ukraine, met hulpgoederen voor Oekraïense legereenheden. Een persoonlijke en soms ongemakkelijke podcast in vijf delen over angst, idealisme en morele keuzes.",
     links: [{ text: "Spotify", href: "" }, { text: "Apple Podcasts", href: "" }],
   },
   {
@@ -57,10 +57,10 @@ window.PAGES = [
     link: { text: "Bestel het boek", href: "" },
   },
   {
-    id: "contact", type: "contact", placeholder: true,
+    id: "contact", type: "contact",
     bg: "#f5f1e8", fg: "#111111", accent: "#ff5a36",
     text: "Voor opdrachten, optredens, interviews, of gewoon een reactie.",
-    email: "hallo@dariogoldbach.nl",
+    email: "contact@studiodario.nl",
   },
   {
     id: "snake", type: "snake",
