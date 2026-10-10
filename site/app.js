@@ -677,7 +677,7 @@
     });
   }
   var NAMES = { boeken: "Infinite Jest", wijnglas: "een glaasje rood", fles: "een flesje rood", microfoon: "een microfoon",
-    plaat: "een plaat", draaitafel: "een SL-1200", vliegplaat: "een rondvliegende plaat",
+    plaat: "vinyl", draaitafel: "een SL-1200", vliegplaat: "een rondvliegende plaat",
     speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
     usb: "een USB-stick", stuc: "een zak Goldband-stuc", vunk: "David Vunk", robijn: "een robijn", steen: "een steen",
     schilderij: "kunst" };
