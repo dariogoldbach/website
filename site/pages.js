@@ -19,7 +19,7 @@ window.PAGES = [
     title: "De Situatie",
     tag: "(wij zoeken schrijftalent)",
     text: "De Situatie is het literaire platform van PIP Den Haag. We organiseerden avonden met o.a. Connie Palmen & Sef, en zijn een springplank voor literair talent. Bij onze jaarlijkse Open Call verzamelen we alles: van poëzie tot proza, van woeste manifesten tot boze appjes aan je ex.",
-    link: { text: "Naar De Situatie", href: "https://de-situatie.nl/" },
+    link: { text: "Naar De Situatie", icon: "arrow", href: "https://de-situatie.nl/" },
   },
   {
     id: "vier-weekenden", type: "podcast",

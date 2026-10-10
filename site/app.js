@@ -40,6 +40,7 @@
   }
 
   var ICONS = {
+    arrow: '<svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12h14"/><path d="M13 6.5 18.5 12 13 17.5"/></svg>',
     playc: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 5.5v13l10.5-6.5z"/></svg>',
     replay: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M18.6 3.2v4.2h-4.2"/></svg>',
     mail: '<svg class="mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><g class="fly"><path class="flap-open" d="M3 8 12 2.5 21 8"/><path class="heart" fill="currentColor" stroke="none" d="M12 11.6 8.9 8.6a1.9 1.9 0 0 1 3.1-2.4 1.9 1.9 0 0 1 3.1 2.4z"/><rect class="body" x="3" y="8" width="18" height="12" rx="1.5"/><path class="flap" d="M3 8 12 14.5 21 8"/></g></svg>',
@@ -73,8 +74,8 @@
         '<div class="mid"><p class="situatie-mark" aria-label="' + esc(p.title) + '"><span class="sit-de">De</span>' +
         '<span class="sit-word">Situatie</span></p>' +
         (p.tag ? '<p class="sit-tag"><span>' + esc(p.tag) + "</span></p>" : "") +
-        '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p></div>" +
-        '<div class="end"><div class="row">' + link(p.link) + "</div></div>";
+        '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p>" +
+        '<div class="icons sit-icons">' + iconLink(p.link) + "</div></div>";
     },
     podcast: function (p) {
       var bars = "";
