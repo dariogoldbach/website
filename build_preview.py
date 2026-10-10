@@ -10,7 +10,6 @@ out = ROOT / "preview" / "dario-goldbach.html"
 import base64
 def inline_images(text):
     # Afbeeldingen uit site/img/ meebakken, zodat het losse previewbestand ze ook toont.
-    text = re.sub(r"media/[\w.-]+\.mp4", lambda m: "data:video/mp4;base64," + base64.b64encode((site / m.group(0)).read_bytes()).decode(), text)
     return re.sub(r"img/[\w.-]+\.(?:jpg|png)", lambda m: "data:image/" + ("png" if m.group(0).endswith("png") else "jpeg") +
                   ";base64," + base64.b64encode((site / m.group(0)).read_bytes()).decode(), text)
 out.parent.mkdir(exist_ok=True)

@@ -32,22 +32,23 @@
       (p.placeholder ? '<span class="ph-tag">voorbeeldtekst</span>' : "") + "</div>";
   }
 
+  var ICONS = {
+    instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>'
+  };
+
   // ---------- Pagina-sjablonen ----------
   var TEMPLATES = {
     bio: function (p) {
-      if (p.image) {
-        return '<img class="bio-bg" src="' + esc(p.image) + '" alt="Portret van Dario Goldbach">' +
-          top("Bio", p) + '<div class="mid"></div>' +
-          '<div class="end"><h1 class="xl">' + esc(p.title).replace(" ", "<br>") + "</h1>" +
-          '<p class="roles">' + esc(p.roles) + "</p>" +
-          '<p class="txt">' + esc(p.text) + "</p>" +
-          (p.credit ? '<p class="small">' + esc(p.credit) + "</p>" : "") + "</div>";
-      }
-      return top("Bio", p) +
-        '<div class="mid"><div class="portrait">Hier komt<br>je foto</div>' +
-        '<h1 class="xl">' + esc(p.title).replace(" ", "<br>") + "</h1>" +
-        '<p class="roles">' + esc(p.roles) + "</p></div>" +
-        '<div class="end"><p class="txt ph">' + esc(p.text) + "</p></div>";
+      // Alleen de naam groot; de bio schuift van onder het scherm in als je op de knop drukt.
+      return '<img class="bio-bg" src="' + esc(p.image) + '" alt="Portret van Dario Goldbach">' +
+        '<div class="mid"></div>' +
+        '<div class="end"><h1 class="xl">' + esc(p.title).replace(" ", "<br>") + "</h1>" +
+        '<div class="row"><button class="btn" type="button" data-sheet aria-expanded="false">Bio</button></div></div>' +
+        '<div class="sheet" role="dialog" aria-label="Bio" aria-hidden="true">' +
+        '<button class="sheet-close" type="button" data-sheet-close aria-label="Sluit de bio">×</button>' +
+        '<p class="txt">' + esc(p.text) + "</p>" +
+        (p.credit ? '<p class="small">' + esc(p.credit) + "</p>" : "") + "</div>";
     },
     platform: function (p) {
       return top(p.label, p) +
@@ -58,26 +59,14 @@
         '<div class="end"><div class="row">' + link(p.link) + "</div></div>";
     },
     podcast: function (p) {
-      if (p.video) {
-        // Trailer over de hele kaart, zoals op TikTok. Zonder geluid tot je op de knop drukt.
-        return '<video class="bio-bg pod-video" src="' + esc(p.video) + '"' + (p.poster ? ' poster="' + esc(p.poster) + '"' : "") +
-          (still ? "" : " autoplay") + ' muted loop playsinline preload="auto"></video>' +
-          top("Podcast", p) +
-          '<div class="mid"></div>' +
-          '<div class="end"><button class="sound" type="button" aria-pressed="false">Geluid aan</button>' +
-          '<h2 class="lg">' + esc(p.title) + "</h2>" +
-          (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
-          (p.episode ? '<div class="episode"><img src="' + esc(p.episode.image) + '" alt="">' +
-            "<p><span>" + esc(p.episode.label) + "</span>" + esc(p.episode.title) + "</p></div>" : "") +
-          '<div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>";
-      }
       var bars = "";
       for (var i = 0; i < 14; i++) bars += "<i></i>";
       return top("Podcast", p) +
-        '<div class="mid">' + (p.image
+        '<div class="mid pod-mid">' + (p.image
           ? '<img class="pod-img" src="' + esc(p.image) + '" alt="Cover van de podcast ' + esc(p.title) + '">'
           : '<div class="pod-cover"><span>Podcast</span><b>' + esc(p.title) + "</b><span>Dario Goldbach</span></div>") +
         '<div class="eq" aria-hidden="true">' + bars + "</div>" +
+        (p.showTitle ? '<h2 class="lg pod-title">' + esc(p.title) + "</h2>" : "") +
         (p.text ? '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p>" : "") + "</div>" +
         '<div class="end"><div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>";
     },
@@ -89,31 +78,26 @@
         '<div class="f back"><p>' + esc(p.back) + "</p></div>" +
         '<div class="f spine"><span>' + esc(p.title) + "</span><span>Goldbach</span></div>" +
         '<div class="f pages"></div><div class="f top"></div><div class="f bottom"></div></div></div>' +
-        '<h2 class="lg">' + esc(p.title) + "</h2>" +
-        (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
-        (p.quote ? '<p class="quote">‘' + esc(p.quote.text) + "’ <span>" + esc(p.quote.by) + "</span></p>" : "") +
-        '<p class="small' + (p.images ? "" : " ph") + '">' + esc(p.meta) + " · sleep het boek om het te draaien</p></div>" +
+        '' + (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
+        (p.quotes ? '<p class="quote" data-quotes aria-live="polite">‘' + esc(p.quotes[0].text) + "’ <span>" + esc(p.quotes[0].by) + "</span></p>" : "") +
+        "</div>" +
         '<div class="end"><div class="row">' + link(p.link) + (p.listen ? link(p.listen, "ghost") : "") + "</div></div>";
     },
     contact: function (p) {
-      return top("Contact", p) +
-        '<div class="mid"><p class="mail-big">Mail<br><em>me.</em></p><p class="txt">' + esc(p.text) + "</p></div>" +
-        '<div class="end"><a class="btn" href="mailto:' + esc(p.email) + '">Stuur een mail</a>' +
-        '<div class="row" style="align-items:center"><span class="addr ph">' + esc(p.email) + "</span>" +
-        '<button class="btn ghost" type="button" data-copy="' + esc(p.email) + '" style="min-height:2.4rem;padding:.4em 1em">Kopieer</button></div></div>';
+      return '<div class="mid"><p class="mail-big">Contact</p><p class="txt">' + esc(p.text) + "</p></div>" +
+        '<div class="end"><a class="btn" href="mailto:' + esc(p.email) + '">Stuur een mail</a></div>';
     },
     social: function (p) {
-      return top("Volg me", p) +
-        '<div class="mid"><p class="mail-big">Volg<br><em>me.</em></p>' +
-        '<p class="handle">@' + esc(p.handle) + "</p>" +
-        (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") + "</div>" +
-        '<div class="end social">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div>";
+      return '<div class="mid"><p class="mail-big">Stalk<br><em>me.</em></p>' +
+        '<div class="icons">' + p.links.map(function (l) {
+          return '<a class="icon-btn" href="' + esc(l.href) + '" target="_blank" rel="noopener" aria-label="' + esc(l.text) + '">' + ICONS[l.icon] + "</a>";
+        }).join("") + "</div></div>";
     },
     game: function () {
       var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span></div>' +
         '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
-        '<p class="snake-title">REN<br>DARIO<br>REN!</p><p class="small" data-msg>' +
+        '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
         '</p><button class="btn" type="button" data-play>Speel</button></div></div>' +
         '<p class="small" data-best>Je record: 0</p>';
@@ -122,25 +106,38 @@
 
   // ---------- Interactieve onderdelen per pagina ----------
   var MOUNT = {
-    boek: function (card) { return book(card.querySelector(".book3d")); },
+    boek: function (card, p) {
+      var stop = book(card.querySelector(".book3d")), q = card.querySelector("[data-quotes]"), n = 0, timer;
+      if (q && p.quotes.length > 1) timer = setInterval(function () {
+        n = (n + 1) % p.quotes.length;
+        q.classList.add("fade");
+        setTimeout(function () {
+          q.innerHTML = "‘" + esc(p.quotes[n].text) + "’ <span>" + esc(p.quotes[n].by) + "</span>";
+          q.classList.remove("fade");
+        }, 300);
+      }, 4000);
+      return function () { stop(); clearInterval(timer); };
+    },
     game: function (card) { return runner(card); },
-    podcast: function (card) {
-      var v = card.querySelector("video"), b = card.querySelector(".sound");
-      if (!v) return null;
-      b.addEventListener("click", function () {
-        v.muted = !v.muted;
-        if (!v.muted) v.play().catch(function () {});
-        b.setAttribute("aria-pressed", String(!v.muted));
-        b.textContent = v.muted ? "Geluid aan" : "Geluid uit";
+    bio: function (card) {
+      var sheet = card.querySelector(".sheet"), open = card.querySelector("[data-sheet]");
+      function set(on) {
+        sheet.classList.toggle("open", on); sheet.setAttribute("aria-hidden", String(!on));
+        open.setAttribute("aria-expanded", String(on));
+      }
+      open.addEventListener("click", function () { set(true); });
+      card.querySelector("[data-sheet-close]").addEventListener("click", function () { set(false); });
+      card.addEventListener("click", function (e) {
+        if (sheet.classList.contains("open") && !e.target.closest(".sheet, [data-sheet]")) set(false);
       });
-      return function () { v.pause(); v.removeAttribute("src"); v.load(); };
+      return null;
     },
   };
 
   function book(el) {
-    var ry = 28, rx = 8, vy = 0, dragging = false, lx = 0, ly = 0, idle = 0, raf;
+    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, lx = 0, ly = 0, idle = 0, raf;
     function down(e) {
-      e.stopPropagation(); dragging = true; vy = 0; lx = e.clientX; ly = e.clientY;
+      e.stopPropagation(); dragging = true; vy = 0; vx = 0; lx = e.clientX; ly = e.clientY;
       el.classList.add("dragging");
       try { el.setPointerCapture(e.pointerId); } catch (err) {}
     }
@@ -148,7 +145,7 @@
       if (!dragging) return;
       e.stopPropagation();
       var dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
-      ry += dx * 0.6; rx = Math.max(-35, Math.min(35, rx - dy * 0.35)); vy = dx * 0.6; idle = 0;
+      ry += dx * 0.6; rx -= dy * 0.5; vy = dx * 0.6; vx = -dy * 0.5; idle = 0;
     }
     function up() { dragging = false; el.classList.remove("dragging"); }
     function key(e) {
@@ -162,9 +159,11 @@
     el.addEventListener("keydown", key);
     (function tick() {
       if (!dragging) {
-        ry += vy; vy *= 0.94; if (Math.abs(vy) < 0.02) vy = 0; idle++;
+        // Helemaal doordraaien mag, alle kanten op; na een tijdje kantelt hij rustig terug.
+        ry += vy; vy *= 0.94; if (Math.abs(vy) < 0.02) vy = 0;
+        rx += vx; vx *= 0.94; if (Math.abs(vx) < 0.02) vx = 0; idle++;
         if (!still && idle > 120) ry += 0.18;
-        if (idle > 60) rx += (8 - rx) * 0.03;
+        if (idle > 60 && !vx) { rx = ((rx + 180) % 360 + 360) % 360 - 180; rx += (8 - rx) * 0.03; }
       }
       el.style.transform = "rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
       raf = requestAnimationFrame(tick);
@@ -177,7 +176,7 @@
   var PAL = {
     H: "#2a1a10", h: "#5b3a22", S: "#f0c39c", s: "#d49a74", G: "#111111", L: "#bfe0f2", M: "#a8483c",
     T: "#1b1b1b", P: "#2c2c35", K: "#111111", W: "#ffffff",
-    p: "#f7a8c8", r: "#e8202a", l: "#c7f06a", w: "#fff8e8", Y: "#f3b61f", y: "#ffd76a", g: "#cfd8dc",
+    p: "#f7a8c8", v: "#8e1b2c", e: "#8d989e", r: "#e8202a", l: "#c7f06a", w: "#fff8e8", Y: "#f3b61f", y: "#ffd76a", g: "#cfd8dc",
     B: "#2f6b3a", k: "#151515", q: "#3a3a3a", R: "#e8202a", o: "#f2eee3", m: "#a0a0a0", n: "#5a5a5a",
     d: "#2b2b2b", a: "#c9c9c9", b: "#ff5a36"
   };
@@ -197,8 +196,8 @@
     duck: HEAD.concat(pad(["TTTTTTTTTTTTTT", "KWKKPPPPPPKWKK"])),
     boeken: [".pppppppp.", ".pwwwwwwp.", ".pppppppp.", "rrrrrrrrrr", "rwwwwwwwwr", "rrrrrrrrrr",
       "lllllllll.", "lwwwwwwwl.", "lllllllll."],
-    bier: [".wwwww...", "wwwwwww..", "gYYYYYggg", "gYyYYYg.g", "gYYYyYg.g", "gYYYYYg.g", "gYyYYYggg",
-      "gYYYYYg..", "gYYYYYg..", "ggggggg.."],
+    wijnglas: ["e.....e", "e.....e", "evvvvve", "evvvvve", ".evvve.", "..eee..", "...e...", "...e...", "...e...",
+      "...e...", ".eeeee."],
     fles: [".kk.", ".BB.", ".BB.", ".BB.", "BBBB", "BBBB", "BwwB", "BwwB", "BBBB", "BBBB", "BBBB"],
     microfoon: [".mmm.", "mnmnm", "mmnmm", ".mmm.", "..k..", "..k..", "..k..", "..k..", "..k..", "..k..",
       "..k..", ".kkk.", "kkkkk"],
@@ -207,7 +206,7 @@
     draaitafel: [".kkkkkkkk...a...", "ddddddddddddaddd", "daaaaaaaaaaaaaad", "dabababaaaaababd",
       "daaaaaaaaaaaaaad", "dddddddddddddddd"]
   };
-  var NAMES = { boeken: "een stapel boeken", bier: "een biertje", fles: "een fles wijn", microfoon: "een microfoon",
+  var NAMES = { boeken: "een stapel boeken", wijnglas: "een glas wijn", fles: "een fles wijn", microfoon: "een microfoon",
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat" };
   function sprite(rows) {
     var c = document.createElement("canvas"), x = c.getContext("2d");
@@ -246,13 +245,15 @@
     function jump() { if (playing && onGround() && performance.now() > duckUntil) me.vy = -158; }
     function duck() { if (!playing) return; duckUntil = performance.now() + 520; if (!onGround()) me.vy = Math.max(me.vy, 260); }
     function spawn() {
-      var kinds = ["boeken", "bier", "fles", "microfoon", "plaat", "draaitafel"];
+      var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel"];
       var kind = kinds[Math.floor(Math.random() * kinds.length)];
       if (score > 150 && Math.random() < 0.25) kind = "vliegplaat";
       var img = IMG[kind === "vliegplaat" ? "plaat" : kind];
       obs.push({ kind: kind, img: img, x: VW + 4, y: kind === "vliegplaat" ? ground - 25 : ground - img.height });
       // Altijd genoeg ruimte om te landen en weer af te zetten.
-      nextGap = speed * 0.7 + 28 + Math.random() * speed * 0.8;
+      // Soms snel achter elkaar, soms een lange adempauze, zodat het ritme niet voorspelbaar wordt.
+      var r = Math.random();
+      nextGap = speed * 0.7 + 28 + (r < 0.35 ? Math.random() * speed * 0.25 : r < 0.8 ? speed * (0.4 + Math.random() * 0.9) : speed * (1.5 + Math.random() * 1.8));
     }
     function hitbox() {
       var d = performance.now() < duckUntil && onGround(), img = d ? IMG.duck : IMG.run1;
@@ -345,7 +346,7 @@
     el.style.setProperty("--accent", page.accent || page.fg);
     if (page.cover) { el.style.setProperty("--cover", page.cover); el.style.setProperty("--cover-ink", page.coverInk); }
     el.innerHTML = TEMPLATES[page.type](page);
-    var cleanup = MOUNT[page.type] ? MOUNT[page.type](el) : null;
+    var cleanup = MOUNT[page.type] ? MOUNT[page.type](el, page) : null;
     return { page: page, el: el, cleanup: cleanup };
   }
   function drop(c) { if (c.cleanup) c.cleanup(); c.el.remove(); }
@@ -399,7 +400,7 @@
   var drag = null;
   frame.addEventListener("pointerdown", function (e) {
     if (state.busy || e.button > 0) return;
-    if (e.target.closest("a, button, .book3d")) return;
+    if (e.target.closest("a, button, .book3d, .sheet")) return;
     drag = { x: e.clientX, y: e.clientY, t: performance.now(), axis: null, next: null, id: e.pointerId };
     try { frame.setPointerCapture(e.pointerId); } catch (err) {}
   });
@@ -511,7 +512,7 @@
   var hint = document.createElement("div");
   hint.className = "hint";
   hint.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2l4 4h-3v5h5V8l4 4-4 4v-3h-5v5h3l-4 4-4-4h3v-5H6v3l-4-4 4-4v3h5V6H8z"/></svg>' +
-    (window.matchMedia("(hover: hover) and (pointer: fine)").matches ? "Gebruik de pijltjes of scroll" : "Veeg alle kanten op");
+    (window.matchMedia("(hover: hover) and (pointer: fine)").matches ? "Gebruik de pijltjes of scroll" : "Doomscroll alle kanten op");
   function hideHint() { if (hint.parentNode) { hint.classList.add("gone"); setTimeout(function () { hint.remove(); }, 320); } }
 
   // Start: de pagina uit het adres (#contact), anders de bio

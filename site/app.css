@@ -126,22 +126,6 @@ h1, h2, p { margin: 0; }
 .card:has(.bio-bg) .txt { font-size: max(0.88rem, 3.8cqw); }
 .card:has(.bio-bg) > :not(.bio-bg) { position: relative; }
 
-/* Podcast met video */
-/* De video heeft ondertitels in beeld: video bovenin, tekst eronder op zwart. */
-.pod-video { height: 60%; inset: 0 0 auto 0; object-position: 50% 62%; }
-.card:has(.pod-video)::before { background: linear-gradient(to bottom, rgba(0,0,0,.35) 0, transparent 12%, transparent 48%, #000 60%, #000); }
-.card:has(.pod-video) .lg { color: var(--accent); text-transform: uppercase; }
-.sound {
-  align-self: flex-start; font: inherit; font-family: var(--mono); font-size: max(0.7rem, 2.8cqw); letter-spacing: 0.04em;
-  color: var(--fg); background: rgba(0,0,0,.45); border: 1px solid color-mix(in srgb, var(--fg) 50%, transparent);
-  border-radius: 99px; padding: 1.6cqw 3.4cqw; cursor: pointer; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-}
-.sound[aria-pressed="true"] { background: var(--accent); color: #000; border-color: var(--accent); }
-@container (max-height: 700px) { .card:has(.pod-video) .episode { display: none; } }
-.episode { display: flex; align-items: center; gap: 3cqw; }
-.episode img { width: 15cqw; aspect-ratio: 1; object-fit: cover; display: block; -webkit-user-drag: none; pointer-events: none; }
-.episode p { margin: 0; font-size: max(0.8rem, 3.4cqw); line-height: 1.25; }
-.episode span { display: block; font-family: var(--mono); font-size: max(0.62rem, 2.5cqw); letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
 
 /* Platform */
 .situatie-mark {
@@ -208,7 +192,7 @@ h1, h2, p { margin: 0; }
 .quote span { display: block; margin-top: 0.4em; font-family: var(--mono); font-size: max(0.7rem, 3cqw); font-weight: 400; font-stretch: 100%; opacity: 0.8; }
 
 /* Boek met echte omslag */
-.book3d.has-img { --w: min(46cqw, 22cqh); }
+.book3d.has-img { --w: min(60cqw, 30cqh); }
 .book3d.has-img .front { background: linear-gradient(90deg, rgba(0,0,0,.18) 0, rgba(255,255,255,.12) 2.5%, transparent 7%), var(--front) center / 100% 100%; }
 .book3d.has-img .back { background: linear-gradient(270deg, rgba(0,0,0,.16) 0, transparent 6%), var(--back) center / 100% 100%; }
 .book3d.has-img .spine { background: linear-gradient(90deg, rgba(0,0,0,.18), transparent 30%, transparent 70%, rgba(0,0,0,.18)), var(--spine) center / 100% 100%; }
@@ -254,3 +238,34 @@ h1, h2, p { margin: 0; }
   .card.moving { transition-duration: 1ms; }
   .eq i, .hint svg { animation: none; }
 }
+
+/* Bio: de tekst schuift van onder in */
+.card > .sheet, .card:has(.bio-bg) > .sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; max-height: 85%; overflow: auto;
+  background: var(--fg); color: var(--bg); padding: 8cqw 6cqw calc(8cqw + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 4cqw;
+  transform: translateY(100%); transition: transform 420ms var(--ease); touch-action: pan-y;
+}
+.card > .sheet.open, .card:has(.bio-bg) > .sheet.open { transform: none; }
+.sheet .txt { max-width: none; }
+.sheet-close {
+  align-self: flex-end; width: 2.75rem; height: 2.75rem; margin: -4cqw -2cqw 0 0; border: 0; border-radius: 50%;
+  background: transparent; color: inherit; font-size: 2rem; line-height: 1; cursor: pointer;
+}
+
+/* Stalk me */
+.icons { display: flex; gap: 5cqw; }
+.icon-btn {
+  width: 22cqw; height: 22cqw; border-radius: 50%; display: grid; place-items: center;
+  background: var(--fg); color: var(--bg);
+}
+.icon-btn svg { width: 50%; height: 50%; }
+.icon-btn:active { transform: scale(0.95); }
+
+/* Podcastcover gecentreerd */
+.pod-mid { align-items: center; text-align: center; }
+.pod-mid .txt { margin: 0 auto; }
+.pod-title { color: var(--accent); text-transform: uppercase; }
+
+.quote { transition: opacity 300ms ease; }
+.quote.fade { opacity: 0; }
