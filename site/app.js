@@ -678,7 +678,7 @@
   }
   var NAMES = { boeken: "Infinite Jest", wijnglas: "een glaasje rood", fles: "Châteauneuf-du-Pape", microfoon: "een microfoon",
     plaat: "vinyl", draaitafel: "een SL-1200", vliegplaat: "een rondvliegende plaat",
-    speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
+    speaker: "Funktion One", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
     usb: "een USB-stick", stuc: "Knauf Goldband", vunk: "David Vunk", robijn: "Kando Shimasu", steen: "een steen",
     schilderij: "kunst" };
   var IMG = null;
