@@ -16,6 +16,13 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
     });
   }
+  // Echte omslagen: voor, rug en achter als afbeelding, met de verhoudingen van het echte boek.
+  function bookStyle(p) {
+    var i = p.images;
+    if (!i) return "";
+    return ' style="--front:url(\'' + i.front + '\');--spine:url(\'' + i.spine + '\');--back:url(\'' + i.back +
+      '\');--ratio:' + i.ratio + ";--depth:" + i.depth + '"';
+  }
   function link(l, cls) {
     var href = l.href ? ' href="' + esc(l.href) + '" target="_blank" rel="noopener"' : ' href="#" data-later';
     return '<a class="btn ' + (cls || "") + '"' + href + ">" + esc(l.text) + " ↗</a>";
@@ -51,14 +58,15 @@
     },
     boek: function (p) {
       return top("Boek", p) +
-        '<div class="mid"><div class="book-stage"><div class="book3d" tabindex="0" role="img" aria-label="' + esc(p.title) +
-        ', als 3D-boek. Sleep om te draaien.">' +
+        '<div class="mid"><div class="book-stage"><div class="book3d' + (p.images ? " has-img" : "") + '" tabindex="0" role="img" aria-label="' + esc(p.title) +
+        ', als 3D-boek. Sleep om te draaien."' + bookStyle(p) + ">" +
         '<div class="f front"><b>' + (p.cover_title || esc(p.title)) + "</b><span>Dario Goldbach</span></div>" +
         '<div class="f back"><p>' + esc(p.back) + "</p></div>" +
         '<div class="f spine"><span>' + esc(p.title) + "</span><span>Goldbach</span></div>" +
         '<div class="f pages"></div><div class="f top"></div><div class="f bottom"></div></div></div>' +
         '<h2 class="lg">' + esc(p.title) + "</h2>" +
-        '<p class="small ph">' + esc(p.meta) + " · sleep het boek om het te draaien</p></div>" +
+        (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
+        '<p class="small' + (p.images ? "" : " ph") + '">' + esc(p.meta) + " · sleep het boek om het te draaien</p></div>" +
         '<div class="end"><div class="row">' + link(p.link) + "</div></div>";
     },
     contact: function (p) {
@@ -84,7 +92,7 @@
   };
 
   function book(el) {
-    var ry = -28, rx = 8, vy = 0, dragging = false, lx = 0, ly = 0, idle = 0, raf;
+    var ry = 28, rx = 8, vy = 0, dragging = false, lx = 0, ly = 0, idle = 0, raf;
     function down(e) {
       e.stopPropagation(); dragging = true; vy = 0; lx = e.clientX; ly = e.clientY;
       el.classList.add("dragging");

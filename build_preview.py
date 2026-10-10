@@ -7,10 +7,15 @@ html = (site / "index.html").read_text()
 fonts = "\n".join(re.findall(r'<link rel="(?:preconnect|stylesheet)" href="https://fonts[^>]*>', html))
 body = html.split("<!--app-->")[1].split("<!--/app-->")[0]
 out = ROOT / "preview" / "dario-goldbach.html"
+import base64
+def inline_images(text):
+    # Afbeeldingen uit site/img/ meebakken, zodat het losse previewbestand ze ook toont.
+    return re.sub(r"img/[\w.-]+\.(?:jpg|png)", lambda m: "data:image/" + ("png" if m.group(0).endswith("png") else "jpeg") +
+                  ";base64," + base64.b64encode((site / m.group(0)).read_bytes()).decode(), text)
 out.parent.mkdir(exist_ok=True)
 out.write_text(
     "<title>Dario Goldbach</title>\n" + fonts +
     "\n<style>" + (site / "app.css").read_text() + "</style>\n" + body +
-    "\n<script>" + (site / "pages.js").read_text() + "</script>\n<script>" + (site / "app.js").read_text() + "</script>\n"
+    "\n<script>" + inline_images((site / "pages.js").read_text()) + "</script>\n<script>" + (site / "app.js").read_text() + "</script>\n"
 )
 print(out)

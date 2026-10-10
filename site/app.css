@@ -140,9 +140,9 @@ h1, h2, p { margin: 0; }
 /* 3D-boek */
 .book-stage { display: grid; place-items: center; perspective: 1400px; padding-block: 3cqw; }
 .book3d {
-  --w: 50cqw; --h: calc(var(--w) * 1.5); --d: calc(var(--w) * 0.15);
+  --w: 50cqw; --h: calc(var(--w) * var(--ratio, 1.5)); --d: calc(var(--w) * var(--depth, 0.15));
   position: relative; width: var(--w); height: var(--h); transform-style: preserve-3d;
-  transform: rotateX(8deg) rotateY(-28deg); cursor: grab; touch-action: none;
+  transform: rotateX(8deg) rotateY(28deg); cursor: grab; touch-action: none;
 }
 .book3d.dragging { cursor: grabbing; }
 .book3d .f { position: absolute; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
@@ -171,6 +171,13 @@ h1, h2, p { margin: 0; }
 .book3d .top, .book3d .bottom { width: var(--w); height: var(--d); top: calc(50% - var(--d) / 2); left: 0; }
 .book3d .top { transform: rotateX(90deg) translateZ(calc(var(--h) / 2 - 2px)); background: repeating-linear-gradient(0deg, #f3efe4 0 2px, #d6cfbd 2px 3px); }
 .book3d .bottom { transform: rotateX(-90deg) translateZ(calc(var(--h) / 2 - 2px)); background: #d6cfbd; }
+
+/* Boek met echte omslag */
+.book3d.has-img { --w: 46cqw; }
+.book3d.has-img .front { background: linear-gradient(90deg, rgba(0,0,0,.18) 0, rgba(255,255,255,.12) 2.5%, transparent 7%), var(--front) center / 100% 100%; }
+.book3d.has-img .back { background: linear-gradient(270deg, rgba(0,0,0,.16) 0, transparent 6%), var(--back) center / 100% 100%; }
+.book3d.has-img .spine { background: linear-gradient(90deg, rgba(0,0,0,.18), transparent 30%, transparent 70%, rgba(0,0,0,.18)), var(--spine) center / 100% 100%; }
+.book3d.has-img .front > *, .book3d.has-img .back > *, .book3d.has-img .spine > * { visibility: hidden; }
 
 /* Contact */
 .mail-big { font-size: 26cqw; line-height: 0.8; font-weight: 900; font-stretch: 62%; text-transform: uppercase; letter-spacing: -0.03em; }
