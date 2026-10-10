@@ -582,15 +582,18 @@
         g.r(2, 29, 22, 1, C.grey5); g.r(11, 31, 4, 2, C.grey3); g.p(4, 32, C.fire3); g.p(21, 32, C.green3);
       });
     },
-    // Robijn: roze fles wasverzachter met een grote dop.
+    // Een robijn: rode geslepen edelsteen met facetten en een glinstering.
     robijn: function () {
-      var P1 = "#e8409a", P2 = "#ff7cc0", P3 = "#b32474";
-      return art(14, 24, function (g) {
-        g.r(4, 0, 6, 4, C.white); g.r(4, 0, 6, 1, C.grey1); g.r(9, 0, 1, 4, C.grey2);
-        g.r(3, 4, 8, 2, P3); g.r(1, 6, 12, 18, P1); g.r(0, 8, 14, 15, P1);
-        g.r(1, 7, 2, 15, P2); g.r(12, 8, 2, 15, P3); g.r(0, 23, 14, 1, P3);
-        g.d(7, 14, 4.2, C.white, 3.4); g.d(7, 14, 3, "#ffd6ec", 2.4); g.r(5, 13, 4, 1, P3); g.r(4, 15, 6, 1, P1);
-        g.r(9, 7, 3, 4, "#ffffff"); g.r(10, 8, 1, 2, P1);
+      var R1 = "#cc0f2e", R2 = "#f0344f", R3 = "#7f0a1f", R4 = "#ff8f9f";
+      return art(20, 18, function (g) {
+        g.poly([[5, 0], [15, 0], [20, 6], [0, 6]], R2);
+        g.poly([[0, 6], [20, 6], [10, 18]], R1);
+        g.poly([[5, 0], [8, 0], [6, 6], [2, 6]], R4); g.poly([[12, 0], [15, 0], [18, 6], [14, 6]], R1);
+        g.poly([[8, 0], [12, 0], [14, 6], [6, 6]], R2);
+        g.poly([[0, 6], [6, 6], [10, 18]], R2); g.poly([[14, 6], [20, 6], [10, 18]], R3);
+        g.poly([[6, 6], [14, 6], [10, 18]], R1);
+        g.r(0, 6, 20, 1, R3); g.r(6, 1, 2, 1, C.white); g.p(5, 2, C.white);
+        g.p(16, 2, C.white); g.p(15, 3, R4); g.p(17, 3, R4); g.p(16, 4, R4);
       });
     },
     // Een steen: de rode baksteen van de Vier Weekenden-cover.
@@ -647,7 +650,7 @@
   var NAMES = { boeken: "Infinite Jest", wijnglas: "een glas wijn", fles: "een flesje rood", microfoon: "een microfoon",
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
     speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
-    usb: "een USB-stick", stuc: "een zak Goldband-stuc", vunk: "David Vunk", robijn: "een fles Robijn", steen: "een steen",
+    usb: "een USB-stick", stuc: "een zak Goldband-stuc", vunk: "David Vunk", robijn: "een robijn", steen: "een steen",
     schilderij: "een schilderij van een abstracte vrouw" };
   var IMG = null;
 
