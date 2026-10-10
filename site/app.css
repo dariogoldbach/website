@@ -277,7 +277,7 @@ h1, h2, p { margin: 0; }
 /* Stalk me */
 .icons { display: flex; gap: 5cqw; }
 .icon-btn {
-  width: 17cqw; height: 17cqw; border-radius: 50%; display: grid; place-items: center;
+  width: 13.5cqw; height: 13.5cqw; border-radius: 50%; display: grid; place-items: center;
   background: var(--fg); color: var(--bg);
 }
 .icon-btn svg { width: 50%; height: 50%; }
@@ -350,7 +350,7 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
   display: flex; flex-direction: column; align-items: center; gap: 1cqw; border: 0; background: none; padding: 0;
   color: #fff; cursor: pointer; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
 }
-.vid-act svg { width: 10cqw; height: 10cqw; min-width: 2rem; min-height: 2rem; }
+.vid-act svg { width: 8.5cqw; height: 8.5cqw; min-width: 2rem; min-height: 2rem; }
 .vid-act span { font-family: var(--display); font-weight: 700; font-size: max(0.7rem, 3cqw); }
 .vid-act.on svg { color: #fe2c55; }
 .vid-act.pop svg { animation: pop 420ms var(--ease); }
@@ -424,7 +424,7 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 }
 .pod-covers::-webkit-scrollbar { display: none; }
 .pod-covers .pod-img { flex: 0 0 70cqw; width: 70cqw; position: relative; scroll-snap-align: center; transform: scale(.78); }
-.run-sound { width: max(2rem, 8cqw); height: max(2rem, 8cqw); border-radius: 50%; border: 0; padding: 0;
+.run-sound { width: max(1.8rem, 7cqw); height: max(1.8rem, 7cqw); border-radius: 50%; border: 0; padding: 0;
   display: grid; place-items: center; background: var(--fg); color: var(--bg); cursor: pointer; }
 .run-sound svg { width: 55%; height: 55%; }
 .run-credit { opacity: .6; margin-top: -1cqw; }
