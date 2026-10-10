@@ -64,7 +64,7 @@ window.PAGES = [
       { text: "Geen woord van gelogen.", by: "Milo Driessen, Goldband" },
     ],
     link: { text: "Bestel nu", icon: "cart", href: "https://libris.nl/singeluitgeverijen/a/dario-goldbach/goldband/501657554#paperback-9789038815930" },
-    listen: { text: "Luister het audioboek op Spotify", icon: "spotify", href: "" },
+    listen: { text: "Luister het audioboek op Spotify", icon: "spotify", href: "https://open.spotify.com/show/2hzgSzA1pBO2rF0AHQau2m" },
   },
   {
     id: "volg-me", type: "social",
