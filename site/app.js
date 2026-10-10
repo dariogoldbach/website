@@ -606,7 +606,7 @@
       scoreEl.textContent = "score 0";
     }
     function onGround() { return me.y >= 0; }
-    function jump() { if (playing && onGround() && performance.now() > duckUntil) me.vy = -158; }
+    function jump() { if (playing && onGround() && performance.now() > duckUntil) me.vy = -178; }
     function duck() { if (!playing) return; duckUntil = performance.now() + 520; if (!onGround()) me.vy = Math.max(me.vy, 260); }
     function spawn() {
       var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel", "speaker", "vuur"];
@@ -631,7 +631,7 @@
     function hitbox() {
       var d = performance.now() < duckUntil && onGround(), img = d ? IMG.duck : IMG.run1;
       var top = ground + me.y - img.height;
-      return { x: 18 + 3, y: top + 2, w: img.width - 6, h: img.height - 3, img: d ? "duck" : null };
+      return { x: 18 + 4, y: top + 3, w: img.width - 8, h: img.height - 4, img: d ? "duck" : null };
     }
     // Gaat er toch iets mis, dan stopt het spel netjes en kun je gewoon weer vegen.
     function safe(now) {
