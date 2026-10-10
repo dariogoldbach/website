@@ -105,7 +105,7 @@
           return '<p class="quote' + (i ? "" : " on") + '"' + (i ? ' aria-hidden="true"' : "") + ">‘" + esc(q.text) + "’ <span>" + esc(q.by) + "</span></p>";
         }).join("") + "</div>" : "") +
         // De knop staat direct onder de tekst, niet onderaan de pagina.
-        (p.link.icon ? '<div class="icons">' + iconLink(p.link) + "</div></div>" :
+        (p.link.icon ? '<div class="icons">' + iconLink(p.link) + (p.listen && p.listen.icon ? iconLink(p.listen) : "") + "</div></div>" :
         '<div class="row">' + link(p.link) + (p.listen ? link(p.listen, "ghost") : "") + "</div></div>");
     },
     contact: function (p) {
