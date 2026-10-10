@@ -89,6 +89,6 @@ window.PAGES = [
   },
   {
     id: "spel", type: "game",
-    bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
+    bg: "#8f1018", fg: "#ffe6e2", accent: "#ff5a52",
   },
 ];

@@ -248,12 +248,14 @@
 
   // ---------- Ren, Dario! Een springspel zoals het dino-spel van Chrome ----------
   // Pixelplaatjes: elke letter is een kleur, een punt is doorzichtig.
+  // Alles in tinten van rood, van bijna zwart tot bijna wit.
+  var RED = ["#2b0306", "#5c0a10", "#8f1018", "#c4161f", "#e8202a", "#ff5a52", "#ff8f86", "#ffc2bb", "#ffe6e2"];
   var PAL = {
-    H: "#2a1a10", h: "#5b3a22", S: "#f0c39c", s: "#d49a74", G: "#111111", L: "#bfe0f2", M: "#a8483c",
-    T: "#1b1b1b", P: "#2c2c35", K: "#111111", W: "#ffffff",
-    p: "#f7a8c8", v: "#8e1b2c", e: "#8d989e", r: "#e8202a", l: "#c7f06a", w: "#fff8e8", Y: "#f3b61f", y: "#ffd76a", g: "#cfd8dc",
-    B: "#2f6b3a", k: "#151515", q: "#3a3a3a", R: "#e8202a", o: "#f2eee3", m: "#a0a0a0", n: "#5a5a5a",
-    d: "#2b2b2b", a: "#c9c9c9", b: "#ff5a36"
+    H: RED[0], h: RED[1], S: RED[7], s: RED[6], G: RED[0], L: RED[5], M: RED[3],
+    T: RED[2], P: RED[1], K: RED[0], W: RED[8],
+    p: RED[6], v: RED[3], e: RED[5], r: RED[4], l: RED[7], w: RED[8], Y: RED[4], y: RED[6], g: RED[7],
+    B: RED[2], k: RED[0], q: RED[1], R: RED[4], o: RED[8], m: RED[6], n: RED[1],
+    d: RED[1], a: RED[6], b: RED[4], i: RED[7]
   };
   var HEAD = [
     "..H.HHh.HH.H.H..", ".HHHhHHHHhHHHHH.", "HHhHHHhHHHHhHHHH", ".HHHHhHHHHHHHhHH", "HHhHHHHHhHHhHHH.",
@@ -279,10 +281,19 @@
     plaat: ["...kkkk...", ".kkkkkkkk.", ".kqkkkkqk.", "kkkRRRRkkk", "kqkRooRkqk", "kqkRooRkqk", "kkkRRRRkkk",
       ".kqkkkkqk.", ".kkkkkkkk.", "...kkkk..."],
     draaitafel: [".kkkkkkkk...a...", "ddddddddddddaddd", "daaaaaaaaaaaaaad", "dabababaaaaababd",
-      "daaaaaaaaaaaaaad", "dddddddddddddddd"]
+      "daaaaaaaaaaaaaad", "dddddddddddddddd"],
+    speaker: ["kkkkkkkkkk", "kqqqqqqqqk", "kqqaaaaqqk", "kqaqqqqaqk", "kqaqbbqaqk", "kqaqqqqaqk", "kqqaaaaqqk",
+      "kqqqqqqqqk", "kqqqaaqqqk", "kqqaqqaqqk", "kqqaqqaqqk", "kqqqaaqqqk", "kqqqqqqqqk", "kkkkkkkkkk"],
+    discobal: ["....k....", "....k....", "..rrirr..", ".riririr.", "ririririr", "iriririri", "ririririr", ".riririr.", "..rrirr.."],
+    discobal2: ["....k....", "....k....", "..iirii..", ".iririri.", "iriririri", "ririririr", "iriririri", ".iririri.", "..iirii.."],
+    vuur: ["...b....", "..bb..b.", "..bbb.bb", ".bbybbbb", ".byyybb.", "bbyyyybb", "byywyyyb", "byywwyyb", ".bywwyb.",
+      "kkkkkkkk", "kqqqqqqk"],
+    vuur2: ["....b...", ".b..bb..", "bb.bbb..", "bbbbybb.", ".bbyyyb.", "bbyyyybb", "byyyywyb", "byywwyyb", ".bywwyb.",
+      "kkkkkkkk", "kqqqqqqk"]
   };
   var NAMES = { boeken: "een stapel boeken", wijnglas: "een glas wijn", fles: "een fles wijn", microfoon: "een microfoon",
-    plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat" };
+    plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
+    speaker: "een speaker", discobal: "een discobal", vuur: "een vuurfontein", stuiterplaat: "een stuiterende plaat" };
   function sprite(rows) {
     var c = document.createElement("canvas"), x = c.getContext("2d");
     c.width = rows[0].length; c.height = rows.length;
@@ -320,11 +331,20 @@
     function jump() { if (playing && onGround() && performance.now() > duckUntil) me.vy = -158; }
     function duck() { if (!playing) return; duckUntil = performance.now() + 520; if (!onGround()) me.vy = Math.max(me.vy, 260); }
     function spawn() {
-      var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel"];
-      var kind = kinds[Math.floor(Math.random() * kinds.length)];
-      if (score > 150 && Math.random() < 0.25) kind = "vliegplaat";
-      var img = IMG[kind === "vliegplaat" ? "plaat" : kind];
-      obs.push({ kind: kind, img: img, x: VW + 4, y: kind === "vliegplaat" ? ground - 25 : ground - img.height });
+      var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel", "speaker", "vuur"];
+      var kind = kinds[Math.floor(Math.random() * kinds.length)], r0 = Math.random();
+      // Hoe verder je komt, hoe gekker het wordt: discoballen om onderdoor te duiken, stuiterende en vliegende platen.
+      if (score > 60 && r0 < 0.18) kind = "discobal";
+      else if (score > 120 && r0 < 0.32) kind = "stuiterplaat";
+      else if (score > 150 && r0 < 0.42) kind = "vliegplaat";
+      var img = IMG[kind === "vliegplaat" || kind === "stuiterplaat" ? "plaat" : kind];
+      var y = kind === "vliegplaat" ? ground - 25 : kind === "discobal" ? ground - 24 : ground - img.height;
+      obs.push({ kind: kind, img: img, x: VW + 4, y: y, base: y, ph: Math.random() * 6 });
+      // Soms twee kleine dingen vlak achter elkaar.
+      if (score > 100 && Math.random() < 0.2 && (kind === "wijnglas" || kind === "fles" || kind === "microfoon")) {
+        var k2 = Math.random() < 0.5 ? "wijnglas" : "fles", img2 = IMG[k2];
+        obs.push({ kind: k2, img: img2, x: VW + 4 + img.width + 4, y: ground - img2.height, base: ground - img2.height, ph: 0 });
+      }
       // Altijd genoeg ruimte om te landen en weer af te zetten.
       // Soms snel achter elkaar, soms een lange adempauze, zodat het ritme niet voorspelbaar wordt.
       var r = Math.random();
@@ -340,7 +360,12 @@
       speed = 60 + Math.min(70, t * 1.8);
       me.vy += 520 * dt; me.y = Math.min(0, me.y + me.vy * dt); if (me.y === 0) me.vy = 0;
       var dx = speed * dt; dist += dx;
-      obs.forEach(function (o) { o.x -= dx * (o.kind === "vliegplaat" ? 1.15 : 1); });
+      obs.forEach(function (o) {
+        o.x -= dx * (o.kind === "vliegplaat" ? 1.15 : 1);
+        if (o.kind === "stuiterplaat") o.y = o.base - Math.abs(Math.sin(t * 5 + o.ph)) * 16;
+        if (o.kind === "discobal") o.img = Math.floor(t * 6) % 2 ? IMG.discobal2 : IMG.discobal;
+        if (o.kind === "vuur") o.img = Math.floor(t * 8 + o.ph) % 2 ? IMG.vuur2 : IMG.vuur;
+      });
       obs = obs.filter(function (o) { return o.x > -20; });
       var lastObs = obs[obs.length - 1];
       if (!lastObs || VW - lastObs.x > nextGap) spawn();
@@ -359,12 +384,12 @@
       ctx.fillStyle = PAL.o; ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.setTransform(k, 0, 0, k, 0, 0); ctx.imageSmoothingEnabled = false;
       // Grond met steentjes die meeschuiven.
-      ctx.fillStyle = "#1b1b1b"; ctx.fillRect(0, ground, VW, 1);
+      ctx.fillStyle = RED[1]; ctx.fillRect(0, ground, VW, 1);
       var off = (dist || 0) % 40;
-      ctx.fillStyle = "#8a8578";
+      ctx.fillStyle = RED[6];
       for (var x = -off; x < VW; x += 40) { ctx.fillRect(x + 6, ground + 4, 3, 1); ctx.fillRect(x + 25, ground + 8, 2, 1); ctx.fillRect(x + 34, ground + 5, 1, 1); }
       // Muzieknootjes als wolken.
-      ctx.fillStyle = "#c9c2b0";
+      ctx.fillStyle = RED[7];
       for (var n = 0; n < 2; n++) {
         var nx = ((n * 55 + 30) - (dist || 0) * 0.25) % (VW + 30); if (nx < -10) nx += VW + 30;
         var ny = ground - 60 - n * 16;
@@ -389,8 +414,8 @@
       playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
       if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
       bestEl.textContent = "Je record: " + best;
-      msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Veeg verder of speel nog een keer.";
-      card.querySelector("[data-play]").textContent = "Nog een keer";
+      msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Veeg verder of start een new game.";
+      card.querySelector("[data-play]").textContent = "New game";
       over.hidden = false;
     }
     function control(d) { if (d === "up") jump(); else if (d === "down") duck(); }
