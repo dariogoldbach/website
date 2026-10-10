@@ -144,7 +144,7 @@
         '<button class="run-sound" type="button" data-music aria-pressed="true" aria-label="Muziek uit">' + ICONS.sound + "</button></div>" +
         '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
         '<canvas class="logo" data-logo role="img" aria-label="Dario\'s Great Adventure"></canvas>' +
-        '<div class="go" data-go hidden><b class="go-title">GAME OVER</b><canvas class="go-img" data-go-img></canvas><span class="go-name" data-go-name></span></div>' +
+        '<div class="go" data-go hidden><canvas class="go-title" data-go-title role="img" aria-label="Game over"></canvas><canvas class="go-img" data-go-img></canvas><span class="go-name" data-go-name></span></div>' +
         '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
         '</p><button class="icon-btn" type="button" data-play aria-label="Speel">' + ICONS.playc + "</button>" +
@@ -697,15 +697,16 @@
     T: ["111111", "001100", "001100", "001100", "001100", "001100", "001100"],
     V: ["11011", "11011", "11011", "11011", "11011", "01110", "00100"],
     N: ["110011", "111011", "111111", "110111", "110011", "110011", "110011"],
+    M: ["110011", "111111", "111111", "110011", "110011", "110011", "110011"],
     U: ["11011", "11011", "11011", "11011", "11011", "11011", "01110"],
     " ": ["000", "000", "000", "000", "000", "000", "000"]
   };
   var LOGO_COLS = ["#fff6c2", "#ffe066", "#ffc93c", "#ff9f1c", "#ff6b1a", "#f2392b", "#c81d25"];
-  function logo() {
-    var lines = [["DARIO'S", 4], ["GREAT ADVENTURE", 2]];
+  function logo(lines) {
     function width(t, sc) { var w = 0; for (var i = 0; i < t.length; i++) w += (FONT[t[i]][0].length + 1) * sc; return w - sc; }
     var W = 0; lines.forEach(function (l) { W = Math.max(W, width(l[0], l[1])); });
-    var pad = 4, gap = 6, H = pad * 2 + 7 * 4 + gap + 7 * 2 + 2;
+    var pad = 4, gap = 6, H = pad * 2 + 2 - gap;
+    lines.forEach(function (l) { H += 7 * l[1] + gap; });
     W += pad * 2;
     var c = document.createElement("canvas"); c.width = W; c.height = H;
     var x = c.getContext("2d"), y = pad;
@@ -990,9 +991,12 @@
       over.hidden = false;
     }
     // Game over: groot in beeld waar je over struikelde, met de naam erbij.
-    var logoEl = card.querySelector("[data-logo]"), lg = logo();
+    var logoEl = card.querySelector("[data-logo]"), lg = logo([["DARIO'S", 4], ["GREAT ADVENTURE", 2]]);
     logoEl.width = lg.width; logoEl.height = lg.height; logoEl.getContext("2d").drawImage(lg, 0, 0);
     logoEl.style.aspectRatio = lg.width + " / " + lg.height;
+    var goT = card.querySelector("[data-go-title]"), gt = logo([["GAME OVER", 4]]);
+    goT.width = gt.width; goT.height = gt.height; goT.getContext("2d").drawImage(gt, 0, 0);
+    goT.style.aspectRatio = gt.width + " / " + gt.height;
     var go = card.querySelector("[data-go]"), goImg = card.querySelector("[data-go-img]"), goName = card.querySelector("[data-go-name]");
     function showCulprit(o) {
       var c = o.img.c;
