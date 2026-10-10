@@ -34,9 +34,13 @@ button { font: inherit; color: inherit; }
 
 /* Het podium */
 .app {
-  height: 100%;
+  height: 100%; position: relative;
   display: flex; align-items: center; justify-content: center;
-  gap: clamp(2rem, 7vw, 6.5rem);
+}
+/* Het beeld precies in het midden; de pijltjes rechts ernaast. */
+.app > .dpad {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  left: min(calc(50% + min(88vh, 60rem) * 9 / 32 + clamp(2rem, 6vw, 5rem)), calc(100% - 10.5rem));
 }
 .frame {
   position: relative; overflow: hidden; background: var(--frame);
