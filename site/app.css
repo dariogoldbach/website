@@ -454,3 +454,6 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 .snake-over > * { flex-shrink: 0; }
 .logo { position: static !important; width: 82cqw !important; height: auto !important; image-rendering: pixelated; }
 .logo[hidden] { display: none; }
+/* Score bovenin het speelveld, geluidsknop rechtsonder in de hoek */
+.run-score { position: absolute; top: 3cqw; left: 50%; transform: translateX(-50%); pointer-events: none; font-weight: 700; }
+.run-wrap .run-sound { position: absolute; right: 2.5cqw; bottom: 2.5cqw; z-index: 2; }

@@ -140,9 +140,8 @@
     },
     game: function () {
       var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-      return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span>' +
-        '<button class="run-sound" type="button" data-music aria-pressed="true" aria-label="Muziek uit">' + ICONS.sound + "</button></div>" +
-        '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
+      return '<div class="top"><span class="label">Game</span></div>' +
+        '<div class="snake-wrap run-wrap"><canvas></canvas><span class="score run-score" data-score>score 0</span><div class="snake-over">' +
         '<canvas class="logo" data-logo role="img" aria-label="Dario\'s Great Adventure"></canvas>' +
         '<div class="go" data-go hidden><canvas class="go-title" data-go-title role="img" aria-label="Game over"></canvas><canvas class="go-img" data-go-img></canvas><span class="go-name" data-go-name></span></div>' +
         '<p class="small" data-msg>' +
@@ -150,7 +149,8 @@
         '</p><button class="icon-btn" type="button" data-play aria-label="Speel">' + ICONS.playc + "</button>" +
         '<form class="lb-form" data-lb-form hidden><input name="naam" maxlength="16" placeholder="Je naam" autocomplete="nickname" enterkeyhint="send" required>' +
         '<button type="submit">Zet op scorebord</button></form>' +
-        '<div class="lb" data-lb hidden><p class="lb-title">Scorebord</p><ol data-lb-list></ol></div></div></div>' +
+        '<div class="lb" data-lb hidden><p class="lb-title">Scorebord</p><ol data-lb-list></ol></div></div>' +
+        '<button class="run-sound" type="button" data-music aria-pressed="true" aria-label="Muziek uit">' + ICONS.sound + "</button></div>" +
         '<p class="small" data-best>Je record: 0</p><p class="small run-credit">Muziek door Sjamsoedin</p>';
     },
   };
@@ -1010,7 +1010,7 @@
     function control(d) { if (d === "up") jump(); else if (d === "down") duck(); }
     // Tikken = springen. Vegen gaat via state.locked (omhoog springt, omlaag bukt).
     var tap = null;
-    wrap.addEventListener("pointerdown", function (e) { if (playing) tap = { x: e.clientX, y: e.clientY }; });
+    wrap.addEventListener("pointerdown", function (e) { if (e.target.closest("[data-music]")) return; if (playing) tap = { x: e.clientX, y: e.clientY }; });
     wrap.addEventListener("pointerup", function (e) {
       if (tap && Math.abs(e.clientX - tap.x) < 14 && Math.abs(e.clientY - tap.y) < 14) jump();
       tap = null;
