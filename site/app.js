@@ -2,7 +2,7 @@
 (function () {
   "use strict";
   var PAGES = window.PAGES || [];
-  // Knopstijl: "c" = hoekig met schuine schreefletter (Dario koos C). "a" en "b" staan nog in app.css.
+  // Knopstijl: "c" = halfvette schreefletter met licht ronde hoeken (Dario koos C). "a" en "b" staan nog in app.css.
   if (!document.documentElement.dataset.knop) document.documentElement.dataset.knop = "c";
   var frame = document.getElementById("frame");
   var countEl = document.getElementById("count");
@@ -92,8 +92,8 @@
         '<div class="end"><div class="row">' + link(p.link) + (p.listen ? link(p.listen, "ghost") : "") + "</div></div>";
     },
     contact: function (p) {
-      return '<div class="mid"><p class="mail-big">Contact</p><p class="txt">' + esc(p.text) + "</p></div>" +
-        '<div class="end"><a class="btn" href="mailto:' + esc(p.email) + '">Stuur een mail</a></div>';
+      return '<div class="mid"><p class="mail-big">Contact</p><p class="txt">' + esc(p.text) + "</p>" +
+        '<div class="row"><a class="btn" href="mailto:' + esc(p.email) + '">Stuur een mail</a></div></div>';
     },
     social: function (p) {
       return '<div class="mid"><p class="mail-big">Stalk<br><em>me.</em></p>' +
