@@ -1,7 +1,7 @@
 /*
   Alle pagina's van de site. Een nieuwe pagina toevoegen = een nieuw blok in deze lijst.
   "placeholder: true" zet het label "voorbeeldtekst" op de pagina tot de echte tekst erin staat.
-  Soorten (type): bio, platform, podcast, boek, contact, snake.
+  Soorten (type): bio, platform, podcast, boek, contact, social, game.
 */
 window.PAGES = [
   {
@@ -60,13 +60,23 @@ window.PAGES = [
     link: { text: "Bestel het boek", href: "https://libris.nl/singeluitgeverijen/a/dario-goldbach/goldband/501657554#paperback-9789038815930" },
   },
   {
+    id: "volg-me", type: "social",
+    bg: "#ff5a36", fg: "#111111", accent: "#ffffff",
+    handle: "dariogoldbach",
+    text: "Columns, filmpjes, nieuwe boeken en waar ik optreed.",
+    links: [
+      { text: "Instagram", href: "https://www.instagram.com/dariogoldbach/" },
+      { text: "TikTok", href: "https://www.tiktok.com/@dariogoldbach" },
+    ],
+  },
+  {
     id: "contact", type: "contact",
     bg: "#f5f1e8", fg: "#111111", accent: "#ff5a36",
     text: "Voor opdrachten, optredens, interviews, of gewoon een reactie.",
     email: "contact@studiodario.nl",
   },
   {
-    id: "snake", type: "snake",
-    bg: "#0b0b0b", fg: "#7cff6b", accent: "#ffd23f",
+    id: "spel", type: "game",
+    bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
   },
 ];

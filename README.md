@@ -4,6 +4,6 @@ De website van Dario Goldbach. Je swipet alle kanten op, zoals op TikTok, en elk
 
 - `site/` is de website zoals die online komt. Er is geen bouwstap.
 - `site/pages.js` bevat alle pagina's en teksten. Een nieuwe pagina is een nieuw blok in die lijst.
-- `site/app.js` regelt het vegen, de 3D-boeken en snake. `site/app.css` is de vormgeving.
+- `site/app.js` regelt het vegen, de 3D-boeken en het springspel. `site/app.css` is de vormgeving.
 - `python3 build_preview.py` maakt `preview/dario-goldbach.html`, de hele site in één bestand om als voorbeeld te delen.
 - Netlify publiceert de map `site/` (zie `netlify.toml`).

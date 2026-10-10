@@ -102,11 +102,20 @@
         '<div class="row" style="align-items:center"><span class="addr ph">' + esc(p.email) + "</span>" +
         '<button class="btn ghost" type="button" data-copy="' + esc(p.email) + '" style="min-height:2.4rem;padding:.4em 1em">Kopieer</button></div></div>';
     },
-    snake: function () {
+    social: function (p) {
+      return top("Volg me", p) +
+        '<div class="mid"><p class="mail-big">Volg<br><em>me.</em></p>' +
+        '<p class="handle">@' + esc(p.handle) + "</p>" +
+        (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") + "</div>" +
+        '<div class="end social">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div>";
+    },
+    game: function () {
+      var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span></div>' +
-        '<div class="snake-wrap"><canvas></canvas><div class="snake-over">' +
-        '<p class="snake-title">SNAKE</p><p class="small" data-msg>Veeg of gebruik de pijltjes om te sturen.</p>' +
-        '<button class="btn" type="button" data-play>Speel</button></div></div>' +
+        '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
+        '<p class="snake-title">REN<br>DARIO<br>REN!</p><p class="small" data-msg>' +
+        (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
+        '</p><button class="btn" type="button" data-play>Speel</button></div></div>' +
         '<p class="small" data-best>Je record: 0</p>';
     },
   };
@@ -114,7 +123,7 @@
   // ---------- Interactieve onderdelen per pagina ----------
   var MOUNT = {
     boek: function (card) { return book(card.querySelector(".book3d")); },
-    snake: function (card) { return snake(card); },
+    game: function (card) { return runner(card); },
     podcast: function (card) {
       var v = card.querySelector("video"), b = card.querySelector(".sound");
       if (!v) return null;
@@ -163,72 +172,166 @@
     return function () { cancelAnimationFrame(raf); };
   }
 
-  function snake(card) {
-    var canvas = card.querySelector("canvas"), ctx = canvas.getContext("2d");
+  // ---------- Ren, Dario! Een springspel zoals het dino-spel van Chrome ----------
+  // Pixelplaatjes: elke letter is een kleur, een punt is doorzichtig.
+  var PAL = {
+    H: "#2a1a10", h: "#5b3a22", S: "#f0c39c", s: "#d49a74", G: "#111111", L: "#bfe0f2", M: "#a8483c",
+    T: "#1b1b1b", P: "#2c2c35", K: "#111111", W: "#ffffff",
+    p: "#f7a8c8", r: "#e8202a", l: "#c7f06a", w: "#fff8e8", Y: "#f3b61f", y: "#ffd76a", g: "#cfd8dc",
+    B: "#2f6b3a", k: "#151515", q: "#3a3a3a", R: "#e8202a", o: "#f2eee3", m: "#a0a0a0", n: "#5a5a5a",
+    d: "#2b2b2b", a: "#c9c9c9", b: "#ff5a36"
+  };
+  var HEAD = [
+    "..H.HHh.HH.H.H..", ".HHHhHHHHhHHHHH.", "HHhHHHhHHHHhHHHH", ".HHHHhHHHHHHHhHH", "HHhHHHHHhHHhHHH.",
+    "HHHHSSSSSSSSHHHH", "HHHSGGGSSGGGSHHH", ".HHSGLGGGGLGSHH.", "..HSGGGSSGGGSH..", "...SSSSssSSSS...",
+    "...SSSMMMMSSS...", "....SSSSSSSS...."
+  ];
+  // Alles onder het hoofd is 14 breed; met een punt links en rechts wordt het 16.
+  function pad(rows) { return rows.map(function (r) { return "." + r + "."; }); }
+  var BODY = pad([".....SSSS.....", "...TTTTTTTT...", "..TTTTTTTTTT..", ".STTTTTTTTTTS.", ".STTTTTTTTTTS.",
+    "...TTTTTTTT...", "...PPPPPPPP..."]);
+  var SPR = {
+    run1: HEAD.concat(BODY, pad(["...PPP..PPP...", "...PPP...PPP..", "..KWKK...KWKK."])),
+    run2: HEAD.concat(BODY, pad(["....PPPPPP....", "....PPP.PPP...", "...KWKK.KWKK.."])),
+    jump: HEAD.concat(BODY, pad(["..PPP....PPP..", ".KWKK....KWKK.", ".............."])),
+    duck: HEAD.concat(pad(["TTTTTTTTTTTTTT", "KWKKPPPPPPKWKK"])),
+    boeken: [".pppppppp.", ".pwwwwwwp.", ".pppppppp.", "rrrrrrrrrr", "rwwwwwwwwr", "rrrrrrrrrr",
+      "lllllllll.", "lwwwwwwwl.", "lllllllll."],
+    bier: [".wwwww...", "wwwwwww..", "gYYYYYggg", "gYyYYYg.g", "gYYYyYg.g", "gYYYYYg.g", "gYyYYYggg",
+      "gYYYYYg..", "gYYYYYg..", "ggggggg.."],
+    fles: [".kk.", ".BB.", ".BB.", ".BB.", "BBBB", "BBBB", "BwwB", "BwwB", "BBBB", "BBBB", "BBBB"],
+    microfoon: [".mmm.", "mnmnm", "mmnmm", ".mmm.", "..k..", "..k..", "..k..", "..k..", "..k..", "..k..",
+      "..k..", ".kkk.", "kkkkk"],
+    plaat: ["...kkkk...", ".kkkkkkkk.", ".kqkkkkqk.", "kkkRRRRkkk", "kqkRooRkqk", "kqkRooRkqk", "kkkRRRRkkk",
+      ".kqkkkkqk.", ".kkkkkkkk.", "...kkkk..."],
+    draaitafel: [".kkkkkkkk...a...", "ddddddddddddaddd", "daaaaaaaaaaaaaad", "dabababaaaaababd",
+      "daaaaaaaaaaaaaad", "dddddddddddddddd"]
+  };
+  var NAMES = { boeken: "een stapel boeken", bier: "een biertje", fles: "een fles wijn", microfoon: "een microfoon",
+    plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat" };
+  function sprite(rows) {
+    var c = document.createElement("canvas"), x = c.getContext("2d");
+    c.width = rows[0].length; c.height = rows.length;
+    rows.forEach(function (row, y) {
+      for (var i = 0; i < row.length; i++) if (row[i] !== ".") { x.fillStyle = PAL[row[i]]; x.fillRect(i, y, 1, 1); }
+    });
+    return c;
+  }
+  var IMG = null;
+
+  function runner(card) {
+    if (!IMG) { IMG = {}; Object.keys(SPR).forEach(function (k) { IMG[k] = sprite(SPR[k]); }); }
+    var wrap = card.querySelector(".run-wrap"), canvas = card.querySelector("canvas"), ctx = canvas.getContext("2d");
     var over = card.querySelector(".snake-over"), msg = card.querySelector("[data-msg]");
     var scoreEl = card.querySelector("[data-score]"), bestEl = card.querySelector("[data-best]");
-    var COLS = 16, rows, cell, body, dir, nextDir, food, score, timer = null;
+    var VW = 100, VH = 200, k = 1, ground = 150;
+    var me, obs, speed, dist, score, nextGap, raf = null, last = 0, t = 0, duckUntil = 0, playing = false;
     var best = 0;
-    try { best = +localStorage.getItem("dg-snake-best") || 0; } catch (e) {}
+    try { best = +localStorage.getItem("dg-run-best") || 0; } catch (e) {}
     bestEl.textContent = "Je record: " + best;
-    var fg = "#7cff6b", accent = "#ffd23f";
 
     function size() {
       var r = canvas.getBoundingClientRect();
       if (!r.width) return;
-      cell = Math.floor(r.width / COLS);
-      rows = Math.max(10, Math.floor(r.height / cell));
-      canvas.width = COLS * cell; canvas.height = rows * cell;
+      var dpr = Math.min(window.devicePixelRatio || 1, 3);
+      canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
+      k = canvas.width / VW; VH = canvas.height / k; ground = Math.round(VH * 0.68);
       draw();
-    }
-    function place() {
-      do { food = [Math.floor(Math.random() * COLS), Math.floor(Math.random() * rows)]; }
-      while (body && body.some(function (b) { return b[0] === food[0] && b[1] === food[1]; }));
     }
     function reset() {
-      var y = Math.floor(rows / 2);
-      body = [[5, y], [4, y], [3, y]]; dir = nextDir = [1, 0]; score = 0; place();
+      me = { y: 0, vy: 0 }; obs = []; speed = 60; dist = 0; score = 0; t = 0; nextGap = 90; duckUntil = 0;
       scoreEl.textContent = "score 0";
     }
-    function draw() {
-      if (!cell) return;
-      ctx.fillStyle = "#0b0b0b"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      if (!body) return;
-      ctx.fillStyle = accent; ctx.fillRect(food[0] * cell + 2, food[1] * cell + 2, cell - 4, cell - 4);
-      ctx.fillStyle = fg;
-      body.forEach(function (b, i) { ctx.globalAlpha = i ? 0.85 : 1; ctx.fillRect(b[0] * cell + 1, b[1] * cell + 1, cell - 2, cell - 2); });
-      ctx.globalAlpha = 1;
+    function onGround() { return me.y >= 0; }
+    function jump() { if (playing && onGround() && performance.now() > duckUntil) me.vy = -158; }
+    function duck() { if (!playing) return; duckUntil = performance.now() + 520; if (!onGround()) me.vy = Math.max(me.vy, 260); }
+    function spawn() {
+      var kinds = ["boeken", "bier", "fles", "microfoon", "plaat", "draaitafel"];
+      var kind = kinds[Math.floor(Math.random() * kinds.length)];
+      if (score > 150 && Math.random() < 0.25) kind = "vliegplaat";
+      var img = IMG[kind === "vliegplaat" ? "plaat" : kind];
+      obs.push({ kind: kind, img: img, x: VW + 4, y: kind === "vliegplaat" ? ground - 25 : ground - img.height });
+      // Altijd genoeg ruimte om te landen en weer af te zetten.
+      nextGap = speed * 0.7 + 28 + Math.random() * speed * 0.8;
     }
-    function step() {
-      dir = nextDir;
-      var h = [body[0][0] + dir[0], body[0][1] + dir[1]];
-      var hit = h[0] < 0 || h[1] < 0 || h[0] >= COLS || h[1] >= rows ||
-        body.some(function (b) { return b[0] === h[0] && b[1] === h[1]; });
-      if (hit) return end();
-      body.unshift(h);
-      if (h[0] === food[0] && h[1] === food[1]) { score++; scoreEl.textContent = "score " + score; place(); }
-      else body.pop();
+    function hitbox() {
+      var d = performance.now() < duckUntil && onGround(), img = d ? IMG.duck : IMG.run1;
+      var top = ground + me.y - img.height;
+      return { x: 18 + 3, y: top + 2, w: img.width - 6, h: img.height - 3, img: d ? "duck" : null };
+    }
+    function step(now) {
+      var dt = Math.min(0.033, (now - last) / 1000 || 0); last = now; t += dt;
+      speed = 60 + Math.min(70, t * 1.8);
+      me.vy += 520 * dt; me.y = Math.min(0, me.y + me.vy * dt); if (me.y === 0) me.vy = 0;
+      var dx = speed * dt; dist += dx;
+      obs.forEach(function (o) { o.x -= dx * (o.kind === "vliegplaat" ? 1.15 : 1); });
+      obs = obs.filter(function (o) { return o.x > -20; });
+      var lastObs = obs[obs.length - 1];
+      if (!lastObs || VW - lastObs.x > nextGap) spawn();
+      score = Math.floor(dist / 6); scoreEl.textContent = "score " + score;
+      var b = hitbox();
+      for (var i = 0; i < obs.length; i++) {
+        var o = obs[i];
+        if (b.x < o.x + o.img.width - 1 && b.x + b.w > o.x + 1 && b.y < o.y + o.img.height - 1 && b.y + b.h > o.y + 1) return end(o);
+      }
       draw();
+      raf = requestAnimationFrame(step);
+    }
+    function draw() {
+      if (!canvas.width) return;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = PAL.o; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.setTransform(k, 0, 0, k, 0, 0); ctx.imageSmoothingEnabled = false;
+      // Grond met steentjes die meeschuiven.
+      ctx.fillStyle = "#1b1b1b"; ctx.fillRect(0, ground, VW, 1);
+      var off = (dist || 0) % 40;
+      ctx.fillStyle = "#8a8578";
+      for (var x = -off; x < VW; x += 40) { ctx.fillRect(x + 6, ground + 4, 3, 1); ctx.fillRect(x + 25, ground + 8, 2, 1); ctx.fillRect(x + 34, ground + 5, 1, 1); }
+      // Muzieknootjes als wolken.
+      ctx.fillStyle = "#c9c2b0";
+      for (var n = 0; n < 2; n++) {
+        var nx = ((n * 55 + 30) - (dist || 0) * 0.25) % (VW + 30); if (nx < -10) nx += VW + 30;
+        var ny = ground - 60 - n * 16;
+        ctx.fillRect(nx, ny + 6, 3, 2); ctx.fillRect(nx + 2, ny, 1, 7); ctx.fillRect(nx + 3, ny, 3, 1); ctx.fillRect(nx + 5, ny, 1, 3);
+      }
+      (obs || []).forEach(function (o) { ctx.drawImage(o.img, Math.round(o.x), Math.round(o.y)); });
+      if (!me) me = { y: 0, vy: 0 };
+      var img;
+      if (performance.now() < duckUntil && onGround()) img = IMG.duck;
+      else if (!onGround()) img = IMG.jump;
+      else img = playing && Math.floor((dist || 0) / 7) % 2 ? IMG.run2 : IMG.run1;
+      ctx.drawImage(img, 18, Math.round(ground + me.y - img.height));
+    }
+    function key(e) {
+      if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); if (playing) jump(); else start(); }
     }
     function start() {
-      size(); reset(); draw(); over.hidden = true; state.locked = steer; hideHint();
-      clearInterval(timer); timer = setInterval(step, 115);
+      size(); reset(); over.hidden = true; playing = true; state.locked = control; hideHint();
+      last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(step);
     }
-    function end() {
-      clearInterval(timer); timer = null; state.locked = null;
-      if (score > best) { best = score; try { localStorage.setItem("dg-snake-best", best); } catch (e) {} }
+    function end(o) {
+      playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
+      if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
       bestEl.textContent = "Je record: " + best;
-      msg.textContent = "Game over. Score " + score + ". Veeg verder of speel nog een keer.";
+      msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Veeg verder of speel nog een keer.";
       card.querySelector("[data-play]").textContent = "Nog een keer";
       over.hidden = false;
     }
-    function steer(d) {
-      var v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[d];
-      if (v && (v[0] !== -dir[0] || v[1] !== -dir[1])) nextDir = v;
-    }
+    function control(d) { if (d === "up") jump(); else if (d === "down") duck(); }
+    // Tikken = springen. Vegen gaat via state.locked (omhoog springt, omlaag bukt).
+    var tap = null;
+    wrap.addEventListener("pointerdown", function (e) { if (playing) tap = { x: e.clientX, y: e.clientY }; });
+    wrap.addEventListener("pointerup", function (e) {
+      if (tap && Math.abs(e.clientX - tap.x) < 14 && Math.abs(e.clientY - tap.y) < 14) jump();
+      tap = null;
+    });
+    document.addEventListener("keydown", key);
     card.querySelector("[data-play]").addEventListener("click", start);
     requestAnimationFrame(size);
-    return function () { clearInterval(timer); if (state.locked === steer) state.locked = null; };
+    return function () {
+      playing = false; cancelAnimationFrame(raf); document.removeEventListener("keydown", key);
+      if (state.locked === control) state.locked = null;
+    };
   }
 
   // ---------- Kaarten maken en wisselen ----------
@@ -304,7 +407,7 @@
     if (!drag || e.pointerId !== drag.id) return;
     var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
     if (state.locked) {
-      // Tijdens snake stuurt een veeg de slang, meteen al tijdens het vegen.
+      // Tijdens het spel stuurt een veeg het spel, meteen al tijdens het vegen.
       if (Math.max(Math.abs(dx), Math.abs(dy)) > 18) {
         state.locked(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "left" : "right") : (dy < 0 ? "up" : "down"));
         drag.x = e.clientX; drag.y = e.clientY;

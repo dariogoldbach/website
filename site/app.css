@@ -219,14 +219,18 @@ h1, h2, p { margin: 0; }
 .mail-big em { font-style: normal; color: var(--accent); }
 .addr { font-family: var(--mono); font-size: max(0.8rem, 3.6cqw); user-select: text; -webkit-user-select: text; word-break: break-all; }
 
-/* Snake */
+/* Volg me */
+.handle { font-family: var(--mono); font-size: max(0.9rem, 4.6cqw); font-weight: 700; }
+.end.social .btn { width: 100%; justify-content: center; }
+
+/* Spel */
 .snake-wrap { flex: 1; min-height: 0; position: relative; border: 2px solid var(--fg); }
 .snake-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .snake-over {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 4cqw; text-align: center; background: color-mix(in srgb, var(--bg) 82%, transparent); padding: 6cqw;
 }
-.snake-title { font-family: var(--mono); font-size: 15cqw; font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; }
+.snake-title { font-family: var(--mono); font-size: 13cqw; font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; }
 .score { font-family: var(--mono); font-size: max(0.75rem, 3.4cqw); font-variant-numeric: tabular-nums; }
 
 /* Uitleg bij de eerste keer */
