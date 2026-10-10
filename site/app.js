@@ -532,6 +532,73 @@
         g.p(3, 28, P2); g.p(20, 28, P2); g.r(0, 30, 24, 2, P1); g.r(0, 31, 24, 1, P3);
       });
     },
+    // Een USB-stick, rechtop, met een rood lampje.
+    usb: function () {
+      return art(10, 18, function (g) {
+        g.r(2, 0, 6, 6, C.grey2); g.r(2, 0, 6, 1, C.grey1); g.r(3, 2, 1, 2, C.grey5); g.r(6, 2, 1, 2, C.grey5); g.r(7, 1, 1, 5, C.grey3);
+        g.r(1, 6, 8, 12, C.black); g.r(1, 6, 8, 1, C.grey5); g.r(2, 7, 1, 10, C.grey6);
+        g.r(3, 10, 4, 4, C.red); g.r(3, 10, 2, 1, "#ff6b6b"); g.p(7, 16, C.red);
+      });
+    },
+    // Een zak Goldband-stuc: gele papieren zak met de omgevouwen bovenkant.
+    stuc: function () {
+      var Y1 = "#f2c230", Y2 = "#d9a21c", Y3 = "#ffe07a";
+      return art(22, 22, function (g) {
+        g.poly([[3, 0], [19, 0], [21, 4], [1, 4]], Y2); g.r(3, 0, 16, 1, Y3);
+        g.r(0, 4, 22, 18, Y1); g.r(0, 4, 22, 1, Y3); g.r(0, 4, 2, 18, Y3); g.r(19, 5, 3, 17, Y2);
+        g.r(2, 9, 18, 6, INK); g.r(2, 9, 18, 1, "#3a3a3a");
+        [3, 4, 6, 7, 9, 10, 11, 13, 14, 16, 17, 18].forEach(function (xx) { g.r(xx, 11, 1, 2, C.white); });
+        g.r(4, 17, 6, 1, Y2); g.r(4, 19, 10, 1, Y2); g.r(0, 21, 22, 1, Y2);
+      });
+    },
+    // David Vunk achter zijn draaitafels, koptelefoon op, handen in de lucht.
+    vunk: function () {
+      return art(26, 36, function (g) {
+        g.r(4, 2, 2, 6, C.skin); g.r(20, 2, 2, 6, C.skin); g.r(3, 0, 4, 3, C.skin); g.r(19, 0, 4, 3, C.skin);
+        g.d(13, 7, 5.5, C.hair, 5); g.r(8, 8, 10, 9, C.skin); g.r(16, 9, 2, 8, C.skin2);
+        g.r(8, 6, 10, 3, C.hair); g.r(9, 11, 3, 2, INK); g.r(14, 11, 3, 2, INK); g.r(12, 11, 2, 1, INK);
+        g.r(11, 15, 4, 1, C.mouth);
+        g.r(6, 5, 14, 2, C.grey6); g.r(5, 9, 3, 5, C.grey6); g.r(18, 9, 3, 5, C.grey6); g.r(5, 10, 1, 3, C.grey4);
+        g.r(12, 17, 2, 1, C.skin2);
+        g.r(6, 18, 14, 8, C.shirt); g.r(4, 8, 3, 11, C.shirt); g.r(19, 8, 3, 11, C.shirt); g.r(7, 19, 2, 6, C.shirt2);
+        g.r(0, 24, 26, 12, C.grey6); g.r(0, 24, 26, 2, C.grey4); g.r(0, 24, 26, 1, C.grey3);
+        g.d(6, 25, 4, C.black, 1.2); g.d(20, 25, 4, C.black, 1.2); g.p(6, 25, C.red); g.p(20, 25, C.red);
+        g.r(2, 29, 22, 1, C.grey5); g.r(11, 31, 4, 2, C.grey3); g.p(4, 32, C.fire3); g.p(21, 32, C.green3);
+      });
+    },
+    // Robijn: roze fles wasverzachter met een grote dop.
+    robijn: function () {
+      var P1 = "#e8409a", P2 = "#ff7cc0", P3 = "#b32474";
+      return art(14, 24, function (g) {
+        g.r(4, 0, 6, 4, C.white); g.r(4, 0, 6, 1, C.grey1); g.r(9, 0, 1, 4, C.grey2);
+        g.r(3, 4, 8, 2, P3); g.r(1, 6, 12, 18, P1); g.r(0, 8, 14, 15, P1);
+        g.r(1, 7, 2, 15, P2); g.r(12, 8, 2, 15, P3); g.r(0, 23, 14, 1, P3);
+        g.d(7, 14, 4.2, C.white, 3.4); g.d(7, 14, 3, "#ffd6ec", 2.4); g.r(5, 13, 4, 1, P3); g.r(4, 15, 6, 1, P1);
+        g.r(9, 7, 3, 4, "#ffffff"); g.r(10, 8, 1, 2, P1);
+      });
+    },
+    // Een steen: de rode baksteen van de Vier Weekenden-cover.
+    steen: function () {
+      var R1 = "#e8202a", R2 = "#ff5a4f", R3 = "#a8141c";
+      return art(22, 12, function (g) {
+        g.poly([[0, 4], [5, 0], [22, 0], [17, 4]], R2);
+        g.r(0, 4, 17, 8, R1); g.poly([[17, 4], [22, 0], [22, 8], [17, 12]], R3);
+        g.p(3, 6, R2); g.p(9, 8, R3); g.p(13, 6, R3); g.p(6, 10, R3); g.p(11, 2, "#ff8a80"); g.p(15, 1, R1);
+      });
+    },
+    // Een schilderij van een abstracte vrouw in een gouden lijst.
+    schilderij: function () {
+      var G1 = "#d9a43a", G2 = "#f3cf6a", G3 = "#9a6d1c";
+      return art(22, 26, function (g) {
+        g.r(0, 0, 22, 26, G1); g.r(0, 0, 22, 1, G2); g.r(0, 0, 1, 26, G2); g.r(21, 1, 1, 25, G3); g.r(1, 25, 21, 1, G3);
+        g.r(2, 2, 18, 22, "#f1e6d2");
+        g.r(2, 2, 9, 22, "#9cc6e6"); g.d(13, 10, 5, "#ff9ac8", 6); g.d(9, 9, 3.4, "#f0c39c", 4);
+        g.r(8, 7, 2, 2, INK); g.r(14, 8, 3, 1, INK); g.p(16, 9, INK);
+        g.d(11, 4.5, 4, INK, 2.2); g.r(5, 3, 3, 6, INK);
+        g.poly([[6, 15], [16, 14], [19, 24], [3, 24]], C.red); g.poly([[10, 16], [14, 16], [12, 24]], "#f3b61f");
+        g.d(15, 19, 2, "#1f4d2a"); g.r(2, 23, 18, 1, "#3a3a3a");
+      });
+    },
     discobal: function () { return ball(0); },
     discobal2: function () { return ball(1); },
     vuur: function () { return pyro(0); },
@@ -563,7 +630,9 @@
   }
   var NAMES = { boeken: "Infinite Jest", wijnglas: "een glas wijn", fles: "een flesje rood", microfoon: "een microfoon",
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
-    speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat" };
+    speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat",
+    usb: "een USB-stick", stuc: "een zak Goldband-stuc", vunk: "David Vunk", robijn: "een fles Robijn", steen: "een steen",
+    schilderij: "een schilderij van een abstracte vrouw" };
   var IMG = null;
 
   function runner(card) {
@@ -612,7 +681,7 @@
     function jump() { if (playing && onGround() && performance.now() > duckUntil) me.vy = -178; }
     function duck() { if (!playing) return; duckUntil = performance.now() + 520; if (!onGround()) me.vy = Math.max(me.vy, 260); }
     function spawn() {
-      var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel", "speaker", "vuur"];
+      var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel", "speaker", "vuur", "usb", "stuc", "vunk", "robijn", "steen", "schilderij"];
       // Nooit twee keer hetzelfde ding achter elkaar (alle platen tellen als hetzelfde).
       function look(k) { return k === "vliegplaat" || k === "stuiterplaat" ? "plaat" : k; }
       var kind, tries = 0;
