@@ -293,8 +293,8 @@
   var R = 2, INK = "#1b1b1b", BG = "#f2eee3";
   var C = {
     hair: "#2a1a10", hair2: "#4a2e1a", hair3: "#74502f", skin: "#f0c39c", skin2: "#d49a74", skin3: "#fbdcc0",
-    lens: "#bfe0f2", mouth: "#a8483c", shirt: "#1d1d1f", shirt2: "#38383c", pants: "#2c2c35", pants2: "#1c1c22",
-    pants3: "#45455a", white: "#ffffff", grey1: "#e8e8e8", grey2: "#c9c9c9", grey3: "#a0a0a0", grey4: "#6e6e6e",
+    lens: "#bfe0f2", mouth: "#a8483c", shirt: "#1d1d1f", shirt2: "#38383c", pants: "#34344a", pants2: "#1c1c22",
+    pants3: "#55557a", white: "#ffffff", grey1: "#e8e8e8", grey2: "#c9c9c9", grey3: "#a0a0a0", grey4: "#6e6e6e",
     grey5: "#4a4a4a", grey6: "#2e2e2e", black: "#121212", red: "#e8202a", red2: "#a8141c", wine: "#8e1b2c",
     wine2: "#5e0f1c", wine3: "#c23a4f", green: "#1f4d2a", green2: "#2f6b3a", green3: "#5c9a64", cream: "#f6eccf",
     gold: "#d9a43a", sky: "#7fb3dc", sky2: "#a9cdea", sky3: "#5d93c0", cloud: "#ffffff", cloud2: "#dbe8f3",
@@ -302,9 +302,9 @@
   };
   function art(w, h, draw, noLine) {
     var c = document.createElement("canvas"), x = c.getContext("2d");
-    c.width = w + 2; c.height = h + 2;
+    c.width = w + 2; c.height = h + 2; var ox = 1, oy = 1;
     var g = {
-      r: function (a, b, ww, hh, col) { x.fillStyle = col; x.fillRect(a + 1, b + 1, ww, hh); },
+      r: function (a, b, ww, hh, col) { x.fillStyle = col; x.fillRect(a + ox, b + oy, ww, hh); },
       clear: function (a, b, ww, hh) { x.clearRect(a + 1, b + 1, ww, hh); },
       // Vlak met hoekpunten [[x, y], ...], voor de isometrische platenspeler.
       poly: function (pts, col) {
@@ -318,13 +318,21 @@
           if (inside) x.fillRect(xx + 1, yy + 1, 1, 1);
         }
       },
-      p: function (a, b, col) { x.fillStyle = col; x.fillRect(a + 1, b + 1, 1, 1); },
+      p: function (a, b, col) { x.fillStyle = col; x.fillRect(a + ox, b + oy, 1, 1); },
+      // Alles hierna een stukje verschoven tekenen (voor het voorovergebogen hoofd).
+      at: function (dx, dy) { ox = 1 + dx; oy = 1 + dy; },
+      // Dikke lijn, voor armen en benen.
+      line: function (x0, y0, x1, y1, t, col) {
+        x.fillStyle = col;
+        var n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+        for (var i = 0; i <= n; i++) x.fillRect(Math.round(x0 + (x1 - x0) * i / n) + ox, Math.round(y0 + (y1 - y0) * i / n) + oy, t, t);
+      },
       // Rondje of ovaal zonder vervaging, pixel voor pixel.
       d: function (cx, cy, rx, col, ry, from) {
         ry = ry || rx; x.fillStyle = col;
         for (var yy = Math.max(Math.floor(cy - ry), from || -99); yy <= cy + ry; yy++) for (var xx = Math.floor(cx - rx); xx <= cx + rx; xx++) {
           var dx = (xx + 0.5 - cx) / rx, dy = (yy + 0.5 - cy) / ry;
-          if (dx * dx + dy * dy <= 1) x.fillRect(xx + 1, yy + 1, 1, 1);
+          if (dx * dx + dy * dy <= 1) x.fillRect(xx + ox, yy + oy, 1, 1);
         }
       }
     };
@@ -348,6 +356,7 @@
   // Dario: krullen, bril, zwart shirt.
   function dario(g, pose) {
     var duck = pose === "duck", top = duck ? 1 : 0;
+    if (!duck) g.at(2, pose === "jump" ? 0 : 1);
     var curls = [[6, 6], [10, 4], [14, 3], [18, 3], [22, 4], [26, 6], [4, 10], [28, 10], [4, 14], [28, 14], [8, 6], [24, 6], [16, 5]];
     curls.forEach(function (q) { g.d(q[0], q[1] + top, 3.6, C.hair); });
     curls.forEach(function (q, i) { if (i % 2 === 0) g.d(q[0] - 1, q[1] - 1 + top, 1.6, C.hair2); });
@@ -370,28 +379,42 @@
       g.r(0, 26, 6, 2, C.black); g.r(26, 26, 6, 2, C.black); g.r(0, 27, 6, 1, C.white); g.r(26, 27, 6, 1, C.white);
       return;
     }
-    // Hals, shirt, armen.
-    g.r(13, 23, 6, 2, C.skin2);
-    g.r(8, 24, 16, 1, C.shirt); g.r(6, 25, 20, 11, C.shirt); g.r(8, 26, 2, 8, C.shirt2); g.r(12, 25, 8, 1, C.shirt2);
-    g.r(3, 25, 4, 5, C.shirt); g.r(25, 25, 4, 5, C.shirt); g.r(4, 25, 1, 4, C.shirt2);
-    g.r(3, 30, 3, 4, C.skin); g.r(26, 30, 3, 4, C.skin); g.r(5, 30, 1, 4, C.skin2); g.r(28, 30, 1, 4, C.skin2);
-    g.r(3, 34, 3, 1, C.skin2); g.r(26, 34, 3, 1, C.skin2);
-    g.r(7, 35, 18, 1, C.black); g.r(15, 35, 2, 1, C.grey3);
-    g.r(7, 36, 18, 1, C.pants); g.r(8, 36, 3, 1, C.pants3);
-    function leg(x, y, len) {
-      g.r(x, 37, 5, y - 37 + len, C.pants); g.r(x + 4, 37, 1, y - 37 + len, C.pants2); g.r(x, 37, 1, y - 37 + len, C.pants3);
-      var sy = y + len;
-      g.r(x - 1, sy, 7, 2, C.black); g.r(x, sy, 2, 1, C.grey5); g.r(x - 1, sy + 2, 7, 1, C.white);
+    g.at(0, 0);
+    // Rennend lijf: iets voorover, armen en benen zwaaien.
+    function shoe(x, y) { g.r(x, y, 7, 2, C.black); g.r(x + 1, y, 2, 1, C.grey5); g.r(x, y + 2, 7, 1, C.white); }
+    function arm(x0, y0, x1, y1, x2, y2) {
+      g.line(x0, y0, x1, y1, 4, C.shirt); g.line(x1, y1, x2, y2, 3, C.skin);
+      g.r(x2, y2, 3, 3, C.skin); g.p(x2 + 2, y2 + 2, C.skin2);
     }
-    if (pose === "run1") { leg(7, 37, 4); leg(20, 36, 4); }
-    else if (pose === "run2") { leg(11, 36, 4); leg(16, 37, 4); }
-    else { leg(5, 37, 2); leg(22, 37, 2); }
+    function leg(x0, y0, x1, y1, x2, y2) {
+      g.line(x0, y0, x1, y1, 5, C.pants); g.line(x1, y1, x2, y2, 4, C.pants); g.line(x1 + 1, y1, x2 + 1, y2, 1, C.pants3);
+    }
+    g.r(14, 23, 6, 2, C.skin2);
+    if (pose === "run1") {
+      arm(9, 25, 5, 29, 1, 27);
+      leg(10, 32, 6, 37, 3, 40); shoe(0, 40);
+      leg(17, 32, 22, 37, 24, 42); shoe(23, 44);
+    } else if (pose === "run2") {
+      arm(9, 25, 8, 30, 6, 32);
+      leg(10, 32, 11, 37, 11, 42); shoe(9, 44);
+      leg(17, 32, 23, 35, 21, 39); shoe(20, 40);
+    } else {
+      arm(9, 25, 5, 22, 3, 18);
+      leg(10, 32, 6, 36, 8, 39); shoe(5, 40);
+      leg(17, 32, 23, 35, 24, 37); shoe(22, 38);
+    }
+    g.r(9, 24, 15, 1, C.shirt); g.r(8, 25, 17, 7, C.shirt); g.r(10, 26, 2, 5, C.shirt2); g.r(13, 25, 8, 1, C.shirt2);
+    g.r(8, 31, 17, 1, C.black); g.r(15, 31, 2, 1, C.grey3);
+    g.r(9, 32, 15, 2, C.pants); g.r(10, 32, 3, 1, C.pants3);
+    if (pose === "run1") arm(22, 25, 26, 27, 28, 22);
+    else if (pose === "run2") arm(22, 25, 25, 29, 27, 31);
+    else arm(22, 25, 26, 21, 28, 17);
   }
 
   var ART = {
-    run1: function () { return art(32, 44, function (g) { dario(g, "run1"); }); },
-    run2: function () { return art(32, 44, function (g) { dario(g, "run2"); }); },
-    jump: function () { return art(32, 42, function (g) { dario(g, "jump"); }); },
+    run1: function () { return art(34, 47, function (g) { dario(g, "run1"); }); },
+    run2: function () { return art(34, 47, function (g) { dario(g, "run2"); }); },
+    jump: function () { return art(34, 43, function (g) { dario(g, "jump"); }); },
     duck: function () { return art(32, 28, function (g) { dario(g, "duck"); }); },
     // Infinite Jest: dikke paperback met de blauwe wolkenlucht, plat op de grond.
     boeken: function () {
@@ -472,19 +495,17 @@
     vuur: function () { return pyro(0); },
     vuur2: function () { return pyro(1); }
   };
+  // Moving head: hangt aan een truss, de kop draait heen en weer en de lamp wisselt van kleur.
   function ball(f) {
-    return art(18, 22, function (g) {
-      g.r(8, 0, 2, 4, C.grey6);
-      g.d(9, 13, 9, C.grey4);
-      for (var yy = 4; yy < 22; yy += 2) for (var xx = 0; xx < 18; xx += 2) {
-        var dx = xx + 1 - 9, dy = yy + 1 - 13;
-        if (dx * dx + dy * dy > 72) continue;
-        var v = ((xx + yy) / 2 + f) % 3, light = dx + dy < -4;
-        g.r(xx, yy, 2, 2, light ? (v ? C.grey1 : C.white) : v === 0 ? C.grey3 : v === 1 ? C.grey2 : C.grey4);
-        g.p(xx + 1, yy + 1, C.grey5);
-      }
-      var sp = f ? [[5, 8], [12, 16]] : [[4, 10], [13, 9]];
-      sp.forEach(function (q) { g.p(q[0], q[1], C.white); g.p(q[0] - 1, q[1], C.white); g.p(q[0] + 1, q[1], C.white); g.p(q[0], q[1] - 1, C.white); g.p(q[0], q[1] + 1, C.white); });
+    return art(22, 22, function (g) {
+      g.r(0, 0, 22, 3, C.grey3); g.r(0, 0, 22, 1, C.grey1);
+      for (var xx = 1; xx < 22; xx += 4) { g.p(xx, 1, C.grey5); g.p(xx + 1, 2, C.grey5); }
+      g.r(7, 3, 8, 3, C.black); g.r(8, 3, 3, 1, C.grey5);
+      g.r(3, 6, 16, 2, C.black); g.r(3, 8, 3, 7, C.black); g.r(16, 8, 3, 7, C.black); g.r(4, 6, 6, 1, C.grey5);
+      var lx = f ? 1 : -1, lamp = f ? "#7ad8ff" : "#ff4fb3", glow = f ? "#d6f4ff" : "#ffd0ea";
+      g.d(11 + lx, 15, 6, C.grey6, 5.5); g.d(11 + lx, 14.5, 5, C.grey5, 4.5);
+      g.d(11 + lx * 2, 17, 3.6, C.black, 3.2); g.d(11 + lx * 2, 17.2, 2.6, lamp, 2.3); g.d(10.5 + lx * 2, 16.5, 1, glow);
+      g.r(6 + lx, 11, 2, 1, C.grey3); g.r(5, 11, 1, 3, C.grey4); g.r(16, 11, 1, 3, C.grey4);
     });
   }
   // Pyrotechniek: een vuurstraal uit een zwart podiumkastje.
@@ -500,7 +521,7 @@
   }
   var NAMES = { boeken: "Infinite Jest", wijnglas: "een glas wijn", fles: "een flesje rood", microfoon: "een microfoon",
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
-    speaker: "een Funktion One speaker", discobal: "een discobal", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat" };
+    speaker: "een Funktion One speaker", discobal: "een moving head", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat" };
   var IMG = null;
 
   function runner(card) {
