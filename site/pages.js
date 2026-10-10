@@ -31,10 +31,12 @@ window.PAGES = [
   },
   {
     id: "dario-in-oekraine", type: "podcast",
-    bg: "#ffd23f", fg: "#0b1d4a", accent: "#2a5bd7",
+    bg: "#000000", fg: "#ffffff", accent: "#ebe33a",
     title: "Dario in Oekraïne",
-    text: "Het begint met een DM op Instagram. Twee weken later rijdt Dario mee in een konvooi van Protect Ukraine, met hulpgoederen voor Oekraïense legereenheden. Een persoonlijke en soms ongemakkelijke podcast in vijf delen over angst, idealisme en morele keuzes.",
-    links: [{ text: "Spotify", href: "" }, { text: "Apple Podcasts", href: "" }],
+    video: "media/dario-in-oekraine.mp4", poster: "img/dario-in-oekraine-poster.jpg",
+    episode: { image: "img/dario-in-oekraine-afl2.jpg", label: "Aflevering 2", title: "De reis naar Oekraïne" },
+    text: "Een DM op Instagram, en twee weken later rijdt Dario mee in een konvooi met hulpgoederen naar het front. Een podcast in vijf delen over angst, idealisme en morele keuzes.",
+    links: [{ text: "Luister op Spotify", href: "https://open.spotify.com/episode/4qeBgAVwyytXE0RwZSksH7" }, { text: "Apple Podcasts", href: "" }],
   },
   {
     id: "de-man-die-alles-had", type: "boek",
@@ -45,6 +47,7 @@ window.PAGES = [
     quote: { text: "Iedereen heeft het ineens over Dario.", by: "Ilja Leonard Pfeijffer" },
     meta: "Roman · De Arbeiderspers · 2023",
     link: { text: "Meer over het boek", href: "https://demandiealleshad.nl/" },
+    listen: { text: "Luister H1", href: "https://open.spotify.com/episode/6yAS2lsSKC0vsi4EDpubLq" },
   },
   {
     id: "goldband-net-echt", type: "boek",
@@ -54,7 +57,7 @@ window.PAGES = [
     text: "Een doorbraak als die van popsensatie Goldband komt zelden voor. Dat zo’n avontuur van binnenuit wordt opgeschreven is nog zeldzamer.",
     quote: { text: "Dit is niet hoe ik het mij herinner.", by: "Boaz Kok, Goldband" },
     meta: "Nijgh & Van Ditmar · paperback · 288 pagina’s · € 22,50",
-    link: { text: "Bestel het boek", href: "" },
+    link: { text: "Bestel het boek", href: "https://libris.nl/singeluitgeverijen/a/dario-goldbach/goldband/501657554#paperback-9789038815930" },
   },
   {
     id: "contact", type: "contact",

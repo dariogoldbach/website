@@ -58,6 +58,19 @@
         '<div class="end"><div class="row">' + link(p.link) + "</div></div>";
     },
     podcast: function (p) {
+      if (p.video) {
+        // Trailer over de hele kaart, zoals op TikTok. Zonder geluid tot je op de knop drukt.
+        return '<video class="bio-bg pod-video" src="' + esc(p.video) + '"' + (p.poster ? ' poster="' + esc(p.poster) + '"' : "") +
+          (still ? "" : " autoplay") + ' muted loop playsinline preload="auto"></video>' +
+          top("Podcast", p) +
+          '<div class="mid"></div>' +
+          '<div class="end"><button class="sound" type="button" aria-pressed="false">Geluid aan</button>' +
+          '<h2 class="lg">' + esc(p.title) + "</h2>" +
+          (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
+          (p.episode ? '<div class="episode"><img src="' + esc(p.episode.image) + '" alt="">' +
+            "<p><span>" + esc(p.episode.label) + "</span>" + esc(p.episode.title) + "</p></div>" : "") +
+          '<div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>";
+      }
       var bars = "";
       for (var i = 0; i < 14; i++) bars += "<i></i>";
       return top("Podcast", p) +
@@ -80,7 +93,7 @@
         (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
         (p.quote ? '<p class="quote">‘' + esc(p.quote.text) + "’ <span>" + esc(p.quote.by) + "</span></p>" : "") +
         '<p class="small' + (p.images ? "" : " ph") + '">' + esc(p.meta) + " · sleep het boek om het te draaien</p></div>" +
-        '<div class="end"><div class="row">' + link(p.link) + "</div></div>";
+        '<div class="end"><div class="row">' + link(p.link) + (p.listen ? link(p.listen, "ghost") : "") + "</div></div>";
     },
     contact: function (p) {
       return top("Contact", p) +
@@ -102,6 +115,17 @@
   var MOUNT = {
     boek: function (card) { return book(card.querySelector(".book3d")); },
     snake: function (card) { return snake(card); },
+    podcast: function (card) {
+      var v = card.querySelector("video"), b = card.querySelector(".sound");
+      if (!v) return null;
+      b.addEventListener("click", function () {
+        v.muted = !v.muted;
+        if (!v.muted) v.play().catch(function () {});
+        b.setAttribute("aria-pressed", String(!v.muted));
+        b.textContent = v.muted ? "Geluid aan" : "Geluid uit";
+      });
+      return function () { v.pause(); v.removeAttribute("src"); v.load(); };
+    },
   };
 
   function book(el) {
