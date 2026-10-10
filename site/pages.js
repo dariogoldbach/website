@@ -97,6 +97,14 @@ window.PAGES = [
     caption: "Steven van Lummel leest Goldband",
   },
   {
+    id: "de-ring", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Dario is boos: geen kaartje voor De Ring",
+    video: "media/de-ring.mp4", poster: "img/de-ring-poster.jpg",
+    account: "dariogoldbach & @npo3fm", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "The Beat huiscolumnist Dario Goldbach is boos omdat hij geen kaartje voor De Ring heeft 🤬",
+  },
+  {
     id: "spel", type: "game",
     bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
   },
