@@ -267,8 +267,9 @@ h1, h2, p { margin: 0; }
 .pod-mid .txt { margin: 0 auto; }
 .pod-title { color: var(--accent); text-transform: uppercase; }
 
-.quote { transition: opacity 300ms ease; }
-.quote.fade { opacity: 0; }
+.quotes { display: grid; }
+.quotes .quote { grid-area: 1 / 1; align-self: center; opacity: 0; transition: opacity 400ms ease; }
+.quotes .quote.on { opacity: 1; }
 
 /* Alles gecentreerd, behalve De Situatie */
 .card.centered { text-align: center; }

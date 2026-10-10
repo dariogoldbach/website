@@ -84,7 +84,10 @@
         '<div class="f spine"><span>' + esc(p.title) + "</span><span>Goldbach</span></div>" +
         '<div class="f pages"></div><div class="f top"></div><div class="f bottom"></div></div></div>' +
         '' + (p.text ? '<p class="txt">' + esc(p.text) + "</p>" : "") +
-        (p.quotes ? '<p class="quote" data-quotes aria-live="polite">‘' + esc(p.quotes[0].text) + "’ <span>" + esc(p.quotes[0].by) + "</span></p>" : "") +
+        // Alle quotes liggen op dezelfde plek op elkaar; er is er steeds één zichtbaar, zodat er niets verspringt.
+        (p.quotes ? '<div class="quotes" data-quotes>' + p.quotes.map(function (q, i) {
+          return '<p class="quote' + (i ? "" : " on") + '"' + (i ? ' aria-hidden="true"' : "") + ">‘" + esc(q.text) + "’ <span>" + esc(q.by) + "</span></p>";
+        }).join("") + "</div>" : "") +
         "</div>" +
         '<div class="end"><div class="row">' + link(p.link) + (p.listen ? link(p.listen, "ghost") : "") + "</div></div>";
     },
@@ -120,14 +123,11 @@
   // ---------- Interactieve onderdelen per pagina ----------
   var MOUNT = {
     boek: function (card, p) {
-      var stop = book(card.querySelector(".book3d")), q = card.querySelector("[data-quotes]"), n = 0, timer;
-      if (q && p.quotes.length > 1) timer = setInterval(function () {
-        n = (n + 1) % p.quotes.length;
-        q.classList.add("fade");
-        setTimeout(function () {
-          q.innerHTML = "‘" + esc(p.quotes[n].text) + "’ <span>" + esc(p.quotes[n].by) + "</span>";
-          q.classList.remove("fade");
-        }, 300);
+      var stop = book(card.querySelector(".book3d")), qs = card.querySelectorAll(".quote"), n = 0, timer;
+      if (qs.length > 1) timer = setInterval(function () {
+        qs[n].classList.remove("on"); qs[n].setAttribute("aria-hidden", "true");
+        n = (n + 1) % qs.length;
+        qs[n].classList.add("on"); qs[n].removeAttribute("aria-hidden");
       }, 4000);
       return function () { stop(); clearInterval(timer); };
     },
