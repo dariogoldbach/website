@@ -219,6 +219,9 @@
     game: function (card) { return runner(card); },
     video: function (card, p) {
       var v = card.querySelector("video"), b = card.querySelector("[data-sound]"), bar = card.querySelector(".vid-bar i");
+      // Staat deze video al klaar (vooraf geladen), dan die gebruiken: dan begint hij meteen.
+      var warm = VIDS[p.video];
+      if (warm && !warm.parentNode.closest(".card")) { warm.className = "vid"; v.replaceWith(warm); v = warm; }
       var like = card.querySelector("[data-like]"), liked = false;
       try { liked = localStorage.getItem("dg-like-" + p.id) === "1"; } catch (e) {}
       function showLike() { like.classList.toggle("on", liked); like.setAttribute("aria-pressed", String(liked)); }
@@ -234,7 +237,9 @@
         sound(true);
         v.play().catch(function () { sound(false); v.play().catch(function () {}); });
       }
-      start();
+      // Tijdens het vegen speelt hij al (zonder geluid); als je loslaat gaat het geluid aan.
+      if (!still) { sound(false); v.play().catch(function () {}); }
+      card._activate = start;
       b.addEventListener("click", function () { sound(v.muted); if (!v.muted) v.play().catch(function () {}); });
       like.addEventListener("click", function () {
         liked = !liked; showLike();
@@ -252,6 +257,8 @@
       // (De klik komt binnen op het frame, omdat dat de aanwijzer vasthoudt tijdens het vegen.)
       function tap(e) {
         if (!state.current || state.current.el !== card) return;
+        // De klik die na het loslaten van een veeg komt (met de muis) telt niet als tik.
+        if (performance.now() - lastSwipe < 500) return;
         // Via composedPath, want de geluidsknop vervangt zijn icoon tijdens de klik en dan hangt e.target los.
         var path = e.composedPath ? e.composedPath() : [e.target];
         for (var i = 0; i < path.length; i++) if (path[i].matches && path[i].matches("button, a")) return;
@@ -262,7 +269,12 @@
       v.addEventListener("play", function () { card.classList.remove("paused"); });
       v.addEventListener("pause", function () { card.classList.add("paused"); });
       v.addEventListener("timeupdate", function () { if (v.duration) bar.style.width = (v.currentTime / v.duration * 100) + "%"; });
-      return function () { frame.removeEventListener("click", tap); v.pause(); v.removeAttribute("src"); v.load(); };
+      return function () {
+        frame.removeEventListener("click", tap); v.pause();
+        // Een vooraf geladen video gaat terug naar de wachtrij, zodat hij de volgende keer weer meteen begint.
+        if (VIDS[p.video] === v) { v.muted = true; try { v.currentTime = 0; } catch (e) {} shelf.appendChild(v); }
+        else { v.removeAttribute("src"); v.load(); }
+      };
     },
     bio: function (card) {
       var sheet = card.querySelector(".sheet"), open = card.querySelector("[data-sheet]");
@@ -1028,6 +1040,11 @@
 
   // ---------- Kaarten maken en wisselen ----------
   var state = { current: null, busy: false, locked: null, seen: {}, bag: [] };
+  // Vooraf geladen video's, buiten beeld geparkeerd.
+  var VIDS = {}, shelf = document.createElement("div");
+  shelf.setAttribute("aria-hidden", "true");
+  shelf.style.cssText = "position:fixed;left:-10px;top:-10px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none";
+  document.body.appendChild(shelf);
 
   function make(page) {
     var el = document.createElement("section");
@@ -1043,15 +1060,33 @@
   function drop(c) { if (c.cleanup) c.cleanup(); c.el.remove(); }
 
   // Trekzak: alle pagina's in willekeurige volgorde, zodat je ze allemaal ziet voordat er één terugkomt.
-  function pick() {
+  function fill() {
     var cur = state.current && state.current.page.id;
-    if (!state.bag.length) {
-      state.bag = PAGES.filter(function (p) { return p.id !== cur; });
-      for (var i = state.bag.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1)), t = state.bag[i]; state.bag[i] = state.bag[j]; state.bag[j] = t;
-      }
+    state.bag = PAGES.filter(function (p) { return p.id !== cur; });
+    for (var i = state.bag.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = state.bag[i]; state.bag[i] = state.bag[j]; state.bag[j] = t;
     }
-    return state.bag.pop();
+  }
+  function pick() {
+    if (!state.bag.length) fill();
+    var p = state.bag.pop();
+    setTimeout(warmUp, 400);
+    return p;
+  }
+
+  // Video's die binnenkort langskomen alvast laden, zodat ze meteen beginnen.
+  // Alleen de eerstvolgende twee pagina's uit de zak, en niet als de telefoon data wil sparen.
+  function warmUp() {
+    if (navigator.connection && navigator.connection.saveData) return;
+    if (!state.bag.length) fill();
+    state.bag.slice(-2).forEach(function (p) {
+      if (p.type !== "video" || VIDS[p.video]) return;
+      var v = document.createElement("video");
+      v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
+      v.preload = "auto"; if (p.poster) v.poster = p.poster;
+      v.src = p.video; shelf.appendChild(v); v.load();
+      VIDS[p.video] = v;
+    });
   }
 
   function setPos(el, x, y, animate) {
@@ -1096,11 +1131,12 @@
     setPos(old.el, v[0] * W, v[1] * H, true);
     setPos(next.el, 0, 0, true);
     show(next);
+    if (next.el._activate) next.el._activate();
     setTimeout(function () { drop(old); next.el.classList.remove("moving"); state.busy = false; }, still ? 30 : 360);
   }
 
   // ---------- Invoer: vegen, scrollwiel, toetsen, knoppen ----------
-  var drag = null;
+  var drag = null, lastSwipe = 0;
   frame.addEventListener("pointerdown", function (e) {
     if (state.busy || e.button > 0) return;
     if (e.target.closest("a, button, input, form, .lb, .book3d, .sheet")) return;
@@ -1155,6 +1191,7 @@
     var dx = e.clientX - d.x, dy = e.clientY - d.y, dt = Math.max(1, performance.now() - d.t);
     if (d.axis === "row") { d.row._dragging = false; d.row._snap(performance.now() - d.lt > 120 ? 0 : d.v); return; }
     if (!d.axis) return;
+    lastSwipe = performance.now();
     var dist = d.axis === "x" ? dx : dy, size = d.axis === "x" ? frame.clientWidth : frame.clientHeight;
     var flick = Math.abs(dist) > size * 0.18 || (Math.abs(dist) > 30 && Math.abs(dist) / dt > 0.45);
     if (flick) {
@@ -1245,6 +1282,7 @@
   setPos(c.el, 0, 0, false);
   frame.appendChild(c.el);
   show(c);
+  if (c.el._activate) c.el._activate();
 
   // Alle afbeeldingen alvast op de achtergrond laden en uitpakken, zodat elke pagina meteen klaarstaat bij het vegen.
   var preloaded = [];
@@ -1263,5 +1301,6 @@
   }
   // Meteen beginnen, niet wachten tot de video of de lettertypes binnen zijn.
   setTimeout(preload, 0);
+  setTimeout(warmUp, 1500);
   frame.appendChild(hint);
 })();
