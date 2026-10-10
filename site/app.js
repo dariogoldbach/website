@@ -499,7 +499,7 @@
   if (mobile.addEventListener) mobile.addEventListener("change", function () { if (state.current) tint(state.current.page.bg); });
   function tint(bg) {
     if (!mobile.matches || !bg) bg = "";
-    if (themeMeta) themeMeta.content = bg || "#fafaf8";
+    if (themeMeta) themeMeta.content = bg || "#fdeef3";
     document.documentElement.style.background = bg;
     document.body.style.background = bg;
   }
