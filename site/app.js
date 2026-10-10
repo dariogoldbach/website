@@ -27,7 +27,7 @@
   }
   function link(l, cls) {
     var href = l.href ? ' href="' + esc(l.href) + '" target="_blank" rel="noopener"' : ' href="#" data-later';
-    return '<a class="btn ' + (cls || "") + '"' + href + ">" + esc(l.text) + " ↗</a>";
+    return '<a class="btn ' + (cls || "") + '"' + href + ">" + esc(l.text) + "</a>";
   }
   function top(label, p) {
     return '<div class="top"><span class="label">' + esc(label) + "</span>" +
@@ -35,6 +35,9 @@
   }
 
   var ICONS = {
+    muted: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16 9l5 6M21 9l-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    sound: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>',
     tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>'
   };
@@ -95,6 +98,14 @@
           return '<a class="icon-btn" href="' + esc(l.href) + '" target="_blank" rel="noopener" aria-label="' + esc(l.text) + '">' + ICONS[l.icon] + "</a>";
         }).join("") + "</div></div>";
     },
+    video: function (p) {
+      // Schermvullend, zoals op TikTok: speelt meteen zonder geluid, tik voor geluid, tik nog eens voor pauze.
+      return '<video class="vid" src="' + esc(p.video) + '"' + (p.poster ? ' poster="' + esc(p.poster) + '"' : "") +
+        (still ? "" : " autoplay") + ' muted loop playsinline preload="metadata"></video>' +
+        '<button class="vid-sound" type="button" aria-pressed="false" aria-label="Geluid aan">' + ICONS.muted + "</button>" +
+        '<div class="vid-play" aria-hidden="true">' + ICONS.play + "</div>" +
+        '<div class="vid-bar" aria-hidden="true"><i></i></div>';
+    },
     game: function () {
       var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       return '<div class="top"><span class="label">Pauze</span><span class="score" data-score>score 0</span></div>' +
@@ -121,6 +132,27 @@
       return function () { stop(); clearInterval(timer); };
     },
     game: function (card) { return runner(card); },
+    video: function (card) {
+      var v = card.querySelector("video"), b = card.querySelector(".vid-sound"), bar = card.querySelector(".vid-bar i");
+      function sound(on) {
+        v.muted = !on; b.setAttribute("aria-pressed", String(on));
+        b.setAttribute("aria-label", on ? "Geluid uit" : "Geluid aan"); b.innerHTML = on ? ICONS.sound : ICONS.muted;
+        if (on) v.play().catch(function () {});
+      }
+      b.addEventListener("click", function () { sound(v.muted); });
+      // Tik op de video: eerst geluid aan, daarna pauze en verder.
+      // (De klik komt binnen op het frame, omdat dat de aanwijzer vasthoudt tijdens het vegen.)
+      function tap(e) {
+        if (!state.current || state.current.el !== card || e.target.closest("button, a")) return;
+        if (v.muted) return sound(true);
+        if (v.paused) v.play().catch(function () {}); else v.pause();
+      }
+      frame.addEventListener("click", tap);
+      v.addEventListener("play", function () { card.classList.remove("paused"); });
+      v.addEventListener("pause", function () { card.classList.add("paused"); });
+      v.addEventListener("timeupdate", function () { if (v.duration) bar.style.width = (v.currentTime / v.duration * 100) + "%"; });
+      return function () { frame.removeEventListener("click", tap); v.pause(); v.removeAttribute("src"); v.load(); };
+    },
     bio: function (card) {
       var sheet = card.querySelector(".sheet"), open = card.querySelector("[data-sheet]");
       function set(on) {
@@ -129,10 +161,11 @@
       }
       open.addEventListener("click", function () { set(true); });
       card.querySelector("[data-sheet-close]").addEventListener("click", function () { set(false); });
-      card.addEventListener("click", function (e) {
+      function outside(e) {
         if (sheet.classList.contains("open") && !e.target.closest(".sheet, [data-sheet]")) set(false);
-      });
-      return null;
+      }
+      frame.addEventListener("click", outside);
+      return function () { frame.removeEventListener("click", outside); };
     },
   };
 

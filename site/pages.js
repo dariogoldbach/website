@@ -1,7 +1,7 @@
 /*
   Alle pagina's van de site. Een nieuwe pagina toevoegen = een nieuw blok in deze lijst.
   "placeholder: true" zet het label "voorbeeldtekst" op de pagina tot de echte tekst erin staat.
-  Soorten (type): bio, platform, podcast, boek, contact, social, game.
+  Soorten (type): bio, platform, podcast, boek, contact, social, video, game.
 */
 window.PAGES = [
   {
@@ -72,6 +72,12 @@ window.PAGES = [
     bg: "#f5f1e8", fg: "#111111", accent: "#ff5a36",
     text: "Voor boekingen, kritiek of complimenten.",
     email: "contact@studiodario.nl",
+  },
+  {
+    id: "voorlezen", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Dario leest voor",
+    video: "media/voorlezen.mp4", poster: "img/voorlezen-poster.jpg",
   },
   {
     id: "spel", type: "game",
