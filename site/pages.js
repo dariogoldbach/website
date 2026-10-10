@@ -10,7 +10,7 @@ window.PAGES = [
     title: "Dario Goldbach",
     image: "img/dario.jpg",
     credit: "Foto: Jelle Stokhof",
-    text: "Dario Goldbach is schrijver. Tijdens de pandemie publiceerde hij in samenwerking met het Haagse cultuurbordeel PIP de novelle Vier Weekenden. Als mede-initiator van literair platform De Situatie stond hij op Writers Unlimited en Crossing Border. Maandelijks gaat hij viraal met zijn column over het nachtleven bij The Beat op 3FM. De Man die Alles Had (2023) was zijn literaire romandebuut.",
+    text: "Dario Goldbach is schrijver. Misschien zag je hem op Lowlands, Wildeburg, Crossing Border of in je lokale club. Maandelijks gaat hij viraal met zijn columns voor FHM en The Beat op 3FM. Hij is mede-oprichter van literair platform De Situatie, schreef drie boeken en werkt momenteel aan de vierde.",
   },
   {
     id: "de-situatie", type: "platform",
@@ -19,13 +19,13 @@ window.PAGES = [
     title: "De Situatie",
     tag: "(wij zoeken schrijftalent)",
     text: "De Situatie is het literaire platform van PIP Den Haag. We organiseerden avonden met o.a. Connie Palmen & Sef, en zijn een springplank voor literair talent. Bij onze jaarlijkse Open Call verzamelen we alles: van poëzie tot proza, van woeste manifesten tot boze appjes aan je ex.",
-    link: { text: "Naar De Situatie", href: "https://de-situatie.nl/" },
+    link: { text: "Naar De Situatie", icon: "arrow", href: "https://de-situatie.nl/" },
   },
   {
     id: "vier-weekenden", type: "podcast",
     bg: "#ffffff", fg: "#111111", accent: "#ff1a0d",
     title: "Vier Weekenden",
-    image: "img/vier-weekenden.jpg",
+    covers: ["img/vier-weekenden-00.jpg", "img/vier-weekenden-01.jpg", "img/vier-weekenden-02.jpg", "img/vier-weekenden-03.jpg", "img/vier-weekenden-04.jpg", "img/vier-weekenden-05.jpg", "img/vier-weekenden-06.jpg", "img/vier-weekenden-07.jpg", "img/vier-weekenden-08.jpg", "img/vier-weekenden-09.jpg", "img/vier-weekenden-10.jpg", "img/vier-weekenden-11.jpg", "img/vier-weekenden-12.jpg", "img/vier-weekenden-13.jpg", "img/vier-weekenden-14.jpg", "img/vier-weekenden-15.jpg"],
     text: "Het verhaal van een jonge twintiger die verward na een relatie met een psychopaat op zoek gaat naar de perfecte liefde en een uitweg. Een uitweg van zijn kutbaan, zijn uitzichtloze leven, zijn doelloze bestaan.",
     links: [
       { text: "Luister op Spotify", icon: "spotify", href: "https://open.spotify.com/episode/0zR4Ko0c84NDSKU3PSaGiI" },
@@ -36,7 +36,7 @@ window.PAGES = [
     id: "dario-in-oekraine", type: "podcast",
     bg: "#ffd700", fg: "#0057b7", accent: "#0057b7",
     title: "Dario in Oekraïne",
-    image: "img/dario-in-oekraine-afl2.jpg", showTitle: true,
+    covers: ["img/dario-in-oekraine-01.jpg", "img/dario-in-oekraine-02.jpg", "img/dario-in-oekraine-03.jpg", "img/dario-in-oekraine-04.jpg", "img/dario-in-oekraine-05.jpg"], showTitle: true,
     text: "Een DM op Instagram, en twee weken later rijdt Dario mee in een konvooi met hulpgoederen naar het front. Een podcast in vijf delen over angst, idealisme en morele keuzes.",
     links: [
       { text: "Luister op Spotify", icon: "spotify", href: "https://open.spotify.com/episode/4qeBgAVwyytXE0RwZSksH7" },
@@ -90,6 +90,6 @@ window.PAGES = [
   },
   {
     id: "spel", type: "game",
-    bg: "#8f1018", fg: "#ffe6e2", accent: "#ff5a52",
+    bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
   },
 ];

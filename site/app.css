@@ -1,6 +1,6 @@
 /* Layout: één 9:16-kaart. Op de telefoon vult die het scherm, op de desktop staat hij in het midden met een pijltjeskruis ernaast. */
 :root {
-  --page: #fafaf8;
+  --page: #fdeef3;
   --page-ink: #4d4d4d;
   --frame: #4d4d4d;
   --ink: #111111;
@@ -34,9 +34,13 @@ button { font: inherit; color: inherit; }
 
 /* Het podium */
 .app {
-  height: 100%;
+  height: 100%; position: relative;
   display: flex; align-items: center; justify-content: center;
-  gap: clamp(2rem, 7vw, 6.5rem);
+}
+/* Het beeld precies in het midden; de pijltjes rechts ernaast. */
+.app > .dpad {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  left: min(calc(50% + min(88vh, 60rem) * 9 / 32 + clamp(2rem, 6vw, 5rem)), calc(100% - 10.5rem));
 }
 .frame {
   position: relative; overflow: hidden; background: var(--frame);
@@ -218,7 +222,7 @@ h1, h2, p { margin: 0; }
 .snake-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .snake-over {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4cqw; text-align: center; background: color-mix(in srgb, var(--bg) 82%, transparent); padding: 6cqw;
+  gap: 4cqw; text-align: center; background: color-mix(in srgb, var(--bg) 90%, transparent); padding: 6cqw;
 }
 .snake-title { font-family: var(--mono); font-size: 13cqw; font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; }
 .score { font-family: var(--mono); font-size: max(0.75rem, 3.4cqw); font-variant-numeric: tabular-nums; }
@@ -273,7 +277,7 @@ h1, h2, p { margin: 0; }
 /* Stalk me */
 .icons { display: flex; gap: 5cqw; }
 .icon-btn {
-  width: 17cqw; height: 17cqw; border-radius: 50%; display: grid; place-items: center;
+  width: 13.5cqw; height: 13.5cqw; border-radius: 50%; display: grid; place-items: center;
   background: var(--fg); color: var(--bg);
 }
 .icon-btn svg { width: 50%; height: 50%; }
@@ -346,7 +350,7 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
   display: flex; flex-direction: column; align-items: center; gap: 1cqw; border: 0; background: none; padding: 0;
   color: #fff; cursor: pointer; filter: drop-shadow(0 1px 3px rgba(0,0,0,.5));
 }
-.vid-act svg { width: 10cqw; height: 10cqw; min-width: 2rem; min-height: 2rem; }
+.vid-act svg { width: 8.5cqw; height: 8.5cqw; min-width: 2rem; min-height: 2rem; }
 .vid-act span { font-family: var(--display); font-weight: 700; font-size: max(0.7rem, 3cqw); }
 .vid-act.on svg { color: #fe2c55; }
 .vid-act.pop svg { animation: pop 420ms var(--ease); }
@@ -362,7 +366,8 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 
 /* De Situatie: tekst links, maar kopje en knop in het midden */
 .card:has(.situatie-mark) .top { justify-content: center; }
-.card:has(.situatie-mark) .end .row { justify-content: center; }
+.card:has(.situatie-mark) .end .row, .sit-icons { justify-content: center; }
+.sit-icons { align-self: stretch; margin-top: 2cqw; }
 
 /* Volg me: alleen de logo's, op zwart */
 /* (zelfde kleine witte rondjes als de andere logoknoppen) */
@@ -380,10 +385,10 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 .icon-btn svg.mail { overflow: visible; }
 svg.mail .body { fill: var(--fg); }
 svg.mail * { transform-box: view-box; }
-svg.mail .fly { animation: mail-fly 6.6s ease-in-out infinite; }
-svg.mail .flap { transform-origin: 12px 8px; animation: mail-flap 6.6s ease-in-out infinite; }
-svg.mail .flap-open { transform-origin: 12px 8px; animation: mail-flap-open 6.6s ease-in-out infinite; }
-svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 6.6s ease-in infinite; }
+svg.mail .fly { animation: mail-fly 4.6s ease-in-out infinite; }
+svg.mail .flap { transform-origin: 12px 8px; animation: mail-flap 4.6s ease-in-out infinite; }
+svg.mail .flap-open { transform-origin: 12px 8px; animation: mail-flap-open 4.6s ease-in-out infinite; }
+svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-in infinite; }
 @keyframes mail-flap { 0%, 6.1% { transform: scaleY(1); } 10.6%, 51.5% { transform: scaleY(0); } 56.1%, 100% { transform: scaleY(1); } }
 @keyframes mail-flap-open { 0%, 10.6% { transform: scaleY(0); } 15.2%, 47.0% { transform: scaleY(1); } 51.5%, 100% { transform: scaleY(0); } }
 @keyframes mail-heart {
@@ -405,3 +410,50 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 6.6s ease-
 @media (prefers-reduced-motion: reduce) { svg.mail *, svg.mail .fly { animation: none !important; } svg.mail .flap-open, svg.mail .heart { opacity: 0; } }
 .snake-over .icon-btn { border: 0; cursor: pointer; }
 .snake-over .icon-btn svg { width: 58%; height: 58%; }
+
+/* Pijltje bij De Situatie: wiebelt af en toe naar rechts */
+.icon-btn svg.arrow { animation: pijl-wiebel 2.4s ease-in-out infinite; }
+@keyframes pijl-wiebel { 0%, 70%, 100% { transform: translateX(0); } 80% { transform: translateX(3px); } 90% { transform: translateX(-1px); } }
+@media (prefers-reduced-motion: reduce) { .icon-btn svg.arrow { animation: none; } }
+
+/* Vier Weekenden: zijwaarts door de covers van alle afleveringen */
+.pod-covers { position: relative;
+  align-self: stretch; margin: 0 -6cqw; padding: 1cqw 21cqw 5cqw; display: flex; gap: 3cqw;
+  overflow: hidden; scrollbar-width: none;
+  overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+}
+.pod-covers::-webkit-scrollbar { display: none; }
+.pod-covers .pod-img { flex: 0 0 70cqw; width: 70cqw; position: relative; scroll-snap-align: center; transform: scale(.78); }
+.run-sound { width: max(1.8rem, 7cqw); height: max(1.8rem, 7cqw); border-radius: 50%; border: 0; padding: 0;
+  display: grid; place-items: center; background: var(--fg); color: var(--bg); cursor: pointer; }
+.run-sound svg { width: 55%; height: 55%; }
+.run-credit { opacity: .6; margin-top: -1cqw; }
+.book3d.has-img .front, .book3d.has-img .back, .book3d.has-img .spine { background-color: var(--cover); }
+.sit-icons .icon-btn { background: var(--accent); color: var(--fg); }
+/* Scorebord in het spel */
+.lb { width: 100%; max-width: 64cqw; font-family: var(--mono); font-size: max(0.7rem, 3.1cqw); }
+.lb-title { font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1.5cqw; }
+.lb ol { list-style: none; margin: 0; padding: 0; counter-reset: lb; }
+.lb li { counter-increment: lb; display: flex; gap: 2cqw; padding: 0.6cqw 0; border-bottom: 1px dashed color-mix(in srgb, var(--fg) 30%, transparent); }
+.lb li::before { content: counter(lb) "."; width: 6cqw; text-align: right; opacity: .6; }
+.lb li span { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb li.me { color: var(--accent); font-weight: 700; }
+.lb-form { display: flex; gap: 2cqw; width: 100%; max-width: 70cqw; }
+.lb-form input { flex: 1; min-width: 0; font: inherit; font-family: var(--mono); font-size: 16px; padding: 2cqw 3cqw;
+  border: 2px solid var(--fg); background: var(--bg); color: var(--fg); border-radius: 0; }
+.lb-form button { font-family: var(--mono); font-size: max(0.7rem, 3cqw); font-weight: 700; padding: 0 3cqw;
+  border: 0; background: var(--fg); color: var(--bg); cursor: pointer; }
+.lb-form button:disabled { opacity: .5; }
+/* Game over: groot het object waar je over struikelde */
+.snake-over { overflow-y: auto; justify-content: safe center; }
+.go { display: flex; flex-direction: column; align-items: center; gap: 2.5cqw; }
+.go[hidden] { display: none; }
+.go-title { position: static !important; width: 80cqw !important; height: auto !important; image-rendering: pixelated; }
+.go-img { position: static !important; width: auto !important; height: 26cqw !important; max-width: 60cqw; image-rendering: pixelated; }
+.go-name { font-family: var(--mono); font-size: max(0.85rem, 4.4cqw); font-weight: 700; }
+.snake-over > * { flex-shrink: 0; }
+.logo { position: static !important; width: 82cqw !important; height: auto !important; image-rendering: pixelated; }
+.logo[hidden] { display: none; }
+/* Score bovenin het speelveld, geluidsknop rechtsonder in de hoek */
+.run-score { position: absolute; top: 3cqw; left: 50%; transform: translateX(-50%); pointer-events: none; font-weight: 700; }
+.run-wrap .run-sound { position: absolute; right: 2.5cqw; bottom: 2.5cqw; z-index: 2; }
