@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact · Dario Goldbach</title>
+<meta name="description" content="Dario Goldbach, schrijver, columnist en organisator.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-head"><div class="wrap">
+  <a class="wordmark" href="index.html">Dario Goldbach</a>
+  <nav aria-label="Hoofdmenu"><ul class="nav"><li><a href="index.html" data-nav="home">Home</a></li><li><a href="over-mij.html" data-nav="over-mij">Over mij</a></li><li><a href="columns.html" data-nav="columns">Columns</a></li><li><a href="schrijfwerk.html" data-nav="schrijfwerk">Schrijfwerk</a></li><li><a href="evenementen.html" data-nav="evenementen">Evenementen</a></li><li><a href="contact.html" aria-current="page" data-nav="contact">Contact</a></li></ul></nav>
+</div></header>
+<main class="wrap">
+<section class="stack">
+  <p class="eyebrow">Contact</p>
+  <h1>Contact</h1>
+  <p class="lead">Voor opdrachten, lezingen, interviews of een reactie op een column.</p>
+</section>
+<section class="two-col">
+  <ul class="facts">
+    <li><span class="eyebrow">E-mail</span><span class="ph">naam@dariogoldbach.nl</span></li>
+    <li><span class="eyebrow">Boekingen</span><span class="ph">Naam agent of bureau</span></li>
+    <li><span class="eyebrow">Sociale media</span><span class="ph">Instagram · LinkedIn · Bluesky</span></li>
+  </ul>
+  <form class="form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+    <input type="hidden" name="form-name" value="contact">
+    <p hidden><label>Niet invullen: <input name="bot-field"></label></p>
+    <div class="field"><label for="naam">Naam</label><input id="naam" name="naam" autocomplete="name" required></div>
+    <div class="field"><label for="email">E-mailadres</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="onderwerp">Onderwerp</label>
+      <select id="onderwerp" name="onderwerp"><option>Schrijfopdracht</option><option>Lezing of optreden</option><option>Interview of pers</option><option>Reactie op een column</option><option>Iets anders</option></select></div>
+    <div class="field"><label for="bericht">Bericht</label><textarea id="bericht" name="bericht" required></textarea></div>
+    <button class="btn" type="submit">Verstuur bericht</button>
+    <p class="form-msg" id="form-msg" role="status"></p>
+  </form>
+</section>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <span class="meta">© 2026 Dario Goldbach</span>
+  <span class="meta">dariogoldbach.nl</span>
+</div></footer>
+<script src="script.js"></script>
+</body>
+</html>
