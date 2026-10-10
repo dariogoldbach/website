@@ -222,7 +222,7 @@ h1, h2, p { margin: 0; }
 .snake-wrap canvas { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; }
 .snake-over {
   position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 4cqw; text-align: center; background: color-mix(in srgb, var(--bg) 82%, transparent); padding: 6cqw;
+  gap: 4cqw; text-align: center; background: color-mix(in srgb, var(--bg) 90%, transparent); padding: 6cqw;
 }
 .snake-title { font-family: var(--mono); font-size: 13cqw; font-weight: 700; letter-spacing: -0.04em; line-height: 0.9; }
 .score { font-family: var(--mono); font-size: max(0.75rem, 3.4cqw); font-variant-numeric: tabular-nums; }
@@ -430,3 +430,17 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 .run-credit { opacity: .6; margin-top: -1cqw; }
 .book3d.has-img .front, .book3d.has-img .back, .book3d.has-img .spine { background-color: var(--cover); }
 .sit-icons .icon-btn { background: var(--accent); color: var(--fg); }
+/* Scorebord in het spel */
+.lb { width: 100%; max-width: 64cqw; font-family: var(--mono); font-size: max(0.7rem, 3.1cqw); }
+.lb-title { font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1.5cqw; }
+.lb ol { list-style: none; margin: 0; padding: 0; counter-reset: lb; }
+.lb li { counter-increment: lb; display: flex; gap: 2cqw; padding: 0.6cqw 0; border-bottom: 1px dashed color-mix(in srgb, var(--fg) 30%, transparent); }
+.lb li::before { content: counter(lb) "."; width: 6cqw; text-align: right; opacity: .6; }
+.lb li span { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb li.me { color: var(--accent); font-weight: 700; }
+.lb-form { display: flex; gap: 2cqw; width: 100%; max-width: 70cqw; }
+.lb-form input { flex: 1; min-width: 0; font: inherit; font-family: var(--mono); font-size: 16px; padding: 2cqw 3cqw;
+  border: 2px solid var(--fg); background: var(--bg); color: var(--fg); border-radius: 0; }
+.lb-form button { font-family: var(--mono); font-size: max(0.7rem, 3cqw); font-weight: 700; padding: 0 3cqw;
+  border: 0; background: var(--fg); color: var(--bg); cursor: pointer; }
+.lb-form button:disabled { opacity: .5; }

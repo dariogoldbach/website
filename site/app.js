@@ -145,7 +145,10 @@
         '<div class="snake-wrap run-wrap"><canvas></canvas><div class="snake-over">' +
         '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
-        '</p><button class="icon-btn" type="button" data-play aria-label="Speel">' + ICONS.playc + '</button></div></div>' +
+        '</p><button class="icon-btn" type="button" data-play aria-label="Speel">' + ICONS.playc + "</button>" +
+        '<form class="lb-form" data-lb-form hidden><input name="naam" maxlength="16" placeholder="Je naam" autocomplete="nickname" enterkeyhint="send" required>' +
+        '<button type="submit">Zet op scorebord</button></form>' +
+        '<div class="lb" data-lb hidden><p class="lb-title">Scorebord</p><ol data-lb-list></ol></div></div></div>' +
         '<p class="small" data-best>Je record: 0</p><p class="small run-credit">Muziek door Sjamsoedin</p>';
     },
   };
@@ -725,12 +728,53 @@
       }
     }
     function key(e) {
+      if (e.target && e.target.closest && e.target.closest("input, textarea")) return;
       if (e.key === " " || e.key === "Spacebar") { e.preventDefault(); if (playing) jump(); else start(); }
     }
     function start() {
-      size(); reset(); over.hidden = true; playing = true; state.locked = control; hideHint(); music();
+      size(); reset(); over.hidden = true; form.hidden = true; playing = true; state.locked = control; hideHint(); music();
       last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(safe);
     }
+    // Scorebord: haalt de top 10 op, en na een potje kun je je naam invullen.
+    var lb = card.querySelector("[data-lb]"), lbList = card.querySelector("[data-lb-list]"), form = card.querySelector("[data-lb-form]");
+    var input = form.querySelector("input"), top = null, mine = 0, sent = false;
+    try { input.value = localStorage.getItem("dg-run-name") || ""; } catch (e) {}
+    function showBoard(list, rank) {
+      top = list; lbList.innerHTML = "";
+      list.forEach(function (r, i) {
+        var li = document.createElement("li"), n = document.createElement("span"), sc = document.createElement("b");
+        n.textContent = r.name; sc.textContent = r.score;
+        if (rank === i + 1) li.className = "me";
+        li.appendChild(n); li.appendChild(sc); lbList.appendChild(li);
+      });
+      lb.hidden = !list.length;
+    }
+    function loadBoard() {
+      if (!window.fetch || location.protocol === "file:") return;
+      fetch("/api/scores").then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { if (d && d.top) showBoard(d.top); }).catch(function () {});
+    }
+    function fits(sc) { return top && sc > 0 && (top.length < 10 || sc > top[top.length - 1].score); }
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = input.value.trim();
+      if (!name || sent) return;
+      sent = true; form.querySelector("button").disabled = true;
+      try { localStorage.setItem("dg-run-name", name); } catch (err) {}
+      fetch("/api/scores", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name: name, score: mine, secs: lastSecs }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          form.querySelector("button").disabled = false;
+          if (d && d.top) {
+            form.hidden = true; showBoard(d.top, d.rank);
+            msg.textContent = d.rank && d.rank <= 10 ? "Je staat op plek " + d.rank + "! Nog een keer? Of veeg verder." : msg.textContent;
+          } else { sent = false; msg.textContent = (d && d.error) || "Dat lukte niet, probeer het nog eens."; }
+        })
+        .catch(function () { sent = false; form.querySelector("button").disabled = false; msg.textContent = "Dat lukte niet, probeer het nog eens."; });
+    });
+    var lastSecs = 0;
+    loadBoard();
     function end(o) {
       playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
       if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
@@ -738,6 +782,9 @@
       msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Nog een keer? Of veeg verder.";
       var pb = card.querySelector("[data-play]");
       pb.setAttribute("aria-label", "New game"); pb.innerHTML = ICONS.replay;
+      mine = score; lastSecs = t; sent = false;
+      form.hidden = !fits(score);
+      if (!form.hidden) msg.textContent = "Au! Gestruikeld over " + NAMES[o.kind] + ". Score " + score + ". Dat is goed voor het scorebord!";
       over.hidden = false;
     }
     function control(d) { if (d === "up") jump(); else if (d === "down") duck(); }
@@ -835,7 +882,7 @@
   var drag = null;
   frame.addEventListener("pointerdown", function (e) {
     if (state.busy || e.button > 0) return;
-    if (e.target.closest("a, button, .book3d, .sheet")) return;
+    if (e.target.closest("a, button, input, form, .lb, .book3d, .sheet")) return;
     var row = e.target.closest(".pod-covers");
     if (row && row._stop) row._stop();
     drag = { x: e.clientX, y: e.clientY, t: performance.now(), axis: null, next: null, id: e.pointerId,
@@ -923,7 +970,7 @@
 
   document.addEventListener("keydown", function (e) {
     var k = { ArrowUp: "up", ArrowDown: "down", ArrowLeft: "left", ArrowRight: "right" }[e.key];
-    if (!k) return;
+    if (!k || (e.target.closest && e.target.closest("input, textarea"))) return;
     e.preventDefault();
     if (state.locked) return state.locked(k);
     go(BUTTON[k]);
