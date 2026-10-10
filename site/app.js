@@ -85,10 +85,11 @@
           : '<div class="pod-cover"><span>Podcast</span><b>' + esc(p.title) + "</b><span>Dario Goldbach</span></div>") +
         '<div class="eq" aria-hidden="true">' + bars + "</div>" +
         (p.showTitle ? '<h2 class="lg pod-title">' + esc(p.title) + "</h2>" : "") +
-        (p.text ? '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p>" : "") + "</div>" +
-        '<div class="end">' + (p.links[0] && p.links[0].icon
-          ? '<div class="icons">' + p.links.map(iconLink).join("") + "</div>"
-          : '<div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div>") + "</div>";
+        (p.text ? '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p>" : "") +
+        // Logoknoppen direct onder de tekst.
+        (p.links[0] && p.links[0].icon
+          ? '<div class="icons">' + p.links.map(iconLink).join("") + "</div></div>"
+          : '</div><div class="end"><div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>");
     },
     boek: function (p) {
       return top("Boek", p) +
