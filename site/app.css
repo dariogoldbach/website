@@ -403,4 +403,4 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 3.6s ease-
 }
 @media (prefers-reduced-motion: reduce) { svg.mail *, svg.mail .fly { animation: none !important; } svg.mail .flap-open, svg.mail .heart { opacity: 0; } }
 .snake-over .icon-btn { border: 0; cursor: pointer; }
-.snake-over .icon-btn svg { width: 62%; height: 62%; margin-left: 6%; }
+.snake-over .icon-btn svg { width: 58%; height: 58%; }
