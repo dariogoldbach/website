@@ -385,10 +385,10 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 .icon-btn svg.mail { overflow: visible; }
 svg.mail .body { fill: var(--fg); }
 svg.mail * { transform-box: view-box; }
-svg.mail .fly { animation: mail-fly 6.6s ease-in-out infinite; }
-svg.mail .flap { transform-origin: 12px 8px; animation: mail-flap 6.6s ease-in-out infinite; }
-svg.mail .flap-open { transform-origin: 12px 8px; animation: mail-flap-open 6.6s ease-in-out infinite; }
-svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 6.6s ease-in infinite; }
+svg.mail .fly { animation: mail-fly 4.6s ease-in-out infinite; }
+svg.mail .flap { transform-origin: 12px 8px; animation: mail-flap 4.6s ease-in-out infinite; }
+svg.mail .flap-open { transform-origin: 12px 8px; animation: mail-flap-open 4.6s ease-in-out infinite; }
+svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-in infinite; }
 @keyframes mail-flap { 0%, 6.1% { transform: scaleY(1); } 10.6%, 51.5% { transform: scaleY(0); } 56.1%, 100% { transform: scaleY(1); } }
 @keyframes mail-flap-open { 0%, 10.6% { transform: scaleY(0); } 15.2%, 47.0% { transform: scaleY(1); } 51.5%, 100% { transform: scaleY(0); } }
 @keyframes mail-heart {
