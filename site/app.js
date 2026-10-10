@@ -306,6 +306,18 @@
     var g = {
       r: function (a, b, ww, hh, col) { x.fillStyle = col; x.fillRect(a + 1, b + 1, ww, hh); },
       clear: function (a, b, ww, hh) { x.clearRect(a + 1, b + 1, ww, hh); },
+      // Vlak met hoekpunten [[x, y], ...], voor de isometrische platenspeler.
+      poly: function (pts, col) {
+        x.fillStyle = col;
+        for (var yy = 0; yy < h; yy++) for (var xx = 0; xx < w; xx++) {
+          var px = xx + 0.5, py = yy + 0.5, inside = false;
+          for (var i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+            var a = pts[i], b = pts[j];
+            if ((a[1] > py) !== (b[1] > py) && px < (b[0] - a[0]) * (py - a[1]) / (b[1] - a[1]) + a[0]) inside = !inside;
+          }
+          if (inside) x.fillRect(xx + 1, yy + 1, 1, 1);
+        }
+      },
       p: function (a, b, col) { x.fillStyle = col; x.fillRect(a + 1, b + 1, 1, 1); },
       // Rondje of ovaal zonder vervaging, pixel voor pixel.
       d: function (cx, cy, rx, col, ry, from) {
@@ -412,43 +424,47 @@
         g.r(1, 14, 8, 6, C.cream); g.r(1, 19, 8, 1, C.gold); g.r(3, 15, 4, 2, C.wine); g.r(3, 18, 4, 1, C.grey3);
       });
     },
+    // Een losse handmicrofoon, rechtop, met de kabel over de grond.
     microfoon: function () {
-      return art(12, 26, function (g) {
-        g.d(6, 4.5, 4.5, C.grey3); g.d(5.2, 3.8, 3.2, C.grey2);
-        for (var yy = 1; yy < 9; yy += 2) for (var xx = 2; xx < 11; xx += 2) g.p(xx + (yy % 4 === 1 ? 0 : 1), yy, C.grey4);
-        g.p(4, 2, C.white); g.p(3, 3, C.white);
-        g.r(3, 9, 6, 2, C.grey5); g.r(4, 11, 4, 4, C.black); g.r(4, 11, 1, 4, C.grey5);
-        g.r(5, 15, 2, 8, C.grey6); g.r(5, 15, 1, 8, C.grey4);
-        g.r(1, 23, 10, 3, C.black); g.r(2, 23, 4, 1, C.grey5);
+      return art(18, 26, function (g) {
+        g.d(6, 5, 5, C.grey3); g.d(5.3, 4.3, 3.8, C.grey2);
+        for (var yy = 1; yy < 10; yy += 2) for (var xx = 1; xx < 12; xx += 2) g.p(xx + ((yy >> 1) % 2), yy, C.grey4);
+        g.p(3, 2, C.white); g.p(4, 2, C.white); g.p(2, 3, C.white);
+        g.r(2, 9, 8, 2, C.grey2); g.r(2, 9, 8, 1, C.grey1);
+        g.r(2, 11, 8, 4, C.black); g.r(3, 15, 6, 5, C.black); g.r(4, 20, 4, 3, C.black);
+        g.r(3, 11, 1, 4, C.grey5); g.r(4, 15, 1, 5, C.grey5); g.r(8, 11, 1, 4, C.grey6);
+        g.r(4, 23, 4, 2, C.grey3); g.r(4, 23, 1, 2, C.grey1);
+        g.r(5, 25, 2, 1, C.black); g.r(7, 25, 6, 1, C.black); g.r(12, 24, 3, 1, C.black); g.r(15, 25, 3, 1, C.black);
       });
     },
-    plaat: function () {
-      return art(20, 20, function (g) {
-        g.d(10, 10, 10, C.black); g.d(10, 10, 8.4, C.grey6); g.d(10, 10, 7.6, C.black);
-        g.d(10, 10, 6, C.grey6); g.d(10, 10, 5.3, C.black);
-        g.d(10, 10, 3.6, C.red); g.d(9.4, 9.4, 2.4, "#ff4b52"); g.d(10, 10, 0.9, BG);
-        g.r(3, 5, 1, 2, C.grey3); g.r(4, 4, 1, 1, C.grey3); g.r(15, 14, 1, 2, C.grey4);
-      });
-    },
+    // Isometrische platenspeler: kastje met bovenblad, plateau en toonarm.
     draaitafel: function () {
-      return art(32, 13, function (g) {
-        g.r(24, 0, 2, 2, C.grey2); g.r(25, 2, 1, 2, C.grey3); g.r(20, 3, 6, 1, C.grey3); g.r(19, 3, 2, 2, C.grey4);
-        g.d(12, 4.5, 10, C.black, 1.8); g.d(12, 4.3, 7, C.grey6, 1.2); g.d(12, 4.3, 2.4, C.red, 0.9);
-        g.r(0, 5, 32, 7, C.grey5); g.r(0, 5, 32, 1, C.grey3); g.r(0, 11, 32, 1, C.grey6);
-        g.r(26, 7, 2, 2, C.red); g.r(28, 7, 1, 2, C.fire3); g.d(4, 8.5, 1.6, C.grey2); g.r(2, 12, 3, 1, C.black); g.r(27, 12, 3, 1, C.black);
+      return art(34, 21, function (g) {
+        var A = [1, 9], B = [17, 1], Cc = [33, 9], D = [17, 17];
+        g.poly([A, D, [17, 21], [1, 13]], C.grey5);
+        g.poly([D, Cc, [33, 13], [17, 21]], C.grey6);
+        g.poly([A, B, Cc, D], C.grey3);
+        g.poly([[3, 9], B, [17, 2.5], [4, 9]], C.grey2);
+        g.r(1, 9, 1, 4, C.grey4); g.r(17, 17, 1, 4, C.grey4);
+        g.d(15, 9, 9.5, C.black, 4.8); g.d(15, 9, 7.5, C.grey6, 3.6); g.d(15, 9, 6.5, C.black, 3.1);
+        g.d(15, 9, 3, C.red, 1.6); g.p(15, 9, C.grey1); g.r(10, 7, 3, 1, C.grey4);
+        g.d(26, 7, 1.8, C.grey1, 1.2); g.r(25, 8, 1, 2, C.grey2); g.r(23, 10, 2, 1, C.grey1); g.r(21, 11, 2, 1, C.grey1); g.r(20, 11, 1, 2, C.black);
+        g.r(27, 11, 2, 1, C.red); g.r(29, 10, 1, 1, C.fire3);
       });
     },
-    // Funktion One: zwarte kast, grote ronde hoorn, logo, en de baskast eronder.
+    // Funktion One in het klassieke paars: grote ronde hoorn, logo, en de baskast eronder.
     speaker: function () {
+      var P1 = "#5b2a86", P2 = "#7a45a8", P3 = "#3b1a59";
       return art(24, 30, function (g) {
-        g.r(0, 0, 24, 30, C.black); g.r(0, 0, 24, 1, C.grey5); g.r(0, 0, 1, 30, C.grey6);
-        g.d(12, 8.5, 9.5, C.grey6); g.d(12, 8.5, 8, C.grey5); g.d(12, 8.5, 6, C.grey4);
-        g.d(12, 8.5, 4.2, C.grey6); g.d(12, 8.5, 2.6, C.black); g.d(11, 7.5, 1, C.grey3);
-        g.r(5, 3, 1, 2, C.grey3); g.r(4, 5, 1, 2, C.grey3);
-        g.r(3, 19, 7, 1, C.white); g.r(11, 19, 3, 1, C.grey2);
-        g.r(0, 21, 24, 1, C.grey6);
-        for (var yy = 23; yy < 29; yy += 2) { g.r(2, yy, 20, 1, C.grey6); }
-        g.r(2, 29, 3, 1, C.grey5); g.r(19, 29, 3, 1, C.grey5);
+        g.r(0, 0, 24, 30, P1); g.r(0, 0, 24, 1, P2); g.r(0, 0, 1, 30, P2); g.r(23, 1, 1, 29, P3);
+        g.d(12, 8.5, 9.5, P3); g.d(12, 8.5, 8, C.black); g.d(12, 8.5, 6.5, C.grey6); g.d(12, 8.5, 5, C.grey5);
+        g.d(12, 8.5, 3.4, C.grey6); g.d(12, 8.5, 2, C.black); g.d(11, 7.5, 0.9, C.grey3);
+        g.r(6, 3, 1, 2, C.grey4); g.r(5, 5, 1, 2, C.grey4);
+        g.r(3, 19, 7, 1, C.white); g.r(11, 19, 3, 1, P2);
+        g.r(0, 21, 24, 1, P3);
+        g.r(2, 22, 20, 7, C.black);
+        for (var yy = 23; yy < 29; yy += 2) g.r(3, yy, 18, 1, C.grey6);
+        g.r(2, 29, 3, 1, P3); g.r(19, 29, 3, 1, P3);
       });
     },
     discobal: function () { return ball(0); },
