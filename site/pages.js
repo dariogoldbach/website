@@ -20,10 +20,10 @@ window.PAGES = [
     link: { text: "Naar De Situatie", href: "" },
   },
   {
-    id: "vier-weekenden", type: "podcast", placeholder: true,
-    bg: "#2a4bff", fg: "#ffffff", accent: "#ffd23f",
+    id: "vier-weekenden", type: "podcast",
+    bg: "#ffffff", fg: "#111111", accent: "#ff1a0d",
     title: "Vier Weekenden",
-    text: "Waar gaat de podcast over? Eén of twee zinnen die mensen nieuwsgierig maken.",
+    image: "img/vier-weekenden.jpg",
     links: [{ text: "Spotify", href: "" }, { text: "Apple Podcasts", href: "" }],
   },
   {

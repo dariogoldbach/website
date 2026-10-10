@@ -51,9 +51,11 @@
       var bars = "";
       for (var i = 0; i < 14; i++) bars += "<i></i>";
       return top("Podcast", p) +
-        '<div class="mid"><div class="pod-cover"><span>Podcast</span><b>' + esc(p.title) + "</b><span>Dario Goldbach</span></div>" +
+        '<div class="mid">' + (p.image
+          ? '<img class="pod-img" src="' + esc(p.image) + '" alt="Cover van de podcast ' + esc(p.title) + '">'
+          : '<div class="pod-cover"><span>Podcast</span><b>' + esc(p.title) + "</b><span>Dario Goldbach</span></div>") +
         '<div class="eq" aria-hidden="true">' + bars + "</div>" +
-        '<p class="txt ph">' + esc(p.text) + "</p></div>" +
+        (p.text ? '<p class="txt' + (p.placeholder ? " ph" : "") + '">' + esc(p.text) + "</p>" : "") + "</div>" +
         '<div class="end"><div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>";
     },
     boek: function (p) {

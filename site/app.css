@@ -131,6 +131,7 @@ h1, h2, p { margin: 0; }
 }
 .pod-cover b { font-size: 9cqw; line-height: 0.9; font-weight: 900; font-stretch: 68%; text-transform: uppercase; }
 .pod-cover span { font-family: var(--mono); font-size: max(0.6rem, 2.6cqw); }
+.pod-img { width: 74cqw; max-width: 100%; aspect-ratio: 1; display: block; box-shadow: 0 1.5cqw 6cqw rgba(0,0,0,.18); -webkit-user-drag: none; pointer-events: none; }
 .eq { display: flex; align-items: flex-end; gap: 1.2cqw; height: 9cqw; }
 .eq i { width: 2.2cqw; background: var(--accent); height: 30%; animation: eq 900ms ease-in-out infinite alternate; }
 .eq i:nth-child(2n) { animation-duration: 650ms; } .eq i:nth-child(3n) { animation-duration: 1150ms; }
