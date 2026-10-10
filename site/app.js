@@ -576,19 +576,33 @@
         g.r(14, 24, 5, 1, W1);
       });
     },
-    // David Vunk achter zijn draaitafels, koptelefoon op, handen in de lucht.
+    // David Vunk: kale kop, zonnebril, rood bomberjack, zwart shirt, spijkerbroek, rode sneakers en een 808 onder de arm.
     vunk: function () {
-      return art(26, 36, function (g) {
-        g.r(4, 2, 2, 6, C.skin); g.r(20, 2, 2, 6, C.skin); g.r(3, 0, 4, 3, C.skin); g.r(19, 0, 4, 3, C.skin);
-        g.d(13, 7, 5.5, C.hair, 5); g.r(8, 8, 10, 9, C.skin); g.r(16, 9, 2, 8, C.skin2);
-        g.r(8, 6, 10, 3, C.hair); g.r(9, 11, 3, 2, INK); g.r(14, 11, 3, 2, INK); g.r(12, 11, 2, 1, INK);
-        g.r(11, 15, 4, 1, C.mouth);
-        g.r(6, 5, 14, 2, C.grey6); g.r(5, 9, 3, 5, C.grey6); g.r(18, 9, 3, 5, C.grey6); g.r(5, 10, 1, 3, C.grey4);
-        g.r(12, 17, 2, 1, C.skin2);
-        g.r(6, 18, 14, 8, C.shirt); g.r(4, 8, 3, 11, C.shirt); g.r(19, 8, 3, 11, C.shirt); g.r(7, 19, 2, 6, C.shirt2);
-        g.r(0, 24, 26, 12, C.grey6); g.r(0, 24, 26, 2, C.grey4); g.r(0, 24, 26, 1, C.grey3);
-        g.d(6, 25, 4, C.black, 1.2); g.d(20, 25, 4, C.black, 1.2); g.p(6, 25, C.red); g.p(20, 25, C.red);
-        g.r(2, 29, 22, 1, C.grey5); g.r(11, 31, 4, 2, C.grey3); g.p(4, 32, C.fire3); g.p(21, 32, C.green3);
+      var J1 = "#c8202a", J2 = "#e8473a", J3 = "#8e141c", JE = "#f3b61f", D1 = "#3c5a8a", D2 = "#5a7cb0", D3 = "#2a3f63";
+      return art(24, 38, function (g) {
+        // Hoofd
+        g.d(12, 6, 5.5, C.skin, 6); g.r(15, 3, 2, 8, C.skin2); g.r(9, 1, 3, 2, C.skin3);
+        g.r(5, 6, 2, 3, C.skin); g.r(17, 6, 2, 3, C.skin2);
+        g.r(6, 5, 12, 2, INK); g.r(7, 7, 4, 1, INK); g.r(13, 7, 4, 1, INK); g.p(8, 5, C.grey4); g.p(14, 5, C.grey4);
+        g.r(10, 10, 4, 1, C.mouth); [8, 10, 13, 15].forEach(function (x2) { g.p(x2, 11, C.skin2); });
+        g.r(10, 12, 4, 1, C.skin2);
+        // Bomberjack met print, open over een zwart shirt
+        g.r(5, 13, 14, 12, J1); g.r(3, 14, 3, 9, J1); g.r(18, 14, 3, 9, J1);
+        [[6, 15], [8, 18], [6, 21], [16, 15], [17, 19], [15, 22], [4, 17], [19, 17], [4, 21], [20, 21]].forEach(function (q) { g.p(q[0], q[1], JE); g.p(q[0] + 1, q[1] + 1, C.white); });
+        g.r(5, 13, 1, 12, J2); g.r(18, 13, 1, 12, J3);
+        g.r(9, 13, 6, 12, C.shirt); g.r(9, 13, 6, 1, INK); g.r(10, 15, 4, 3, C.white); g.r(11, 16, 2, 1, C.shirt);
+        g.r(5, 24, 14, 1, INK); g.r(3, 23, 3, 1, INK); g.r(18, 23, 3, 1, INK);
+        g.r(19, 24, 2, 2, C.skin);
+        // De 808 onder de arm
+        g.r(0, 19, 12, 7, C.grey6); g.r(0, 19, 12, 1, C.grey4); g.r(1, 21, 10, 1, C.grey5);
+        [1, 3, 5, 7, 9].forEach(function (x2, i) { g.p(x2, 20, i % 2 ? C.red : C.grey2); });
+        for (var x3 = 1; x3 < 11; x3++) g.p(x3, 24, x3 < 4 ? C.red : x3 < 7 ? C.fire2 : x3 < 9 ? C.fire3 : C.white);
+        g.r(1, 22, 3, 1, C.fire3);
+        g.r(2, 26, 3, 1, C.skin);
+        // Spijkerbroek en rode sneakers
+        g.r(6, 25, 12, 3, D1); g.r(6, 28, 5, 7, D1); g.r(13, 28, 5, 7, D1); g.r(7, 26, 1, 9, D2); g.r(16, 28, 1, 7, D3);
+        g.r(11, 28, 2, 2, D3);
+        g.r(5, 35, 7, 2, C.red); g.r(13, 35, 7, 2, C.red); g.r(5, 37, 7, 1, C.white); g.r(13, 37, 7, 1, C.white); g.r(6, 35, 2, 1, "#ff6b6b"); g.r(14, 35, 2, 1, "#ff6b6b");
       });
     },
     // Een robijn: rode geslepen edelsteen met facetten en een glinstering.
