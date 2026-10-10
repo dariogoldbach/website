@@ -81,7 +81,12 @@
       var bars = "";
       for (var i = 0; i < 14; i++) bars += "<i></i>";
       return top("Podcast", p) +
-        '<div class="mid pod-mid">' + (p.image
+        '<div class="mid pod-mid">' + (p.covers
+          // Een rij covers (één per aflevering) waar je zijwaarts doorheen veegt; de volgende piept rechts in beeld.
+          ? '<div class="pod-covers" aria-label="Covers van alle afleveringen">' + p.covers.map(function (c, i) {
+              return '<img class="pod-img" src="' + esc(c) + '" alt="Cover van aflevering ' + (i + 1) + '"' + (i ? ' loading="lazy"' : "") + ">";
+            }).join("") + "</div>"
+          : p.image
           ? '<img class="pod-img" src="' + esc(p.image) + '" alt="Cover van de podcast ' + esc(p.title) + '">'
           : '<div class="pod-cover"><span>Podcast</span><b>' + esc(p.title) + "</b><span>Dario Goldbach</span></div>") +
         '<div class="eq" aria-hidden="true">' + bars + "</div>" +
@@ -268,7 +273,7 @@
     T: "#1b1b1b", P: "#2c2c35", K: "#111111", W: "#ffffff",
     p: "#f7a8c8", v: "#8e1b2c", e: "#8d989e", r: "#e8202a", l: "#c7f06a", w: "#fff8e8", Y: "#f3b61f", y: "#ffd76a", g: "#cfd8dc",
     B: "#2f6b3a", k: "#151515", q: "#3a3a3a", R: "#e8202a", o: "#f2eee3", m: "#a0a0a0", n: "#5a5a5a",
-    d: "#2b2b2b", a: "#c9c9c9", b: "#ff5a36", i: "#f4f4f4"
+    d: "#2b2b2b", a: "#c9c9c9", b: "#ff5a36", i: "#f4f4f4", u: "#7fb3dc"
   };
   var HEAD = [
     "..H.HHh.HH.H.H..", ".HHHhHHHHhHHHHH.", "HHhHHHhHHHHhHHHH", ".HHHHhHHHHHHHhHH", "HHhHHHHHhHHhHHH.",
@@ -284,8 +289,9 @@
     run2: HEAD.concat(BODY, pad(["....PPPPPP....", "....PPP.PPP...", "...KWKK.KWKK.."])),
     jump: HEAD.concat(BODY, pad(["..PPP....PPP..", ".KWKK....KWKK.", ".............."])),
     duck: HEAD.concat(pad(["TTTTTTTTTTTTTT", "KWKKPPPPPPKWKK"])),
-    boeken: [".pppppppp.", ".pwwwwwwp.", ".pppppppp.", "rrrrrrrrrr", "rwwwwwwwwr", "rrrrrrrrrr",
-      "lllllllll.", "lwwwwwwwl.", "lllllllll."],
+    // Infinite Jest: de dikke paperback met de blauwe wolkenlucht, rug naar voren.
+    boeken: ["uuuuuuuuuuuu", "uwwuuuuuwwuu", "wwwwuuuwwwwu", "uukwkwkkwkuu", "uwwwuuuuwwwu", "wwwwwuuuuwwu",
+      "uuwwuuuuuuuu", "uuuuuuuuuuuu"],
     wijnglas: ["e.....e", "e.....e", "evvvvve", "evvvvve", ".evvve.", "..eee..", "...e...", "...e...", "...e...",
       "...e...", ".eeeee."],
     fles: [".kk.", ".BB.", ".BB.", ".BB.", "BBBB", "BBBB", "BwwB", "BwwB", "BBBB", "BBBB", "BBBB"],
@@ -295,8 +301,10 @@
       ".kqkkkkqk.", ".kkkkkkkk.", "...kkkk..."],
     draaitafel: [".kkkkkkkk...a...", "ddddddddddddaddd", "daaaaaaaaaaaaaad", "dabababaaaaababd",
       "daaaaaaaaaaaaaad", "dddddddddddddddd"],
-    speaker: ["kkkkkkkkkk", "kqqqqqqqqk", "kqqaaaaqqk", "kqaqqqqaqk", "kqaqbbqaqk", "kqaqqqqaqk", "kqqaaaaqqk",
-      "kqqqqqqqqk", "kqqqaaqqqk", "kqqaqqaqqk", "kqqaqqaqqk", "kqqqaaqqqk", "kqqqqqqqqk", "kkkkkkkkkk"],
+    // Funktion One: zwarte kast met een grote ronde hoorn, logo, en de bas eronder.
+    speaker: ["kkkkkkkkkkkk", "kqnnnnnnnnqk", "kqnmmmmmmnqk", "kqnmnddnmnqk", "kqnmddddmnqk", "kqnmnddnmnqk",
+      "kqnmmmmmmnqk", "kqnnnnnnnnqk", "kqwwwqqqqqqk", "kkkkkkkkkkkk", "kqddddddddqk", "kqqqqqqqqqqk", "kqddddddddqk",
+      "kkkkkkkkkkkk"],
     discobal: ["....k....", "....k....", "..mmnmm..", ".mnmnmnm.", "mnmnmnmnm", "nmnmnmnmn", "mnmnmnmnm", ".mnmnmnm.", "..mmnmm.."],
     discobal2: ["....k....", "....k....", "..nnmnn..", ".nmnmnmn.", "nmnmnmnmn", "mnmnmnmnm", "nmnmnmnmn", ".nmnmnmn.", "..nnmnn.."],
     vuur: ["...b....", "..bb..b.", "..bbb.bb", ".bbybbbb", ".byyybb.", "bbyyyybb", "byywyyyb", "byywwyyb", ".bywwyb.",
@@ -304,9 +312,9 @@
     vuur2: ["....b...", ".b..bb..", "bb.bbb..", "bbbbybb.", ".bbyyyb.", "bbyyyybb", "byyyywyb", "byywwyyb", ".bywwyb.",
       "kkkkkkkk", "kqqqqqqk"]
   };
-  var NAMES = { boeken: "een stapel boeken", wijnglas: "een glas wijn", fles: "een fles wijn", microfoon: "een microfoon",
+  var NAMES = { boeken: "Infinite Jest", wijnglas: "een glas wijn", fles: "een flesje rood", microfoon: "een microfoon",
     plaat: "een plaat", draaitafel: "een draaitafel", vliegplaat: "een rondvliegende plaat",
-    speaker: "een speaker", discobal: "een discobal", vuur: "een vuurfontein", stuiterplaat: "een stuiterende plaat" };
+    speaker: "een Funktion One speaker", discobal: "een discobal", vuur: "pyrotechniek", stuiterplaat: "een stuiterende plaat" };
   function sprite(rows) {
     var c = document.createElement("canvas"), x = c.getContext("2d");
     c.width = rows[0].length; c.height = rows.length;
@@ -526,7 +534,7 @@
   var drag = null;
   frame.addEventListener("pointerdown", function (e) {
     if (state.busy || e.button > 0) return;
-    if (e.target.closest("a, button, .book3d, .sheet")) return;
+    if (e.target.closest("a, button, .book3d, .sheet, .pod-covers")) return;
     drag = { x: e.clientX, y: e.clientY, t: performance.now(), axis: null, next: null, id: e.pointerId };
     try { frame.setPointerCapture(e.pointerId); } catch (err) {}
   });
@@ -654,7 +662,7 @@
   function preload() {
     var urls = {};
     PAGES.forEach(function (p) {
-      [p.image, p.poster, p.avatar].forEach(function (u) { if (u) urls[u] = 1; });
+      [p.image, p.poster, p.avatar].concat(p.covers || []).forEach(function (u) { if (u) urls[u] = 1; });
       if (p.images) ["front", "spine", "back"].forEach(function (k) { if (p.images[k]) urls[p.images[k]] = 1; });
     });
     // Boeken eerst, die zijn het grootst en worden in 3D getekend.

@@ -415,3 +415,12 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 .icon-btn svg.arrow { animation: pijl-wiebel 2.4s ease-in-out infinite; }
 @keyframes pijl-wiebel { 0%, 70%, 100% { transform: translateX(0); } 80% { transform: translateX(3px); } 90% { transform: translateX(-1px); } }
 @media (prefers-reduced-motion: reduce) { .icon-btn svg.arrow { animation: none; } }
+
+/* Vier Weekenden: zijwaarts door de covers van alle afleveringen */
+.pod-covers {
+  align-self: stretch; margin: 0 -6cqw; padding: 1cqw 13cqw 5cqw; display: flex; gap: 4cqw;
+  overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none;
+  touch-action: pan-x; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+}
+.pod-covers::-webkit-scrollbar { display: none; }
+.pod-covers .pod-img { flex: 0 0 74cqw; width: 74cqw; scroll-snap-align: center; }
