@@ -419,8 +419,8 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 /* Vier Weekenden: zijwaarts door de covers van alle afleveringen */
 .pod-covers { position: relative;
   align-self: stretch; margin: 0 -6cqw; padding: 1cqw 13cqw 5cqw; display: flex; gap: 4cqw;
-  overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none;
-  touch-action: pan-x; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+  overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
 }
 .pod-covers::-webkit-scrollbar { display: none; }
 .pod-covers .pod-img { flex: 0 0 74cqw; width: 74cqw; scroll-snap-align: center; transform: scale(.78); }

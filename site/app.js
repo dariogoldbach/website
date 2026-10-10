@@ -167,10 +167,40 @@
         });
       }
       function soon() { if (!raf) raf = requestAnimationFrame(fit); }
-      row.addEventListener("scroll", soon, { passive: true });
+      // Zelf naar het midden klikken: het vegen loopt via het frame, dus de browser doet het niet.
+      var anim = null, idle = null;
+      function centerOf(im) { return im.offsetLeft + im.offsetWidth / 2 - row.clientWidth / 2; }
+      function glide(to) {
+        cancelAnimationFrame(anim);
+        var from = row.scrollLeft, t0 = performance.now(), dur = 320;
+        (function tick(now) {
+          var k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+          row.scrollLeft = from + (to - from) * e;
+          anim = k < 1 ? requestAnimationFrame(tick) : null;
+        })(t0);
+      }
+      row._stop = function () { cancelAnimationFrame(anim); anim = null; clearTimeout(idle); };
+      row._snap = function (v) {
+        var at = row.scrollLeft - (v || 0) * 180, best = 0, bd = Infinity;
+        imgs.forEach(function (im, i) { var d = Math.abs(centerOf(im) - at); if (d < bd) { bd = d; best = i; } });
+        // Een snelle veeg, of een stukje slepen, gaat altijd minstens één cover verder.
+        var cur = row._index || 0, moved = cur >= 0 ? row.scrollLeft - centerOf(imgs[cur]) : 0;
+        if (cur >= 0 && best === cur && (Math.abs(v || 0) > 0.3 || Math.abs(moved) > imgs[0].offsetWidth * 0.2)) {
+          var dir = Math.abs(v || 0) > 0.3 ? (v < 0 ? 1 : -1) : (moved > 0 ? 1 : -1);
+          best = Math.max(0, Math.min(imgs.length - 1, cur + dir));
+        }
+        row._index = best;
+        glide(Math.max(0, Math.min(row.scrollWidth - row.clientWidth, centerOf(imgs[best]))));
+      };
+      row.addEventListener("scroll", function () {
+        soon();
+        // Trackpad of scrollwiel: na het scrollen netjes naar de dichtstbijzijnde cover.
+        if (anim || row._dragging) return;
+        clearTimeout(idle); idle = setTimeout(function () { row._index = -1; row._snap(0); }, 140);
+      }, { passive: true });
       window.addEventListener("resize", soon);
       requestAnimationFrame(fit);
-      return function () { window.removeEventListener("resize", soon); if (raf) cancelAnimationFrame(raf); };
+      return function () { window.removeEventListener("resize", soon); if (raf) cancelAnimationFrame(raf); row._stop(); };
     },
     boek: function (card, p) {
       var stop = book(card.querySelector(".book3d")), qs = card.querySelectorAll(".quote"), n = 0, timer;
@@ -460,6 +490,14 @@
         g.r(5, 25, 2, 1, C.black); g.r(7, 25, 6, 1, C.black); g.r(12, 24, 3, 1, C.black); g.r(15, 25, 3, 1, C.black);
       });
     },
+    plaat: function () {
+      return art(20, 20, function (g) {
+        g.d(10, 10, 10, C.black); g.d(10, 10, 8.4, C.grey6); g.d(10, 10, 7.6, C.black);
+        g.d(10, 10, 6, C.grey6); g.d(10, 10, 5.3, C.black);
+        g.d(10, 10, 3.6, C.red); g.d(9.4, 9.4, 2.4, "#ff4b52"); g.d(10, 10, 0.9, BG);
+        g.r(3, 5, 1, 2, C.grey3); g.r(4, 4, 1, 1, C.grey3); g.r(15, 14, 1, 2, C.grey4);
+      });
+    },
     // Isometrische platenspeler: kastje met bovenblad, plateau en toonarm.
     draaitafel: function () {
       return art(34, 21, function (g) {
@@ -475,19 +513,20 @@
         g.r(27, 11, 2, 1, C.red); g.r(29, 10, 1, 1, C.fire3);
       });
     },
-    // Funktion One in het klassieke paars: grote ronde hoorn, logo, en de baskast eronder.
+    // Funktion One Evo: donkerpaarse kast, grijze hoorns (klein voor hoog, groot met lens voor midden), basopening onder.
     speaker: function () {
-      var P1 = "#5b2a86", P2 = "#7a45a8", P3 = "#3b1a59";
-      return art(24, 30, function (g) {
-        g.r(0, 0, 24, 30, P1); g.r(0, 0, 24, 1, P2); g.r(0, 0, 1, 30, P2); g.r(23, 1, 1, 29, P3);
-        g.d(12, 8.5, 9.5, P3); g.d(12, 8.5, 8, C.black); g.d(12, 8.5, 6.5, C.grey6); g.d(12, 8.5, 5, C.grey5);
-        g.d(12, 8.5, 3.4, C.grey6); g.d(12, 8.5, 2, C.black); g.d(11, 7.5, 0.9, C.grey3);
-        g.r(6, 3, 1, 2, C.grey4); g.r(5, 5, 1, 2, C.grey4);
-        g.r(3, 19, 7, 1, C.white); g.r(11, 19, 3, 1, P2);
-        g.r(0, 21, 24, 1, P3);
-        g.r(2, 22, 20, 7, C.black);
-        for (var yy = 23; yy < 29; yy += 2) g.r(3, yy, 18, 1, C.grey6);
-        g.r(2, 29, 3, 1, P3); g.r(19, 29, 3, 1, P3);
+      var P1 = "#2c2850", P2 = "#433d73", P3 = "#16142b", H1 = "#e4e4e4", H2 = "#c8c8c8", H3 = "#a9a9a9", H4 = "#8c8c8c";
+      return art(24, 32, function (g) {
+        g.r(0, 0, 24, 32, P1); g.r(0, 0, 24, 1, P2); g.r(0, 0, 1, 32, P2); g.r(23, 1, 1, 31, P3);
+        g.poly([[5, 2], [19, 2], [22, 5], [22, 18], [2, 18], [2, 5]], H2);
+        g.r(8, 3, 8, 5, H3); g.poly([[9, 4], [15, 4], [13, 7], [11, 7]], H4); g.p(12, 5, P3); g.r(8, 7, 8, 1, H1);
+        g.r(3, 9, 18, 9, H3); g.poly([[4, 10], [20, 10], [17, 17], [7, 17]], H4);
+        g.poly([[7, 13], [12, 11], [17, 13], [12, 14]], H1); g.poly([[7, 13], [17, 13], [12, 15]], H2);
+        g.r(3, 17, 18, 1, H1); g.r(15, 16, 5, 1, H3);
+        [[3, 3], [20, 3], [3, 16], [20, 16]].forEach(function (q) { g.p(q[0], q[1], H1); });
+        g.r(2, 18, 20, 3, P1); g.p(3, 19, P2); g.p(20, 19, P2);
+        g.r(2, 21, 20, 9, P3); g.r(2, 21, 20, 1, "#0d0c1a"); g.r(11, 22, 2, 8, P1); g.r(11, 22, 1, 8, P2);
+        g.p(3, 28, P2); g.p(20, 28, P2); g.r(0, 30, 24, 2, P1); g.r(0, 31, 24, 1, P3);
       });
     },
     discobal: function () { return ball(0); },
@@ -594,6 +633,13 @@
       var top = ground + me.y - img.height;
       return { x: 18 + 3, y: top + 2, w: img.width - 6, h: img.height - 3, img: d ? "duck" : null };
     }
+    // Gaat er toch iets mis, dan stopt het spel netjes en kun je gewoon weer vegen.
+    function safe(now) {
+      try { step(now); } catch (err) {
+        playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; over.hidden = false;
+        if (window.console) console.error(err);
+      }
+    }
     function step(now) {
       var dt = Math.min(0.033, (now - last) / 1000 || 0); last = now; t += dt;
       speed = 60 + Math.min(70, t * 1.8);
@@ -615,7 +661,7 @@
         if (b.x < o.x + o.img.width - 1 && b.x + b.w > o.x + 1 && b.y < o.y + o.img.height - 1 && b.y + b.h > o.y + 1) return end(o);
       }
       draw();
-      raf = requestAnimationFrame(step);
+      raf = requestAnimationFrame(safe);
     }
     // Plaatjes op halve eenheden neerzetten, met de rand van 1 pixel eromheen.
     function put(a, x, y) {
@@ -668,7 +714,7 @@
     }
     function start() {
       size(); reset(); over.hidden = true; playing = true; state.locked = control; hideHint(); music();
-      last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(step);
+      last = performance.now(); cancelAnimationFrame(raf); raf = requestAnimationFrame(safe);
     }
     function end(o) {
       playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
@@ -774,8 +820,11 @@
   var drag = null;
   frame.addEventListener("pointerdown", function (e) {
     if (state.busy || e.button > 0) return;
-    if (e.target.closest("a, button, .book3d, .sheet, .pod-covers")) return;
-    drag = { x: e.clientX, y: e.clientY, t: performance.now(), axis: null, next: null, id: e.pointerId };
+    if (e.target.closest("a, button, .book3d, .sheet")) return;
+    var row = e.target.closest(".pod-covers");
+    if (row && row._stop) row._stop();
+    drag = { x: e.clientX, y: e.clientY, t: performance.now(), axis: null, next: null, id: e.pointerId,
+      row: row, left: row ? row.scrollLeft : 0, lx: e.clientX, lt: performance.now(), v: 0 };
     try { frame.setPointerCapture(e.pointerId); } catch (err) {}
   });
   frame.addEventListener("pointermove", function (e) {
@@ -788,6 +837,19 @@
         drag.x = e.clientX; drag.y = e.clientY;
       }
       return;
+    }
+    if (drag.row && drag.axis !== "y") {
+      // Zijwaarts over de covers: de carrousel schuift mee, omhoog of omlaag blijft gewoon vegen.
+      if (!drag.axis) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dx) > Math.abs(dy)) { drag.axis = "row"; drag.row._dragging = true; }
+      }
+      if (drag.axis === "row") {
+        var now = performance.now(), ddt = Math.max(1, now - drag.lt);
+        drag.v = 0.7 * drag.v + 0.3 * (e.clientX - drag.lx) / ddt; drag.lx = e.clientX; drag.lt = now;
+        drag.row.scrollLeft = drag.left - dx;
+        return;
+      }
     }
     if (!drag.axis) {
       if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
@@ -808,6 +870,7 @@
     if (!drag || e.pointerId !== drag.id) return;
     var d = drag; drag = null;
     var dx = e.clientX - d.x, dy = e.clientY - d.y, dt = Math.max(1, performance.now() - d.t);
+    if (d.axis === "row") { d.row._dragging = false; d.row._snap(performance.now() - d.lt > 120 ? 0 : d.v); return; }
     if (!d.axis) return;
     var dist = d.axis === "x" ? dx : dy, size = d.axis === "x" ? frame.clientWidth : frame.clientHeight;
     var flick = Math.abs(dist) > size * 0.18 || (Math.abs(dist) > 30 && Math.abs(dist) / dt > 0.45);
@@ -829,6 +892,9 @@
   var wheelAcc = 0, wheelAxis = null, wheelLock = 0;
   window.addEventListener("wheel", function (e) {
     e.preventDefault();
+    // Zijwaarts scrollen boven de covers schuift de carrousel, niet de pagina.
+    var row = e.target.closest && e.target.closest(".pod-covers");
+    if (row && Math.abs(e.deltaX) > Math.abs(e.deltaY)) { row._stop(); row.scrollLeft += e.deltaX; return; }
     var now = performance.now();
     if (now < wheelLock || state.busy || state.locked) return;
     var ax = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? "x" : "y";
