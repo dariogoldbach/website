@@ -89,6 +89,14 @@ window.PAGES = [
     caption: "‘Gezondheid is uit!’ voor FHM.",
   },
   {
+    id: "steven-leest-goldband", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Steven van Lummel leest Goldband",
+    video: "media/steven-leest-goldband.mp4", poster: "img/steven-leest-goldband-poster.jpg",
+    account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Steven van Lummel leest Goldband",
+  },
+  {
     id: "spel", type: "game",
     bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
   },
