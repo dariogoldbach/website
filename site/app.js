@@ -152,6 +152,26 @@
 
   // ---------- Interactieve onderdelen per pagina ----------
   var MOUNT = {
+    // Covers carrousel: de middelste cover is groot, naar de randen toe worden ze kleiner.
+    podcast: function (card) {
+      var row = card.querySelector(".pod-covers");
+      if (!row) return null;
+      var imgs = row.querySelectorAll(".pod-img"), raf = null;
+      function fit() {
+        raf = null;
+        var mid = row.scrollLeft + row.clientWidth / 2;
+        imgs.forEach(function (im) {
+          var w = im.offsetWidth, off = im.offsetLeft + w / 2 - mid, d = Math.min(1, Math.abs(off) / w), sc = 1 - 0.22 * d;
+          // Kleinere covers schuiven iets naar het midden, zodat het randje rechts zichtbaar blijft.
+          im.style.transform = "translateX(" + (-Math.sign(off) * (1 - sc) * w / 2).toFixed(1) + "px) scale(" + sc.toFixed(3) + ")";
+        });
+      }
+      function soon() { if (!raf) raf = requestAnimationFrame(fit); }
+      row.addEventListener("scroll", soon, { passive: true });
+      window.addEventListener("resize", soon);
+      requestAnimationFrame(fit);
+      return function () { window.removeEventListener("resize", soon); if (raf) cancelAnimationFrame(raf); };
+    },
     boek: function (card, p) {
       var stop = book(card.querySelector(".book3d")), qs = card.querySelectorAll(".quote"), n = 0, timer;
       if (qs.length > 1) timer = setInterval(function () {

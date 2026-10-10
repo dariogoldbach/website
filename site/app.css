@@ -417,13 +417,13 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 @media (prefers-reduced-motion: reduce) { .icon-btn svg.arrow { animation: none; } }
 
 /* Vier Weekenden: zijwaarts door de covers van alle afleveringen */
-.pod-covers {
+.pod-covers { position: relative;
   align-self: stretch; margin: 0 -6cqw; padding: 1cqw 13cqw 5cqw; display: flex; gap: 4cqw;
   overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none;
   touch-action: pan-x; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch;
 }
 .pod-covers::-webkit-scrollbar { display: none; }
-.pod-covers .pod-img { flex: 0 0 74cqw; width: 74cqw; scroll-snap-align: center; }
+.pod-covers .pod-img { flex: 0 0 74cqw; width: 74cqw; scroll-snap-align: center; transform: scale(.78); }
 .run-sound { width: max(2rem, 8cqw); height: max(2rem, 8cqw); border-radius: 50%; border: 0; padding: 0;
   display: grid; place-items: center; background: var(--fg); color: var(--bg); cursor: pointer; }
 .run-sound svg { width: 55%; height: 55%; }
