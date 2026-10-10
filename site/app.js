@@ -987,7 +987,7 @@
       pb.setAttribute("aria-label", "New game"); pb.innerHTML = ICONS.replay;
       mine = score; lastSecs = t; sent = false;
       form.hidden = !fits(score);
-      if (!form.hidden) msg.textContent = "Score " + score + ". Dat is goed voor het scorebord!";
+      if (!form.hidden) msg.textContent = "Score " + score + ".";
       over.hidden = false;
     }
     // Game over: groot in beeld waar je over struikelde, met de naam erbij.
