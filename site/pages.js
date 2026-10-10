@@ -49,7 +49,7 @@ window.PAGES = [
     title: "De Man die Alles Had",
     images: { front: "img/de-man-front.jpg", spine: "img/de-man-spine.jpg", back: "img/de-man-back.jpg", ratio: 1.536, depth: 0.155 },
     text: "Dario’s literaire debuut over een techgigant, een groeiende leugen en een onbereikbare liefde.",
-    link: { text: "Bestel nu", href: "https://demandiealleshad.nl/" },
+    link: { text: "Bestel nu", icon: "cart", href: "https://demandiealleshad.nl/" },
   },
   {
     id: "goldband-net-echt", type: "boek",
@@ -63,7 +63,7 @@ window.PAGES = [
       { text: "Ik ben bijna op de helft!", by: "Karel Gerlach, Goldband" },
       { text: "Geen woord van gelogen.", by: "Milo Driessen, Goldband" },
     ],
-    link: { text: "Bestel nu", href: "https://libris.nl/singeluitgeverijen/a/dario-goldbach/goldband/501657554#paperback-9789038815930" },
+    link: { text: "Bestel nu", icon: "cart", href: "https://libris.nl/singeluitgeverijen/a/dario-goldbach/goldband/501657554#paperback-9789038815930" },
   },
   {
     id: "volg-me", type: "social",
