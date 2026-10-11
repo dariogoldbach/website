@@ -790,7 +790,7 @@
     var over = card.querySelector(".snake-over"), msg = card.querySelector("[data-msg]");
     var scoreEl = card.querySelector("[data-score]"), bestEl = card.querySelector("[data-best]");
     var VW = 100, VH = 200, k = 1, ground = 150;
-    var me, obs, speed, dist, score, nextGap, lastKind = null, duckTold = false, duckTip = 0, raf = null, last = 0, t = 0, duckUntil = 0, playing = false;
+    var me, obs, speed, dist, score, nextGap, sinceSpawn = 0, pace1 = null, pace2 = null, lastKind = null, duckTold = false, duckTip = 0, raf = null, last = 0, t = 0, duckUntil = 0, playing = false;
     var best = 0;
     try { best = +localStorage.getItem("dg-run-best") || 0; } catch (e) {}
     bestEl.textContent = "Je record: " + best;
@@ -848,7 +848,7 @@
       draw();
     }
     function reset() {
-      me = { y: 0, vy: 0 }; obs = []; speed = 60; dist = 0; score = 0; t = 0; nextGap = 90; duckUntil = 0;
+      me = { y: 0, vy: 0 }; obs = []; speed = 60; dist = 0; score = 0; t = 0; nextGap = 90; sinceSpawn = 0; duckUntil = 0;
       scoreEl.textContent = "score 0";
     }
     function onGround() { return me.y >= 0; }
@@ -873,16 +873,25 @@
       var img = IMG[kind === "vliegplaat" || kind === "stuiterplaat" ? "plaat" : kind];
       var y = kind === "vliegplaat" ? ground - 25 : kind === "discobal" ? ground - 26 : ground - img.height;
       obs.push({ kind: kind, img: img, x: VW + 4, y: y, base: y, ph: Math.random() * 6 });
-      // Soms twee kleine dingen vlak achter elkaar.
-      if (score > 100 && Math.random() < 0.2 && (kind === "wijnglas" || kind === "fles" || kind === "microfoon")) {
-        var k2 = kind === "wijnglas" ? "fles" : kind === "fles" ? "wijnglas" : Math.random() < 0.5 ? "wijnglas" : "fles", img2 = IMG[k2];
-        lastKind = k2;
-        obs.push({ kind: k2, img: img2, x: VW + 4 + img.width + 4, y: ground - img2.height, base: ground - img2.height, ph: 0 });
+      // Soms twee kleine dingen vlak achter elkaar: daar spring je in één keer overheen.
+      var small = ["wijnglas", "fles", "usb", "robijn", "steen", "microfoon"];
+      if (score > 40 && Math.random() < 0.22 && small.indexOf(kind) >= 0) {
+        var fits = small.filter(function (k3) { return k3 !== kind && IMG[k3].width + img.width <= 17; });
+        if (fits.length) {
+          var k2 = fits[Math.floor(Math.random() * fits.length)], img2 = IMG[k2];
+          lastKind = k2;
+          var x2 = VW + 4 + img.width + 3 + Math.random() * 3;
+          obs.push({ kind: k2, img: img2, x: x2, y: ground - img2.height, base: ground - img2.height, ph: 0 });
+          sinceSpawn = -(x2 - VW - 4);
+        }
       }
-      // Altijd genoeg ruimte om te landen en weer af te zetten.
-      // Soms snel achter elkaar, soms een lange adempauze, zodat het ritme niet voorspelbaar wordt.
-      var r = Math.random();
-      nextGap = speed * 0.7 + 28 + (r < 0.35 ? Math.random() * speed * 0.25 : r < 0.8 ? speed * (0.4 + Math.random() * 0.9) : speed * (1.5 + Math.random() * 1.8));
+      // Altijd genoeg ruimte om te landen en weer af te zetten, maar verder zo wisselend mogelijk:
+      // kort (meteen weer springen), middel of een lange adempauze, en nooit drie keer dezelfde soort na elkaar.
+      var kinds3 = ["kort", "middel", "lang"], r = Math.random(), pace = r < 0.38 ? "kort" : r < 0.75 ? "middel" : "lang";
+      if (pace === pace1 && pace === pace2) pace = kinds3.filter(function (x) { return x !== pace; })[Math.floor(Math.random() * 2)];
+      pace2 = pace1; pace1 = pace;
+      nextGap = speed * 0.7 + 28 + (pace === "kort" ? Math.random() * speed * 0.15
+        : pace === "middel" ? speed * (0.3 + Math.random() * 0.9) : speed * (1.2 + Math.random() * 1.4));
     }
     function hitbox() {
       var d = performance.now() < duckUntil && onGround(), img = d ? IMG.duck : IMG.run1;
@@ -909,8 +918,10 @@
         if (o.kind === "vuur") o.img = Math.floor(t * 8 + o.ph) % 2 ? IMG.vuur2 : IMG.vuur;
       });
       obs = obs.filter(function (o) { return o.x > -20; });
-      var lastObs = obs[obs.length - 1];
-      if (!lastObs || VW - lastObs.x > nextGap) spawn();
+      // De afstand tellen sinds het vorige ding verscheen (niet kijken waar dat nu is: dan zou elke
+      // lange pauze worden afgekapt zodra het vorige ding uit beeld is, en krijg je steeds hetzelfde ritme).
+      sinceSpawn += dx;
+      if (sinceSpawn > nextGap) { sinceSpawn = 0; spawn(); }
       score = Math.floor(dist / 6); scoreEl.textContent = "score " + score;
       var b = hitbox();
       for (var i = 0; i < obs.length; i++) {
