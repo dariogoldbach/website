@@ -283,6 +283,7 @@
       };
     },
     bio: function (card) {
+      var wide = window.matchMedia("(min-width: 701px) and (min-aspect-ratio: 751/1000), (min-width: 901px)");
       var sheet = card.querySelector(".sheet"), open = card.querySelector("[data-sheet]");
       var end = card.querySelector(".end"), name = card.querySelector(".end h1");
       // De naam glijdt mee omhoog en komt precies boven de tekst te staan; de foto wordt donkerder.
@@ -290,8 +291,18 @@
         sheet.classList.toggle("open", on); sheet.setAttribute("aria-hidden", String(!on));
         open.setAttribute("aria-expanded", String(on));
         card.classList.toggle("bio-open", on);
-        var below = end.getBoundingClientRect().bottom - name.getBoundingClientRect().bottom;
-        end.style.transform = on ? "translateY(" + -(sheet.offsetHeight - below) + "px)" : "";
+        // Waar de naam ook staat (onderaan op de telefoon, in het midden op de desktop): net boven de tekst.
+        var r = card.getBoundingClientRect(), nb = name.getBoundingClientRect(), h = sheet.offsetHeight, shift;
+        if (wide.matches) {
+          // Desktop: naam en tekst samen netjes in het midden van de rechterhelft.
+          var gap = Math.max(0, (r.height - nb.height - h) / 2);
+          sheet.style.bottom = gap + "px";
+          shift = r.bottom - gap - h - nb.bottom;
+        } else {
+          sheet.style.bottom = "";
+          shift = r.bottom - (parseFloat(getComputedStyle(card).paddingBottom) || 0) - h - nb.bottom;
+        }
+        end.style.transform = on ? "translateY(" + shift + "px)" : "";
       }
       open.addEventListener("click", function () { set(true); });
       card.querySelector("[data-sheet-close]").addEventListener("click", function () { set(false); });

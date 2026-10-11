@@ -463,12 +463,14 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 
 /* ---------- Alleen op een breed scherm ---------- */
 @media (min-width: 701px) and (min-aspect-ratio: 751/1000), (min-width: 901px) {
-  /* Bio: de foto heel (niet ingezoomd) rechts, de naam en de bio links ernaast */
-  .card:has(.bio-bg) { padding-inline: calc(8 * var(--u)) calc(50% + 4 * var(--u)); }
-  .bio-bg { left: 50%; width: 50%; object-position: 50% 30%; }
-  .card:has(.bio-bg)::before { background: none; }
-  .card:has(.bio-bg) > .sheet { right: 50%; padding-inline: calc(8 * var(--u)) calc(4 * var(--u)); }
-  .card.bio-open::after { right: 50%; }
+  /* Bio: de foto heel (niet ingezoomd) links, de naam en de bio rechts ernaast, de naam in het midden */
+  .card:has(.bio-bg) { padding-inline: calc(50% + 8 * var(--u)) calc(8 * var(--u)); justify-content: center; }
+  .card:has(.bio-bg) > .mid { flex: 0 0 0; }
+  .bio-bg { right: auto; width: 50%; object-position: 50% 30%; }
+  .card:has(.bio-bg)::before, .card:has(.bio-bg)::after { display: none; }
+  .card:has(.bio-bg) > .sheet { left: 50%; padding-inline: calc(8 * var(--u)); }
+  .card:has(.bio-bg) > .sheet { transform: none; opacity: 0; visibility: hidden; transition: opacity 300ms ease, visibility 0s 300ms; }
+  .card:has(.bio-bg) > .sheet.open { opacity: 1; visibility: visible; transition: opacity 300ms ease 120ms; }
 
   /* Video: op een iPhone midden in beeld */
   .card:has(.vid) {
