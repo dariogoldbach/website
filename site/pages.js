@@ -139,9 +139,17 @@ window.PAGES = [
   {
     id: "lowlands-zondag", type: "video",
     bg: "#000000", fg: "#ffffff",
-    title: "Lowlands, zondag: Maan vindt het weird",
+    title: "Lowlands, zondag: Het is alleen vanavond",
     video: "media/lowlands-zondag.mp4", poster: "img/lowlands-zondag-poster.jpg",
     account: "dariogoldbach & @lowlands_fest", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Het is alleen vanavond, vanavond 👀",
+  },
+  {
+    id: "maan-leest-goldband", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Maan leest Goldband",
+    video: "media/maan.mp4", poster: "img/maan-poster.jpg",
+    account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
     caption: "Maan vindt het weird...",
   },
   {
