@@ -262,21 +262,29 @@
       function withSound() {
         var my = ++tries;
         sound(true);
-        v.play().catch(function (e) {
+        dbg("start met geluid: " + p.id);
+        v.play().then(function () { dbg("speelt, muted=" + v.muted + ": " + p.id); }, function (e) {
+          dbg("play geweigerd (" + (e && e.name) + ")" + (my !== tries || !alive ? " [oud]" : "") + ": " + p.id);
           if (my !== tries || !alive) return;
           if (e && e.name === "NotAllowedError") { sound(false); v.play().catch(function () {}); }
           else if (state.current && state.current.el === card) v.play().catch(function () {});
         });
       }
-      function start() { if (!still) withSound(); }
+      // Heb je het geluid zelf uitgezet, dan blijven volgende video's ook stil tot je het weer aanzet.
+      function start() {
+        if (still) return;
+        if (soundOff) { tries++; sound(false); v.play().catch(function () {}); return; }
+        withSound();
+      }
       // Tijdens het vegen speelt hij al (zonder geluid); als je loslaat gaat het geluid aan.
       if (!still) { sound(false); v.play().catch(function () {}); }
       card._activate = start;
+      card._deactivate = function () { tries++; dbg("oude video stil: " + p.id); v.muted = true; v.pause(); };
       // Nog een kans aan het eind van dezelfde veeg (touchend telt op de iPhone zeker als aanraking),
       // voor als de iPhone het geluid bij het loslaten nog weigerde. Niet als je zelf het geluid uitzette.
-      card._regain = function () { if (!still && !b.classList.contains("off-by-user")) withSound(); };
+      card._regain = function () { if (!still && !soundOff) withSound(); };
       b.addEventListener("click", function () {
-        tries++; sound(v.muted); b.classList.toggle("off-by-user", v.muted);
+        tries++; sound(v.muted); soundOff = v.muted;
         if (!v.muted) v.play().catch(function () {});
       });
       like.addEventListener("click", function () {
@@ -300,7 +308,7 @@
         // Via composedPath, want de geluidsknop vervangt zijn icoon tijdens de klik en dan hangt e.target los.
         var path = e.composedPath ? e.composedPath() : [e.target];
         for (var i = 0; i < path.length; i++) if (path[i].matches && path[i].matches("button, a")) return;
-        if (v.muted) { tries++; sound(true); b.classList.remove("off-by-user"); return v.play().catch(function () {}); }
+        if (v.muted) { tries++; sound(true); soundOff = false; return v.play().catch(function () {}); }
         if (v.paused) v.play().catch(function () {}); else v.pause();
       }
       frame.addEventListener("click", tap);
@@ -1133,6 +1141,20 @@
   // Op de iPhone mag een speler pas met geluid spelen als hij één keer tijdens een tik is gestart;
   // die toestemming blijft bij de speler horen. Met steeds dezelfde spelers is één tik dus genoeg,
   // in plaats van dat elke nieuwe video opnieuw toestemming nodig heeft.
+  // Meetmodus: met ?debug in de link staat bovenin wat er met het geluid gebeurt.
+  var dbgEl = null;
+  function dbg(msg) {
+    if (!/[?&]debug/.test(location.search)) return;
+    if (!dbgEl) {
+      dbgEl = document.createElement("pre");
+      dbgEl.style.cssText = "position:fixed;left:4px;right:4px;top:4px;z-index:99;margin:0;padding:6px;font:10px/1.3 monospace;background:rgba(0,0,0,.75);color:#0f0;pointer-events:none;white-space:pre-wrap;max-height:45vh;overflow:hidden";
+      document.body.appendChild(dbgEl);
+    }
+    var t = (performance.now() / 1000).toFixed(1);
+    dbgEl.textContent = (t + " " + msg + "\n" + dbgEl.textContent).split("\n").slice(0, 16).join("\n");
+  }
+  // Geluid zelf uitgezet? Dan geldt dat voor alle video's tot je het weer aanzet.
+  var soundOff = false;
   var POOL = [], shelf = document.createElement("div");
   shelf.setAttribute("aria-hidden", "true");
   // Even groot als het scherm (maar onzichtbaar): verhuist een video van hier naar de pagina, dan heeft hij
@@ -1144,6 +1166,10 @@
     pv.className = "vid"; pv.muted = true; pv.loop = true; pv.playsInline = true;
     pv.setAttribute("playsinline", ""); pv.preload = "auto";
     shelf.appendChild(pv); POOL.push(pv);
+    (function (pv, n) {
+      pv.addEventListener("pause", function () { if (pv.parentNode !== shelf) dbg("speler " + n + " gepauzeerd"); });
+      pv.addEventListener("volumechange", function () { if (pv.parentNode !== shelf) dbg("speler " + n + " muted=" + pv.muted); });
+    })(pv, pi);
   }
   function upcoming() {
     return state.bag.slice(-2).filter(function (p) { return p.type === "video"; }).map(function (p) { return p.video; });
@@ -1253,6 +1279,9 @@
     setPos(old.el, v[0] * W, v[1] * H, true);
     setPos(next.el, 0, 0, true);
     show(next);
+    // De oude video meteen stil en op pauze, vóór de nieuwe met geluid start: de iPhone laat maar één
+    // video tegelijk geluid maken en kan de nieuwe anders weigeren.
+    if (old.el._deactivate) old.el._deactivate();
     if (next.el._activate) next.el._activate();
     setTimeout(function () { drop(old); next.el.classList.remove("moving"); state.busy = false; }, still ? 30 : 360);
   }
