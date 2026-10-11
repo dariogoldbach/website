@@ -113,6 +113,14 @@ window.PAGES = [
     caption: "Welke teleurstellende hyperniche ben jij?! 🥸",
   },
   {
+    id: "kluisjes", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Zijn er ook kluisjes?",
+    video: "media/kluisjes.mp4", poster: "img/kluisjes-poster.jpg",
+    account: "dariogoldbach & @npo3fm", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "‘Zijn er ook kluisjes?’ 🔒",
+  },
+  {
     id: "spel", type: "game",
     bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
   },
