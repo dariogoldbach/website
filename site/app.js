@@ -250,7 +250,12 @@
       function start() {
         if (still) return;
         sound(true);
-        v.play().catch(function () { sound(false); v.play().catch(function () {}); });
+        // Alleen echt zonder geluid als de browser geluid weigert. Een play() die om een andere reden
+        // afbreekt (bv. omdat de video net verplaatst of nog aan het laden is) zette eerst ook het geluid uit.
+        v.play().catch(function (e) {
+          if (e && e.name === "NotAllowedError") { sound(false); v.play().catch(function () {}); }
+          else if (state.current && state.current.el === card) v.play().catch(function () {});
+        });
       }
       // Tijdens het vegen speelt hij al (zonder geluid); als je loslaat gaat het geluid aan.
       if (!still) { sound(false); v.play().catch(function () {}); }
@@ -291,7 +296,7 @@
       return function () {
         frame.removeEventListener("click", tap); v.pause();
         // Een vooraf geladen video gaat terug naar de wachtrij, zodat hij de volgende keer weer meteen begint.
-        if (VIDS[p.video] === v) { v.muted = true; try { v.currentTime = 0; } catch (e) {} shelf.appendChild(v); }
+        if (VIDS[p.video] === v) { v.muted = true; v.className = "vid"; try { v.currentTime = 0; } catch (e) {} shelf.appendChild(v); }
         else { v.removeAttribute("src"); v.load(); }
       };
     },
@@ -1104,7 +1109,9 @@
   // Vooraf geladen video's, buiten beeld geparkeerd.
   var VIDS = {}, shelf = document.createElement("div");
   shelf.setAttribute("aria-hidden", "true");
-  shelf.style.cssText = "position:fixed;left:-10px;top:-10px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none";
+  // Even groot als het scherm (maar onzichtbaar): verhuist een video van hier naar de pagina, dan heeft hij
+  // al de goede maat. Op een iPhone tekende een video uit een piepklein vakje eerst nog even klein met zwarte rand.
+  shelf.style.cssText = "position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;opacity:0;pointer-events:none;z-index:-1;--fit:cover";
   document.body.appendChild(shelf);
 
   function make(page) {
@@ -1155,6 +1162,7 @@
     state.bag.slice(-2).forEach(function (p) {
       if (p.type !== "video" || VIDS[p.video]) return;
       var v = document.createElement("video");
+      v.className = "vid";
       v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
       v.preload = "auto";
       v.src = p.video; shelf.appendChild(v); v.load();
