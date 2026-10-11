@@ -315,9 +315,10 @@
   };
 
   function book(el) {
-    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, lx = 0, ly = 0, idle = 0, raf;
+    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, lx = 0, ly = 0, idle = 0, raf, hist = [], prev = 0;
     function down(e) {
       e.stopPropagation(); dragging = true; vy = 0; vx = 0; lx = e.clientX; ly = e.clientY;
+      hist = [{ t: performance.now(), ry: ry, rx: rx }];
       el.classList.add("dragging");
       try { el.setPointerCapture(e.pointerId); } catch (err) {}
     }
@@ -325,9 +326,24 @@
       if (!dragging) return;
       e.stopPropagation();
       var dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
-      ry += dx * 0.6; rx -= dy * 0.5; vy = dx * 0.6; vx = -dy * 0.5; idle = 0;
+      ry += dx * 0.6; rx -= dy * 0.5; idle = 0;
+      var now = performance.now();
+      hist.push({ t: now, ry: ry, rx: rx });
+      while (hist.length > 2 && now - hist[0].t > 100) hist.shift();
     }
-    function up() { dragging = false; el.classList.remove("dragging"); }
+    // Bij loslaten: de snelheid over de laatste ~100 ms, niet alleen de allerlaatste beweging.
+    // (Die laatste is bij een snelle zwiep vaak bijna nul, dan bleef het boek eerst even hangen.)
+    function up() {
+      if (!dragging) return;
+      dragging = false; el.classList.remove("dragging");
+      var now = performance.now(), last = hist[hist.length - 1], first = hist[0];
+      vy = vx = 0;
+      if (last && now - last.t < 80 && last.t > first.t) {
+        var f = 16.7 / (last.t - first.t);
+        vy = Math.max(-45, Math.min(45, (last.ry - first.ry) * f));
+        vx = Math.max(-30, Math.min(30, (last.rx - first.rx) * f));
+      }
+    }
     function key(e) {
       var s = { ArrowLeft: -5, ArrowRight: 5 }[e.key];
       if (s) { vy = s; idle = 0; e.preventDefault(); e.stopPropagation(); }
@@ -337,13 +353,16 @@
     el.addEventListener("pointerup", up);
     el.addEventListener("pointercancel", up);
     el.addEventListener("keydown", key);
-    (function tick() {
+    (function tick(now) {
+      // Rekenen in tijd in plaats van in beeldjes, zodat hij op elk scherm even soepel uitdraait.
+      var k = prev && now ? Math.min(3, (now - prev) / 16.7) : 1; prev = now || 0;
       if (!dragging) {
         // Helemaal doordraaien mag, alle kanten op; na een tijdje kantelt hij rustig terug.
-        ry += vy; vy *= 0.94; if (Math.abs(vy) < 0.02) vy = 0;
-        rx += vx; vx *= 0.94; if (Math.abs(vx) < 0.02) vx = 0; idle++;
-        if (!still && idle > 120) ry += 0.18;
-        if (idle > 60 && !vx) { rx = ((rx + 180) % 360 + 360) % 360 - 180; rx += (8 - rx) * 0.03; }
+        var damp = Math.pow(0.94, k);
+        ry += vy * k; vy *= damp; if (Math.abs(vy) < 0.02) vy = 0;
+        rx += vx * k; vx *= damp; if (Math.abs(vx) < 0.02) vx = 0; idle += k;
+        if (!still && idle > 120) ry += 0.18 * k;
+        if (idle > 60 && !vx) { rx = ((rx + 180) % 360 + 360) % 360 - 180; rx += (8 - rx) * (1 - Math.pow(0.97, k)); }
       }
       el.style.transform = "rotateX(" + rx.toFixed(2) + "deg) rotateY(" + ry.toFixed(2) + "deg)";
       raf = requestAnimationFrame(tick);
