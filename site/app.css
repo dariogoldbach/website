@@ -469,6 +469,7 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
   .bio-bg { right: auto; width: 50%; object-position: 50% 30%; }
   .card:has(.bio-bg)::before, .card:has(.bio-bg)::after { display: none; }
   .card:has(.bio-bg) > .sheet { left: 50%; padding-inline: calc(8 * var(--u)); }
+  .card:has(.bio-bg) > .sheet .txt { max-width: 23em; margin-inline: auto; }
   .card:has(.bio-bg) > .sheet { transform: none; opacity: 0; visibility: hidden; transition: opacity 300ms ease, visibility 0s 300ms; }
   .card:has(.bio-bg) > .sheet.open { opacity: 1; visibility: visible; transition: opacity 300ms ease 120ms; }
 
