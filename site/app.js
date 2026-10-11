@@ -178,16 +178,22 @@
       function set(x) { pos = Math.max(0, Math.min(maxPos(), x)); soon(); }
       var anim = null, idle = null;
       function centerOf(im) { return im.offsetLeft + im.offsetWidth / 2 - row.clientWidth / 2; }
-      function glide(to) {
+      // Uitglijden met ease-out, en zo snel beginnen als je vinger ging: geen stilstand of
+      // aanloopje na het loslaten, hij remt alleen nog af tot de cover in het midden staat.
+      function glide(to, v0) {
         cancelAnimationFrame(anim);
-        var from = pos, t0 = performance.now(), dur = 480 + Math.min(260, Math.abs(to - from) * 0.6);
-        (function tick(now) {
-          var k = Math.min(1, Math.max(0, (now - t0) / dur)), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-          pos = from + (to - from) * e;
+        var from = pos, dist = to - from, dur = 420;
+        if (v0 && dist && (v0 > 0) === (dist > 0)) dur = Math.max(220, Math.min(650, 3 * Math.abs(dist) / Math.abs(v0)));
+        var t0 = null;
+        // De eerste stap meteen in het eerstvolgende beeldje, alsof er al één beeldje verstreken is.
+        anim = requestAnimationFrame(function tick(now) {
+          if (t0 === null) t0 = now - 16.7;
+          var k = Math.min(1, Math.max(0, (now - t0) / dur)), e = 1 - Math.pow(1 - k, 3);
+          pos = from + dist * e;
           if (raf) { cancelAnimationFrame(raf); raf = null; }
           fit();
           anim = k < 1 ? requestAnimationFrame(tick) : null;
-        })(t0);
+        });
       }
       row._pos = function () { return pos; };
       row._move = function (x, wheel) {
@@ -206,7 +212,7 @@
           best = Math.max(0, Math.min(imgs.length - 1, cur + dir));
         }
         row._index = best;
-        glide(Math.max(0, Math.min(maxPos(), centerOf(imgs[best]))));
+        glide(Math.max(0, Math.min(maxPos(), centerOf(imgs[best]))), -(v || 0));
       };
       function resize() { if (!anim) set(centerOf(imgs[Math.max(0, row._index || 0)])); }
       window.addEventListener("resize", resize);
