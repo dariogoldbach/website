@@ -315,9 +315,9 @@
   };
 
   function book(el) {
-    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, lx = 0, ly = 0, idle = 0, raf;
+    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, thrown = false, lastMove = 0, lx = 0, ly = 0, idle = 0, raf;
     function down(e) {
-      e.stopPropagation(); dragging = true; vy = 0; vx = 0; lx = e.clientX; ly = e.clientY;
+      e.stopPropagation(); dragging = true; thrown = false; vy = 0; vx = 0; lx = e.clientX; ly = e.clientY; lastMove = performance.now();
       el.classList.add("dragging");
       try { el.setPointerCapture(e.pointerId); } catch (err) {}
     }
@@ -325,9 +325,12 @@
       if (!dragging) return;
       e.stopPropagation();
       var dx = e.clientX - lx, dy = e.clientY - ly; lx = e.clientX; ly = e.clientY;
+      // Al weggegooid? Dan pas weer vastpakken bij een echte beweging, niet bij een trillinkje.
+      if (thrown) { if (Math.abs(dx) + Math.abs(dy) < 4) return; thrown = false; }
+      lastMove = performance.now();
       ry += dx * 0.6; rx -= dy * 0.5; vy = dx * 0.6; vx = -dy * 0.5; idle = 0;
     }
-    function up() { dragging = false; el.classList.remove("dragging"); }
+    function up() { dragging = false; thrown = false; el.classList.remove("dragging"); }
     function key(e) {
       var s = { ArrowLeft: -5, ArrowRight: 5 }[e.key];
       if (s) { vy = s; idle = 0; e.preventDefault(); e.stopPropagation(); }
@@ -338,7 +341,9 @@
     el.addEventListener("pointercancel", up);
     el.addEventListener("keydown", key);
     (function tick() {
-      if (!dragging) {
+      // Na een ruk staat de muis vaak even stil voordat je loslaat: dan draait hij meteen al door.
+      if (dragging && !thrown && performance.now() - lastMove > 40 && (Math.abs(vy) > 6 || Math.abs(vx) > 5)) thrown = true;
+      if (!dragging || thrown) {
         // Helemaal doordraaien mag, alle kanten op; na een tijdje kantelt hij rustig terug.
         ry += vy; vy *= 0.94; if (Math.abs(vy) < 0.02) vy = 0;
         rx += vx; vx *= 0.94; if (Math.abs(vx) < 0.02) vx = 0; idle++;
