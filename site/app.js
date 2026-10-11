@@ -184,7 +184,7 @@
       function glide(to, v0) {
         cancelAnimationFrame(anim);
         var from = pos, dist = to - from, tau = 130, t0 = performance.now();
-        if (v0 && dist && (v0 > 0) === (dist > 0)) tau = Math.max(90, Math.min(450, Math.abs(dist / v0)));
+        if (v0 && dist && (v0 > 0) === (dist > 0)) tau = Math.max(90, Math.min(1000, Math.abs(dist / v0)));
         anim = requestAnimationFrame(function tick(now) {
           var left = dist * Math.exp(-Math.max(0, now - t0) / tau);
           var done = Math.abs(left) < 0.4;
@@ -203,7 +203,7 @@
       row._stop = function () { cancelAnimationFrame(anim); anim = null; clearTimeout(idle); };
       row._snap = function (v) {
         // Net als gewoon scrollen: met vaart glijdt hij door, ook langs meerdere covers, en loopt dan uit.
-        var at = pos - (v || 0) * 325, best = 0, bd = Infinity;
+        var at = pos - (v || 0) * 600, best = 0, bd = Infinity;
         imgs.forEach(function (im, i) { var d = Math.abs(centerOf(im) - at); if (d < bd) { bd = d; best = i; } });
         // Een snelle veeg, of een stukje slepen, gaat altijd minstens één cover verder.
         var cur = row._index || 0, moved = cur >= 0 ? pos - centerOf(imgs[cur]) : 0;
