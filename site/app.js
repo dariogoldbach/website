@@ -475,6 +475,44 @@
     else arm(22, 25, 26, 21, 28, 17);
   }
 
+  function vunk(pump) {
+    var J1 = "#c8202a", J2 = "#e8473a", J3 = "#8e141c", JE = "#f3b61f", D1 = "#3c5a8a", D2 = "#5a7cb0", D3 = "#2a3f63";
+    return art(24, 38, function (g) {
+      // Hoofd
+      g.d(12, 6, 5.5, C.skin, 6); g.r(15, 3, 2, 8, C.skin2); g.r(9, 1, 3, 2, C.skin3);
+      g.r(5, 6, 2, 3, C.skin); g.r(17, 6, 2, 3, C.skin2);
+      g.r(6, 5, 12, 2, INK); g.r(7, 7, 4, 1, INK); g.r(13, 7, 4, 1, INK); g.p(8, 5, C.grey4); g.p(14, 5, C.grey4);
+      g.r(10, 10, 4, 1, C.mouth); [8, 10, 13, 15].forEach(function (x2) { g.p(x2, 11, C.skin2); });
+      g.r(10, 12, 4, 1, C.skin2);
+      // Bomberjack met print, open over een zwart shirt
+      g.r(5, 13, 14, 12, J1); g.r(3, 14, 3, 9, J1);
+      if (!pump) g.r(18, 14, 3, 9, J1);
+      [[6, 15], [8, 18], [6, 21], [16, 15], [17, 19], [15, 22], [4, 17], [19, 17], [4, 21], [20, 21]].forEach(function (q) { if (pump && q[0] >= 18) return; g.p(q[0], q[1], JE); g.p(q[0] + 1, q[1] + 1, C.white); });
+      g.r(5, 13, 1, 12, J2); g.r(18, 13, 1, 12, J3);
+      g.r(9, 13, 6, 12, C.shirt); g.r(9, 13, 6, 1, INK); g.r(10, 15, 4, 3, C.white); g.r(11, 16, 2, 1, C.shirt);
+      g.r(5, 24, 14, 1, INK); g.r(3, 23, 3, 1, INK);
+      if (!pump) { g.r(18, 23, 3, 1, INK); g.r(19, 24, 2, 2, C.skin); }
+      else {
+        // Rechterarm omhoog met gebalde vuist: stand 2 helemaal gestrekt, stand 1 half.
+        var top = pump === 2 ? 4 : 8;
+        g.r(18, top, 3, 16 - top, J1); g.r(18, top, 1, 16 - top, J2); g.r(18, top, 3, 1, INK);
+        g.p(19, top + 3, JE); g.p(20, top + 4, C.white); g.p(19, top + 7, JE);
+        g.r(18, top - 4, 4, 4, C.skin); g.r(18, top - 4, 4, 1, C.skin2); g.p(21, top - 3, C.skin2); g.p(21, top - 1, C.skin2);
+        g.r(19, top - 3, 2, 1, C.skin2);
+      }
+      // De 808 onder de arm
+      g.r(0, 19, 12, 7, C.grey6); g.r(0, 19, 12, 1, C.grey4); g.r(1, 21, 10, 1, C.grey5);
+      [1, 3, 5, 7, 9].forEach(function (x2, i) { g.p(x2, 20, i % 2 ? C.red : C.grey2); });
+      for (var x3 = 1; x3 < 11; x3++) g.p(x3, 24, x3 < 4 ? C.red : x3 < 7 ? C.fire2 : x3 < 9 ? C.fire3 : C.white);
+      g.r(1, 22, 3, 1, C.fire3);
+      g.r(2, 26, 3, 1, C.skin);
+      // Spijkerbroek en rode sneakers
+      g.r(6, 25, 12, 3, D1); g.r(6, 28, 5, 7, D1); g.r(13, 28, 5, 7, D1); g.r(7, 26, 1, 9, D2); g.r(16, 28, 1, 7, D3);
+      g.r(11, 28, 2, 2, D3);
+      g.r(5, 35, 7, 2, C.red); g.r(13, 35, 7, 2, C.red); g.r(5, 37, 7, 1, C.white); g.r(13, 37, 7, 1, C.white); g.r(6, 35, 2, 1, "#ff6b6b"); g.r(14, 35, 2, 1, "#ff6b6b");
+    });
+  }
+
   var ART = {
     run1: function () { return art(34, 47, function (g) { dario(g, "run1"); }); },
     run2: function () { return art(34, 47, function (g) { dario(g, "run2"); }); },
@@ -601,34 +639,10 @@
       });
     },
     // David Vunk: kale kop, zonnebril, rood bomberjack, zwart shirt, spijkerbroek, rode sneakers en een 808 onder de arm.
-    vunk: function () {
-      var J1 = "#c8202a", J2 = "#e8473a", J3 = "#8e141c", JE = "#f3b61f", D1 = "#3c5a8a", D2 = "#5a7cb0", D3 = "#2a3f63";
-      return art(24, 38, function (g) {
-        // Hoofd
-        g.d(12, 6, 5.5, C.skin, 6); g.r(15, 3, 2, 8, C.skin2); g.r(9, 1, 3, 2, C.skin3);
-        g.r(5, 6, 2, 3, C.skin); g.r(17, 6, 2, 3, C.skin2);
-        g.r(6, 5, 12, 2, INK); g.r(7, 7, 4, 1, INK); g.r(13, 7, 4, 1, INK); g.p(8, 5, C.grey4); g.p(14, 5, C.grey4);
-        g.r(10, 10, 4, 1, C.mouth); [8, 10, 13, 15].forEach(function (x2) { g.p(x2, 11, C.skin2); });
-        g.r(10, 12, 4, 1, C.skin2);
-        // Bomberjack met print, open over een zwart shirt
-        g.r(5, 13, 14, 12, J1); g.r(3, 14, 3, 9, J1); g.r(18, 14, 3, 9, J1);
-        [[6, 15], [8, 18], [6, 21], [16, 15], [17, 19], [15, 22], [4, 17], [19, 17], [4, 21], [20, 21]].forEach(function (q) { g.p(q[0], q[1], JE); g.p(q[0] + 1, q[1] + 1, C.white); });
-        g.r(5, 13, 1, 12, J2); g.r(18, 13, 1, 12, J3);
-        g.r(9, 13, 6, 12, C.shirt); g.r(9, 13, 6, 1, INK); g.r(10, 15, 4, 3, C.white); g.r(11, 16, 2, 1, C.shirt);
-        g.r(5, 24, 14, 1, INK); g.r(3, 23, 3, 1, INK); g.r(18, 23, 3, 1, INK);
-        g.r(19, 24, 2, 2, C.skin);
-        // De 808 onder de arm
-        g.r(0, 19, 12, 7, C.grey6); g.r(0, 19, 12, 1, C.grey4); g.r(1, 21, 10, 1, C.grey5);
-        [1, 3, 5, 7, 9].forEach(function (x2, i) { g.p(x2, 20, i % 2 ? C.red : C.grey2); });
-        for (var x3 = 1; x3 < 11; x3++) g.p(x3, 24, x3 < 4 ? C.red : x3 < 7 ? C.fire2 : x3 < 9 ? C.fire3 : C.white);
-        g.r(1, 22, 3, 1, C.fire3);
-        g.r(2, 26, 3, 1, C.skin);
-        // Spijkerbroek en rode sneakers
-        g.r(6, 25, 12, 3, D1); g.r(6, 28, 5, 7, D1); g.r(13, 28, 5, 7, D1); g.r(7, 26, 1, 9, D2); g.r(16, 28, 1, 7, D3);
-        g.r(11, 28, 2, 2, D3);
-        g.r(5, 35, 7, 2, C.red); g.r(13, 35, 7, 2, C.red); g.r(5, 37, 7, 1, C.white); g.r(13, 37, 7, 1, C.white); g.r(6, 35, 2, 1, "#ff6b6b"); g.r(14, 35, 2, 1, "#ff6b6b");
-      });
-    },
+    vunk: function () { return vunk(0); },
+    // De fist pump: vuist half omhoog en helemaal omhoog.
+    vunk2: function () { return vunk(1); },
+    vunk3: function () { return vunk(2); },
     // Een robijn: rode geslepen edelsteen met facetten en een glinstering.
     robijn: function () {
       var R1 = "#cc0f2e", R2 = "#f0344f", R3 = "#7f0a1f", R4 = "#ff8f9f";
@@ -891,6 +905,7 @@
         o.x -= dx * (o.kind === "vliegplaat" ? 1.15 : 1);
         if (o.kind === "stuiterplaat") o.y = o.base - Math.abs(Math.sin(t * 5 + o.ph)) * 16;
         if (o.kind === "discobal") o.img = Math.floor(t * 6) % 2 ? IMG.discobal2 : IMG.discobal;
+        if (o.kind === "vunk") o.img = [IMG.vunk2, IMG.vunk3, IMG.vunk3, IMG.vunk2][Math.floor(t * 8 + o.ph) % 4];
         if (o.kind === "vuur") o.img = Math.floor(t * 8 + o.ph) % 2 ? IMG.vuur2 : IMG.vuur;
       });
       obs = obs.filter(function (o) { return o.x > -20; });
@@ -1028,7 +1043,7 @@
     goT.style.aspectRatio = gt.width + " / " + gt.height;
     var go = card.querySelector("[data-go]"), goImg = card.querySelector("[data-go-img]"), goName = card.querySelector("[data-go-name]");
     function showCulprit(o) {
-      var c = o.img.c;
+      var c = (o.kind === "vunk" ? IMG.vunk3 : o.img).c;
       goImg.width = c.width; goImg.height = c.height;
       var gx = goImg.getContext("2d"); gx.imageSmoothingEnabled = false; gx.clearRect(0, 0, c.width, c.height); gx.drawImage(c, 0, 0);
       goImg.style.aspectRatio = c.width + " / " + c.height;
