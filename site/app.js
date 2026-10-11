@@ -1203,6 +1203,8 @@
     el.style.setProperty("--bg", page.bg); el.style.setProperty("--fg", page.fg);
     el.style.setProperty("--accent", page.accent || page.fg);
     if (page.cover) { el.style.setProperty("--cover", page.cover); el.style.setProperty("--cover-ink", page.coverInk); }
+    // Eigen kleur voor de ronde knoppen (Goldband: roze als de kaft).
+    if (page.btn) { el.style.setProperty("--btn", page.btn); el.style.setProperty("--btn-ink", page.btnInk || page.fg); }
     el.innerHTML = TEMPLATES[page.type](page);
     var cleanup = MOUNT[page.type] ? MOUNT[page.type](el, page) : null;
     return { page: page, el: el, cleanup: cleanup };

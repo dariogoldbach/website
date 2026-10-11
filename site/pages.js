@@ -53,7 +53,7 @@ window.PAGES = [
   },
   {
     id: "goldband-net-echt", type: "boek",
-    bg: "#ffffff", fg: "#111111", cover: "#fde6ef", coverInk: "#111111",
+    bg: "#ffffff", fg: "#111111", cover: "#fde6ef", coverInk: "#111111", btn: "#fde6ef",
     title: "Goldband: Net Echt",
     images: { front: "img/goldband-front.jpg", spine: "img/goldband-spine.jpg", back: "img/goldband-back.jpg", ratio: 1.591, depth: 0.156 },
     text: "Een doorbraak als die van popsensatie Goldband komt zelden voor. Dat zo’n avontuur van binnenuit wordt opgeschreven is nog zeldzamer.",

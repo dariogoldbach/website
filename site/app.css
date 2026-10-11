@@ -277,7 +277,7 @@ h1, h2, p { margin: 0; }
 .icons { display: flex; gap: calc(5 * var(--u)); }
 .icon-btn {
   width: calc(13.5 * var(--u)); height: calc(13.5 * var(--u)); border-radius: 50%; display: grid; place-items: center;
-  background: var(--fg); color: var(--bg);
+  background: var(--btn, var(--fg)); color: var(--btn-ink, var(--bg));
 }
 .icon-btn svg { width: 50%; height: 50%; }
 .icon-btn:active { transform: scale(0.95); }
