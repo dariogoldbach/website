@@ -247,20 +247,29 @@
         b.querySelector("svg").outerHTML = on ? ICONS.sound : ICONS.muted;
       }
       // Meteen met geluid. Als de browser dat niet toestaat (nog niet op de site getikt), dan eerst zonder.
-      function start() {
-        if (still) return;
+      // Alleen een echte weigering (NotAllowedError) zet het geluid uit, en alleen van de laatste poging:
+      // een oudere play() die later alsnog afbreekt mag een nieuwere poging met geluid niet overrulen.
+      var tries = 0;
+      function withSound() {
+        var my = ++tries;
         sound(true);
-        // Alleen echt zonder geluid als de browser geluid weigert. Een play() die om een andere reden
-        // afbreekt (bv. omdat de video net verplaatst of nog aan het laden is) zette eerst ook het geluid uit.
         v.play().catch(function (e) {
+          if (my !== tries) return;
           if (e && e.name === "NotAllowedError") { sound(false); v.play().catch(function () {}); }
           else if (state.current && state.current.el === card) v.play().catch(function () {});
         });
       }
+      function start() { if (!still) withSound(); }
       // Tijdens het vegen speelt hij al (zonder geluid); als je loslaat gaat het geluid aan.
       if (!still) { sound(false); v.play().catch(function () {}); }
       card._activate = start;
-      b.addEventListener("click", function () { sound(v.muted); if (!v.muted) v.play().catch(function () {}); });
+      // Nog een kans aan het eind van dezelfde veeg (touchend telt op de iPhone zeker als aanraking),
+      // voor als de iPhone het geluid bij het loslaten nog weigerde. Niet als je zelf het geluid uitzette.
+      card._regain = function () { if (!still && !b.classList.contains("off-by-user")) withSound(); };
+      b.addEventListener("click", function () {
+        tries++; sound(v.muted); b.classList.toggle("off-by-user", v.muted);
+        if (!v.muted) v.play().catch(function () {});
+      });
       like.addEventListener("click", function () {
         liked = !liked; showLike();
         if (liked) { like.classList.remove("pop"); void like.offsetWidth; like.classList.add("pop"); }
@@ -282,7 +291,7 @@
         // Via composedPath, want de geluidsknop vervangt zijn icoon tijdens de klik en dan hangt e.target los.
         var path = e.composedPath ? e.composedPath() : [e.target];
         for (var i = 0; i < path.length; i++) if (path[i].matches && path[i].matches("button, a")) return;
-        if (v.muted) { sound(true); return v.play().catch(function () {}); }
+        if (v.muted) { tries++; sound(true); b.classList.remove("off-by-user"); return v.play().catch(function () {}); }
         if (v.paused) v.play().catch(function () {}); else v.pause();
       }
       frame.addEventListener("click", tap);
@@ -1295,6 +1304,20 @@
     }
   }
   frame.addEventListener("pointerup", release);
+  // iPhone: video's mogen alleen met geluid spelen als ze ooit tijdens een aanraking zijn gestart.
+  // Bij elke aanraking geven we de vooraf geladen video's die "zegen" (heel even stil starten en meteen
+  // weer stoppen), en na een veeg krijgt de nieuwe video nog een kans om met geluid te spelen.
+  document.addEventListener("touchend", function () {
+    Object.keys(VIDS).forEach(function (k) {
+      var w = VIDS[k];
+      if (w._blessed || w.parentNode !== shelf || !w.paused) return;
+      w._blessed = true;
+      var pr = w.play(); if (pr && pr.catch) pr.catch(function () {});
+      w.pause();
+    });
+    var c = state.current && state.current.el;
+    if (c && c._regain && performance.now() - lastSwipe < 200) c._regain();
+  }, true);
   frame.addEventListener("pointercancel", release);
 
   var wheelAcc = 0, wheelAxis = null, wheelLock = 0;
