@@ -250,7 +250,12 @@
       function start() {
         if (still) return;
         sound(true);
-        v.play().catch(function () { sound(false); v.play().catch(function () {}); });
+        // Alleen echt zonder geluid als de browser geluid weigert. Een play() die om een andere reden
+        // afbreekt (bv. omdat de video net verplaatst of nog aan het laden is) zette eerst ook het geluid uit.
+        v.play().catch(function (e) {
+          if (e && e.name === "NotAllowedError") { sound(false); v.play().catch(function () {}); }
+          else if (state.current && state.current.el === card) v.play().catch(function () {});
+        });
       }
       // Tijdens het vegen speelt hij al (zonder geluid); als je loslaat gaat het geluid aan.
       if (!still) { sound(false); v.play().catch(function () {}); }
