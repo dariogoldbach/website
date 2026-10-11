@@ -26,7 +26,7 @@ window.PAGES = [
     bg: "#ffffff", fg: "#111111", accent: "#ff1a0d",
     title: "Vier Weekenden",
     covers: ["img/vier-weekenden-00.jpg", "img/vier-weekenden-01.jpg", "img/vier-weekenden-02.jpg", "img/vier-weekenden-03.jpg", "img/vier-weekenden-04.jpg", "img/vier-weekenden-05.jpg", "img/vier-weekenden-06.jpg", "img/vier-weekenden-07.jpg", "img/vier-weekenden-08.jpg", "img/vier-weekenden-09.jpg", "img/vier-weekenden-10.jpg", "img/vier-weekenden-11.jpg", "img/vier-weekenden-12.jpg", "img/vier-weekenden-13.jpg", "img/vier-weekenden-14.jpg", "img/vier-weekenden-15.jpg"],
-    text: "Het verhaal van een jonge twintiger die verward na een relatie met een psychopaat op zoek gaat naar de perfecte liefde en een uitweg. Een uitweg van zijn kutbaan, zijn uitzichtloze leven, zijn doelloze bestaan.",
+    text: "Vier Weekenden is het verhaal van een jonge twintiger die verward na een relatie met een psychopaat op zoek gaat naar de perfecte liefde en een uitweg. Een uitweg van zijn kutbaan, zijn uitzichtloze leven, zijn doelloze bestaan.",
     links: [
       { text: "Luister op Spotify", icon: "spotify", href: "https://open.spotify.com/episode/0zR4Ko0c84NDSKU3PSaGiI" },
       { text: "Luister op Apple Podcasts", icon: "apple", href: "https://podcasts.apple.com/nl/podcast/vier-weekenden-h1/id1673680848?i=1000602239982" },
