@@ -474,8 +474,8 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 
   /* Covers: naar de zijkanten toe uitfaden, zodat er geen lange rij over het hele scherm ontstaat */
   .pod-covers {
-    -webkit-mask-image: linear-gradient(90deg, transparent calc(50% - 115 * var(--u)), #000 calc(50% - 40 * var(--u)), #000 calc(50% + 40 * var(--u)), transparent calc(50% + 115 * var(--u)));
-    mask-image: linear-gradient(90deg, transparent calc(50% - 115 * var(--u)), #000 calc(50% - 40 * var(--u)), #000 calc(50% + 40 * var(--u)), transparent calc(50% + 115 * var(--u)));
+    -webkit-mask-image: linear-gradient(90deg, transparent calc(50% - 78 * var(--u)), #000 calc(50% - 36 * var(--u)), #000 calc(50% + 36 * var(--u)), transparent calc(50% + 78 * var(--u)));
+    mask-image: linear-gradient(90deg, transparent calc(50% - 78 * var(--u)), #000 calc(50% - 36 * var(--u)), #000 calc(50% + 36 * var(--u)), transparent calc(50% + 78 * var(--u)));
   }
 
   /* Video: op een iPhone midden in beeld */
