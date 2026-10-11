@@ -282,6 +282,9 @@ h1, h2, p { margin: 0; }
 .icon-btn svg { width: 50%; height: 50%; }
 .icon-btn:active { transform: scale(0.95); }
 
+/* Boekenclub: diep donkerrood met rode letters */
+.club-title { font-size: calc(17 * var(--u)); line-height: 0.85; font-weight: 900; font-stretch: 62%; text-transform: uppercase; letter-spacing: -0.02em; max-width: 6.5em; margin-inline: auto; }
+
 /* Podcastcover gecentreerd */
 .pod-mid { align-items: center; text-align: center; }
 .pod-mid .txt { margin: 0 auto; }
@@ -465,6 +468,9 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 
 /* ---------- Alleen op een breed scherm ---------- */
 @media (min-width: 701px) and (min-aspect-ratio: 751/1000), (min-width: 901px) {
+  /* Lopende tekst op desktop een tikje kleiner */
+  .txt { font-size: max(0.9rem, calc(3.8 * var(--u))); }
+  .card:has(.bio-bg) .txt { font-size: max(0.85rem, calc(3.4 * var(--u))); }
   /* Bio: de foto heel (niet ingezoomd) links, de naam en de bio rechts ernaast, de naam in het midden */
   .card:has(.bio-bg) { padding-inline: calc(50% + 8 * var(--u)) calc(8 * var(--u)); justify-content: center; }
   .card:has(.bio-bg) > .mid { flex: 0 0 0; }

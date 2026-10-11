@@ -53,6 +53,7 @@
     share: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 4.5v4C6.8 9.2 3.5 13.6 2.5 19.5c2.6-3.4 6-5 11-5v4.1L21.5 11.5l-8-7z"/></svg>',
     play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
     instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35zM12.05 21.8h-.01a9.8 9.8 0 0 1-5-1.37l-.36-.21-3.72.98 1-3.63-.24-.37a9.8 9.8 0 0 1-1.5-5.22c0-5.42 4.41-9.83 9.84-9.83 2.63 0 5.1 1.03 6.96 2.88a9.78 9.78 0 0 1 2.88 6.96c0 5.42-4.42 9.83-9.85 9.83zm8.38-18.2A11.76 11.76 0 0 0 12.05.13C5.5.13.17 5.46.17 12c0 2.09.55 4.13 1.58 5.93L.07 24l6.22-1.63a11.84 11.84 0 0 0 5.76 1.47h.01c6.54 0 11.87-5.33 11.87-11.87 0-3.17-1.23-6.15-3.47-8.39z"/></svg>',
     tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>'
   };
 
@@ -98,7 +99,7 @@
           : '</div><div class="end"><div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>");
     },
     boek: function (p) {
-      return top("Boek", p) +
+      return top("Roman", p) +
         '<div class="mid"><div class="book-stage"><div class="book3d' + (p.images ? " has-img" : "") + '" tabindex="0" role="img" aria-label="' + esc(p.title) +
         ', als 3D-boek. Sleep om te draaien."' + bookStyle(p) + ">" +
         '<div class="f front"><b>' + (p.cover_title || esc(p.title)) + "</b><span>Dario Goldbach</span></div>" +
@@ -117,6 +118,11 @@
     contact: function (p) {
       return '<div class="mid"><p class="mail-big">Contact</p><p class="txt">' + esc(p.text) + "</p>" +
         '<div class="icons"><a class="icon-btn" href="mailto:' + esc(p.email) + '" aria-label="Stuur een mail">' + ICONS.mail + "</a></div></div>";
+    },
+    club: function (p) {
+      return '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
+        p.text.map(function (t) { return '<p class="txt">' + esc(t) + "</p>"; }).join("") +
+        '<div class="icons">' + iconLink(p.link) + "</div></div>";
     },
     social: function (p) {
       return '<div class="mid">' +
@@ -253,21 +259,29 @@
       function withSound() {
         var my = ++tries;
         sound(true);
-        v.play().catch(function (e) {
+        dbg("start met geluid: " + p.id);
+        v.play().then(function () { dbg("speelt, muted=" + v.muted + ": " + p.id); }, function (e) {
+          dbg("play geweigerd (" + (e && e.name) + ")" + (my !== tries || !alive ? " [oud]" : "") + ": " + p.id);
           if (my !== tries || !alive) return;
           if (e && e.name === "NotAllowedError") { sound(false); v.play().catch(function () {}); }
           else if (state.current && state.current.el === card) v.play().catch(function () {});
         });
       }
-      function start() { if (!still) withSound(); }
+      // Heb je het geluid zelf uitgezet, dan blijven volgende video's ook stil tot je het weer aanzet.
+      function start() {
+        if (still) return;
+        if (soundOff) { tries++; sound(false); v.play().catch(function () {}); return; }
+        withSound();
+      }
       // Tijdens het vegen speelt hij al (zonder geluid); als je loslaat gaat het geluid aan.
       if (!still) { sound(false); v.play().catch(function () {}); }
       card._activate = start;
+      card._deactivate = function () { tries++; dbg("oude video stil: " + p.id); v.muted = true; v.pause(); };
       // Nog een kans aan het eind van dezelfde veeg (touchend telt op de iPhone zeker als aanraking),
       // voor als de iPhone het geluid bij het loslaten nog weigerde. Niet als je zelf het geluid uitzette.
-      card._regain = function () { if (!still && !b.classList.contains("off-by-user")) withSound(); };
+      card._regain = function () { if (!still && !soundOff) withSound(); };
       b.addEventListener("click", function () {
-        tries++; sound(v.muted); b.classList.toggle("off-by-user", v.muted);
+        tries++; sound(v.muted); soundOff = v.muted;
         if (!v.muted) v.play().catch(function () {});
       });
       like.addEventListener("click", function () {
@@ -291,7 +305,7 @@
         // Via composedPath, want de geluidsknop vervangt zijn icoon tijdens de klik en dan hangt e.target los.
         var path = e.composedPath ? e.composedPath() : [e.target];
         for (var i = 0; i < path.length; i++) if (path[i].matches && path[i].matches("button, a")) return;
-        if (v.muted) { tries++; sound(true); b.classList.remove("off-by-user"); return v.play().catch(function () {}); }
+        if (v.muted) { tries++; sound(true); soundOff = false; return v.play().catch(function () {}); }
         if (v.paused) v.play().catch(function () {}); else v.pause();
       }
       frame.addEventListener("click", tap);
@@ -1059,6 +1073,7 @@
           form.querySelector("button").disabled = false;
           if (d && d.top) {
             form.hidden = true; showBoard(d.top, d.rank);
+            if (!playing) state.locked = null;
             msg.textContent = d.rank && d.rank <= 10 ? "Je staat op plek " + d.rank + "! Nog een keer? Of veeg verder." : msg.textContent;
           } else { sent = false; msg.textContent = (d && d.error) || "Dat lukte niet, probeer het nog eens."; }
         })
@@ -1067,7 +1082,17 @@
     var lastSecs = 0;
     loadBoard();
     function end(o) {
-      playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
+      playing = false; cancelAnimationFrame(raf); raf = null; draw();
+      // Na game over veeg je niet meteen weg: wie uit reflex nog springt of bukt, blijft hier.
+      // Kun je op het scorebord? Dan gaat de eerste veeg nog niet weg, de tweede wel.
+      var calm = performance.now() + 1500, warned = false;
+      state.locked = guard;
+      function guard() {
+        if (performance.now() < calm) return;
+        if (!form.hidden && !sent && !warned) { warned = true; toast("Nog even je naam invullen? Veeg nog een keer om verder te gaan."); return; }
+        state.locked = null;
+      }
+      setTimeout(function () { if (state.locked === guard && (form.hidden || sent)) state.locked = null; }, 1500);
       if (song) song.pause();
       deathSound();
       if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
@@ -1113,7 +1138,7 @@
       playing = false; cancelAnimationFrame(raf); document.removeEventListener("keydown", key);
       if (song) { song.pause(); song = null; }
       if (actx) { try { actx.close(); } catch (e) {} actx = null; }
-      if (state.locked === control) state.locked = null;
+      if (!playing || state.locked === control) state.locked = null;
     };
   }
 
@@ -1124,6 +1149,20 @@
   // Op de iPhone mag een speler pas met geluid spelen als hij één keer tijdens een tik is gestart;
   // die toestemming blijft bij de speler horen. Met steeds dezelfde spelers is één tik dus genoeg,
   // in plaats van dat elke nieuwe video opnieuw toestemming nodig heeft.
+  // Meetmodus: met ?debug in de link staat bovenin wat er met het geluid gebeurt.
+  var dbgEl = null;
+  function dbg(msg) {
+    if (!/[?&]debug/.test(location.search)) return;
+    if (!dbgEl) {
+      dbgEl = document.createElement("pre");
+      dbgEl.style.cssText = "position:fixed;left:4px;right:4px;top:4px;z-index:99;margin:0;padding:6px;font:10px/1.3 monospace;background:rgba(0,0,0,.75);color:#0f0;pointer-events:none;white-space:pre-wrap;max-height:45vh;overflow:hidden";
+      document.body.appendChild(dbgEl);
+    }
+    var t = (performance.now() / 1000).toFixed(1);
+    dbgEl.textContent = (t + " " + msg + "\n" + dbgEl.textContent).split("\n").slice(0, 16).join("\n");
+  }
+  // Geluid zelf uitgezet? Dan geldt dat voor alle video's tot je het weer aanzet.
+  var soundOff = false;
   var POOL = [], shelf = document.createElement("div");
   shelf.setAttribute("aria-hidden", "true");
   // Even groot als het scherm (maar onzichtbaar): verhuist een video van hier naar de pagina, dan heeft hij
@@ -1135,6 +1174,10 @@
     pv.className = "vid"; pv.muted = true; pv.loop = true; pv.playsInline = true;
     pv.setAttribute("playsinline", ""); pv.preload = "auto";
     shelf.appendChild(pv); POOL.push(pv);
+    (function (pv, n) {
+      pv.addEventListener("pause", function () { if (pv.parentNode !== shelf) dbg("speler " + n + " gepauzeerd"); });
+      pv.addEventListener("volumechange", function () { if (pv.parentNode !== shelf) dbg("speler " + n + " muted=" + pv.muted); });
+    })(pv, pi);
   }
   function upcoming() {
     return state.bag.slice(-2).filter(function (p) { return p.type === "video"; }).map(function (p) { return p.video; });
@@ -1244,6 +1287,9 @@
     setPos(old.el, v[0] * W, v[1] * H, true);
     setPos(next.el, 0, 0, true);
     show(next);
+    // De oude video meteen stil en op pauze, vóór de nieuwe met geluid start: de iPhone laat maar één
+    // video tegelijk geluid maken en kan de nieuwe anders weigeren.
+    if (old.el._deactivate) old.el._deactivate();
     if (next.el._activate) next.el._activate();
     setTimeout(function () { drop(old); next.el.classList.remove("moving"); state.busy = false; }, still ? 30 : 360);
   }
@@ -1262,8 +1308,11 @@
   frame.addEventListener("pointermove", function (e) {
     if (!drag || e.pointerId !== drag.id) return;
     var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    if (state.locked) {
-      // Tijdens het spel stuurt een veeg het spel, meteen al tijdens het vegen.
+    if (state.locked || drag.game) {
+      // Tijdens het spel stuurt een veeg het spel, meteen al tijdens het vegen. De rest van dezelfde
+      // veeg blijft bij het spel, ook als het net game over is, zodat je niet half wegschuift.
+      drag.game = true;
+      if (!state.locked) return;
       if (Math.max(Math.abs(dx), Math.abs(dy)) > 18) {
         state.locked(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "left" : "right") : (dy < 0 ? "up" : "down"));
         drag.x = e.clientX; drag.y = e.clientY;
@@ -1410,7 +1459,7 @@
   var hint = document.createElement("div");
   hint.className = "hint";
   hint.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2l4 4h-3v5h5V8l4 4-4 4v-3h-5v5h3l-4 4-4-4h3v-5H6v3l-4-4 4-4v3h5V6H8z"/></svg>' +
-    (window.matchMedia("(hover: hover) and (pointer: fine)").matches ? "Gebruik de pijltjes of scroll" : "Doomscroll alle kanten op");
+    "Doomscroll alle kanten op";
   function hideHint() { if (hint.parentNode) { hint.classList.add("gone"); setTimeout(function () { hint.remove(); }, 320); } }
 
   // Start: de pagina uit het adres (#contact), anders de bio
