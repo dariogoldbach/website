@@ -124,7 +124,10 @@
     },
     video: function (p) {
       // Schermvullend met een overlay zoals op TikTok: account, caption, like en delen.
-      return '<video class="vid" src="' + esc(p.video) + '"' + (p.poster ? ' poster="' + esc(p.poster) + '"' : "") +
+      // De stilstaande afbeelding is een gewone <img> eronder: Safari tekent een video-poster soms klein
+      // met zwarte randen. De video zelf wordt pas zichtbaar als het eerste beeldje echt getekend is.
+      return (p.poster ? '<img class="vid-poster" src="' + esc(p.poster) + '" alt="">' : "") +
+        '<video class="vid" src="' + esc(p.video) + '"' +
         ' loop playsinline preload="auto"></video>' +
         '<div class="vid-shade" aria-hidden="true"></div>' +
         '<div class="vid-play" aria-hidden="true">' + ICONS.play + "</div>" +
@@ -278,6 +281,10 @@
         if (v.paused) v.play().catch(function () {}); else v.pause();
       }
       frame.addEventListener("click", tap);
+      function shown() { v.classList.add("on"); }
+      v.addEventListener("playing", function () {
+        if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(shown); else setTimeout(shown, 60);
+      });
       v.addEventListener("play", function () { card.classList.remove("paused"); });
       v.addEventListener("pause", function () { card.classList.add("paused"); });
       v.addEventListener("timeupdate", function () { if (v.duration) bar.style.width = (v.currentTime / v.duration * 100) + "%"; });
@@ -1149,7 +1156,7 @@
       if (p.type !== "video" || VIDS[p.video]) return;
       var v = document.createElement("video");
       v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
-      v.preload = "auto"; if (p.poster) v.poster = p.poster;
+      v.preload = "auto";
       v.src = p.video; shelf.appendChild(v); v.load();
       VIDS[p.video] = v;
     });
