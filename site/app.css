@@ -472,6 +472,9 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
   .card:has(.bio-bg) > .sheet { transform: none; opacity: 0; visibility: hidden; transition: opacity 300ms ease, visibility 0s 300ms; }
   .card:has(.bio-bg) > .sheet.open { opacity: 1; visibility: visible; transition: opacity 300ms ease 120ms; }
 
+  /* De labels bovenin (Boek, Podcast...) iets lager, niet tegen de rand van het scherm */
+  .card > .top { margin-top: 4vh; }
+
   /* Covers: naar de zijkanten toe uitfaden, zodat er geen lange rij over het hele scherm ontstaat */
   .pod-covers {
     -webkit-mask-image: linear-gradient(90deg, transparent calc(50% - 78 * var(--u)), #000 calc(50% - 36 * var(--u)), #000 calc(50% + 36 * var(--u)), transparent calc(50% + 78 * var(--u)));
