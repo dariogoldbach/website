@@ -341,7 +341,7 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 .vid-play svg { width: calc(22 * var(--u)); height: calc(22 * var(--u)); filter: drop-shadow(0 2px 8px rgba(0,0,0,.4)); }
 .card.paused .vid-play { opacity: 1; }
 .vid-side {
-  position: absolute; z-index: 2; right: calc(var(--gut) + 3 * var(--u)); bottom: calc(calc(8 * var(--u)) + env(safe-area-inset-bottom, 0px));
+  position: absolute; z-index: 2; right: calc(var(--gut) + 3 * var(--u)); bottom: calc(var(--vb, 0px) + calc(8 * var(--u)) + env(safe-area-inset-bottom, 0px));
   display: flex; flex-direction: column; align-items: center; gap: calc(5 * var(--u));
 }
 .vid-avatar { display: block; width: calc(12.5 * var(--u)); height: calc(12.5 * var(--u)); border-radius: 50%; border: 2px solid #fff; overflow: hidden; }
@@ -356,7 +356,7 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 .vid-act.pop svg { animation: pop 420ms var(--ease); }
 @keyframes pop { 30% { transform: scale(1.35); } 100% { transform: scale(1); } }
 .card.centered .vid-info, .vid-info {
-  position: absolute; z-index: 2; left: calc(var(--gut) + 4 * var(--u)); right: calc(var(--gut) + 22 * var(--u)); bottom: calc(calc(7 * var(--u)) + env(safe-area-inset-bottom, 0px));
+  position: absolute; z-index: 2; left: calc(var(--gut) + 4 * var(--u)); right: calc(var(--gut) + 22 * var(--u)); bottom: calc(var(--vb, 0px) + calc(7 * var(--u)) + env(safe-area-inset-bottom, 0px));
   color: #fff; text-align: left; text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
 .vid-account { color: #fff; text-decoration: none; font-weight: 800; font-size: max(0.95rem, calc(4.3 * var(--u))); }
@@ -457,3 +457,43 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 /* Score bovenin het speelveld, geluidsknop rechtsonder in de hoek */
 .run-score { position: absolute; top: calc(3 * var(--u)); left: 50%; transform: translateX(-50%); pointer-events: none; font-weight: 700; }
 .run-wrap .run-sound { position: absolute; right: calc(2.5 * var(--u)); bottom: calc(2.5 * var(--u)); z-index: 2; }
+
+/* De Situatie: de lopende tekst gecentreerd */
+.card:has(.situatie-mark) .txt { text-align: center; margin-inline: auto; }
+
+/* ---------- Alleen op een breed scherm ---------- */
+@media (min-width: 701px) and (min-aspect-ratio: 751/1000), (min-width: 901px) {
+  /* Bio: de foto heel (niet ingezoomd) rechts, de naam en de bio links ernaast */
+  .card:has(.bio-bg) { padding-inline: calc(8 * var(--u)) calc(50% + 4 * var(--u)); }
+  .bio-bg { left: 50%; width: 50%; object-position: 50% 30%; }
+  .card:has(.bio-bg)::before { background: none; }
+  .card:has(.bio-bg) > .sheet { right: 50%; padding-inline: calc(8 * var(--u)) calc(4 * var(--u)); }
+  .card.bio-open::after { right: 50%; }
+
+  /* Video: op een iPhone midden in beeld */
+  .card:has(.vid) {
+    --sh: 84cqh; --pw: calc(var(--sh) * 9 / 19.5); --u: calc(var(--pw) / 100);
+    --gut: calc((100cqw - var(--pw)) / 2); --vb: calc((100cqh - var(--sh)) / 2);
+    background: var(--page);
+  }
+  .card:has(.vid) .vid, .card:has(.vid) .vid-shade, .card:has(.vid) .vid-play {
+    left: var(--gut); top: var(--vb); width: var(--pw); height: var(--sh); right: auto; bottom: auto;
+    border-radius: calc(var(--pw) * 0.13); object-fit: cover;
+  }
+  .card:has(.vid) .vid-bar { left: calc(var(--gut) + var(--pw) * 0.1); right: auto; width: calc(var(--pw) * 0.8); bottom: calc(var(--vb) + var(--pw) * 0.035); border-radius: 2px; overflow: hidden; }
+  /* De behuizing en de knoppen aan de zijkant */
+  .card:has(.vid)::before {
+    content: ""; position: absolute; pointer-events: none;
+    --b: calc(var(--pw) * 0.045);
+    left: calc(var(--gut) - var(--b)); top: calc(var(--vb) - var(--b));
+    width: calc(var(--pw) + 2 * var(--b)); height: calc(var(--sh) + 2 * var(--b));
+    border-radius: calc(var(--pw) * 0.13 + var(--b)); background: #0b0b0c;
+    box-shadow: 0 0 0 2px #3a3a3e, 0 0 0 3px #1b1b1d, 0 3vh 7vh rgba(40, 0, 20, .28);
+  }
+  /* Het eilandje bovenin */
+  .card:has(.vid)::after {
+    content: ""; position: absolute; pointer-events: none; z-index: 4;
+    left: calc(50% - var(--pw) * 0.16); top: calc(var(--vb) + var(--pw) * 0.03);
+    width: calc(var(--pw) * 0.32); height: calc(var(--pw) * 0.095); border-radius: 999px; background: #000;
+  }
+}
