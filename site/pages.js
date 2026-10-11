@@ -121,6 +121,14 @@ window.PAGES = [
     caption: "‘Zijn er ook kluisjes?’ 🔒",
   },
   {
+    id: "lowlands-vrijdag", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Lowlands, vrijdag: Wat is er gebeurd in de shotjes-bar?",
+    video: "media/lowlands-vrijdag.mp4", poster: "img/lowlands-vrijdag-poster.jpg",
+    account: "dariogoldbach & @lowlands_fest", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Wat is er gebeurd in de shotjes-bar?!",
+  },
+  {
     id: "lowlands-zondag", type: "video",
     bg: "#000000", fg: "#ffffff",
     title: "Lowlands, zondag: Het is alleen vanavond",
