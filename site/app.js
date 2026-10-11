@@ -1073,6 +1073,7 @@
           form.querySelector("button").disabled = false;
           if (d && d.top) {
             form.hidden = true; showBoard(d.top, d.rank);
+            if (!playing) state.locked = null;
             msg.textContent = d.rank && d.rank <= 10 ? "Je staat op plek " + d.rank + "! Nog een keer? Of veeg verder." : msg.textContent;
           } else { sent = false; msg.textContent = (d && d.error) || "Dat lukte niet, probeer het nog eens."; }
         })
@@ -1081,7 +1082,17 @@
     var lastSecs = 0;
     loadBoard();
     function end(o) {
-      playing = false; cancelAnimationFrame(raf); raf = null; state.locked = null; draw();
+      playing = false; cancelAnimationFrame(raf); raf = null; draw();
+      // Na game over veeg je niet meteen weg: wie uit reflex nog springt of bukt, blijft hier.
+      // Kun je op het scorebord? Dan gaat de eerste veeg nog niet weg, de tweede wel.
+      var calm = performance.now() + 1500, warned = false;
+      state.locked = guard;
+      function guard() {
+        if (performance.now() < calm) return;
+        if (!form.hidden && !sent && !warned) { warned = true; toast("Nog even je naam invullen? Veeg nog een keer om verder te gaan."); return; }
+        state.locked = null;
+      }
+      setTimeout(function () { if (state.locked === guard && (form.hidden || sent)) state.locked = null; }, 1500);
       if (song) song.pause();
       deathSound();
       if (score > best) { best = score; try { localStorage.setItem("dg-run-best", best); } catch (e) {} }
@@ -1127,7 +1138,7 @@
       playing = false; cancelAnimationFrame(raf); document.removeEventListener("keydown", key);
       if (song) { song.pause(); song = null; }
       if (actx) { try { actx.close(); } catch (e) {} actx = null; }
-      if (state.locked === control) state.locked = null;
+      if (!playing || state.locked === control) state.locked = null;
     };
   }
 
@@ -1297,8 +1308,11 @@
   frame.addEventListener("pointermove", function (e) {
     if (!drag || e.pointerId !== drag.id) return;
     var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    if (state.locked) {
-      // Tijdens het spel stuurt een veeg het spel, meteen al tijdens het vegen.
+    if (state.locked || drag.game) {
+      // Tijdens het spel stuurt een veeg het spel, meteen al tijdens het vegen. De rest van dezelfde
+      // veeg blijft bij het spel, ook als het net game over is, zodat je niet half wegschuift.
+      drag.game = true;
+      if (!state.locked) return;
       if (Math.max(Math.abs(dx), Math.abs(dy)) > 18) {
         state.locked(Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? "left" : "right") : (dy < 0 ? "up" : "down"));
         drag.x = e.clientX; drag.y = e.clientY;
@@ -1445,7 +1459,7 @@
   var hint = document.createElement("div");
   hint.className = "hint";
   hint.innerHTML = '<svg viewBox="0 0 24 24"><path d="M12 2l4 4h-3v5h5V8l4 4-4 4v-3h-5v5h3l-4 4-4-4h3v-5H6v3l-4-4 4-4v3h5V6H8z"/></svg>' +
-    (window.matchMedia("(hover: hover) and (pointer: fine)").matches ? "Gebruik de pijltjes of scroll" : "Doomscroll alle kanten op");
+    "Doomscroll alle kanten op";
   function hideHint() { if (hint.parentNode) { hint.classList.add("gone"); setTimeout(function () { hint.remove(); }, 320); } }
 
   // Start: de pagina uit het adres (#contact), anders de bio
