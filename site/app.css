@@ -332,7 +332,9 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 /* Video, schermvullend zoals op TikTok */
 .card:has(.vid) { padding: 0; }
 /* Op een breed scherm de hele video laten zien, met zwart ernaast */
-.vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: var(--fit, contain); background: #000; pointer-events: none; }
+.vid, .vid-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: var(--fit, contain); background: #000; pointer-events: none; }
+.vid { opacity: 0; }
+.vid.on { opacity: 1; }
 .vid-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, transparent 70%, rgba(0,0,0,.55)); }
 .vid-play {
   position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; color: rgba(255,255,255,.85);
@@ -488,7 +490,7 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
     --gut: calc((100cqw - var(--pw)) / 2); --vb: calc((100cqh - var(--sh)) / 2);
     background: var(--page);
   }
-  .card:has(.vid) .vid, .card:has(.vid) .vid-shade, .card:has(.vid) .vid-play {
+  .card:has(.vid) .vid, .card:has(.vid) .vid-poster, .card:has(.vid) .vid-shade, .card:has(.vid) .vid-play {
     left: var(--gut); top: var(--vb); width: var(--pw); height: var(--sh); right: auto; bottom: auto;
     border-radius: calc(var(--pw) * 0.13); object-fit: cover;
   }
