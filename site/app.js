@@ -261,16 +261,21 @@
           else if (state.current && state.current.el === card) v.play().catch(function () {});
         });
       }
-      function start() { if (!still) withSound(); }
+      // Heb je het geluid zelf uitgezet, dan blijven volgende video's ook stil tot je het weer aanzet.
+      function start() {
+        if (still) return;
+        if (soundOff) { tries++; sound(false); v.play().catch(function () {}); return; }
+        withSound();
+      }
       // Tijdens het vegen speelt hij al (zonder geluid); als je loslaat gaat het geluid aan.
       if (!still) { sound(false); v.play().catch(function () {}); }
       card._activate = start;
       card._deactivate = function () { tries++; dbg("oude video stil: " + p.id); v.muted = true; v.pause(); };
       // Nog een kans aan het eind van dezelfde veeg (touchend telt op de iPhone zeker als aanraking),
       // voor als de iPhone het geluid bij het loslaten nog weigerde. Niet als je zelf het geluid uitzette.
-      card._regain = function () { if (!still && !b.classList.contains("off-by-user")) withSound(); };
+      card._regain = function () { if (!still && !soundOff) withSound(); };
       b.addEventListener("click", function () {
-        tries++; sound(v.muted); b.classList.toggle("off-by-user", v.muted);
+        tries++; sound(v.muted); soundOff = v.muted;
         if (!v.muted) v.play().catch(function () {});
       });
       like.addEventListener("click", function () {
@@ -294,7 +299,7 @@
         // Via composedPath, want de geluidsknop vervangt zijn icoon tijdens de klik en dan hangt e.target los.
         var path = e.composedPath ? e.composedPath() : [e.target];
         for (var i = 0; i < path.length; i++) if (path[i].matches && path[i].matches("button, a")) return;
-        if (v.muted) { tries++; sound(true); b.classList.remove("off-by-user"); return v.play().catch(function () {}); }
+        if (v.muted) { tries++; sound(true); soundOff = false; return v.play().catch(function () {}); }
         if (v.paused) v.play().catch(function () {}); else v.pause();
       }
       frame.addEventListener("click", tap);
@@ -1139,6 +1144,8 @@
     var t = (performance.now() / 1000).toFixed(1);
     dbgEl.textContent = (t + " " + msg + "\n" + dbgEl.textContent).split("\n").slice(0, 16).join("\n");
   }
+  // Geluid zelf uitgezet? Dan geldt dat voor alle video's tot je het weer aanzet.
+  var soundOff = false;
   var POOL = [], shelf = document.createElement("div");
   shelf.setAttribute("aria-hidden", "true");
   // Even groot als het scherm (maar onzichtbaar): verhuist een video van hier naar de pagina, dan heeft hij
