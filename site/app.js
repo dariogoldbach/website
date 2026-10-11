@@ -120,11 +120,8 @@
         '<div class="icons"><a class="icon-btn" href="mailto:' + esc(p.email) + '" aria-label="Stuur een mail">' + ICONS.mail + "</a></div></div>";
     },
     club: function (p) {
-      // Het beeld heeft dezelfde rode achtergrond als de pagina, dus het loopt naadloos over.
-      return top(p.label, p) +
-        '<div class="mid club-mid"><img class="club-img" width="640" height="640" src="' + esc(p.image) + '" alt="' + esc(p.title) + ' bij Hito">' +
-        '<p class="club-when">' + esc(p.when) + "</p>" +
-        '<p class="txt">' + esc(p.text) + "</p>" +
+      return '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
+        p.text.map(function (t) { return '<p class="txt">' + esc(t) + "</p>"; }).join("") +
         '<div class="icons">' + iconLink(p.link) + "</div></div>";
     },
     social: function (p) {

@@ -282,9 +282,8 @@ h1, h2, p { margin: 0; }
 .icon-btn svg { width: 50%; height: 50%; }
 .icon-btn:active { transform: scale(0.95); }
 
-/* Boekenclub: het rode beeld loopt over in de rode pagina */
-.club-img { display: block; width: min(calc(78 * var(--u)), 42vh); aspect-ratio: 1; object-fit: cover; margin: calc(-6 * var(--u)) auto calc(-4 * var(--u)); }
-.club-when { font-family: var(--mono); font-size: max(0.85rem, calc(3.7 * var(--u))); line-height: 1.4; max-width: 30ch; margin-inline: auto; }
+/* Boekenclub: diep donkerrood met rode letters */
+.club-title { font-size: calc(17 * var(--u)); line-height: 0.85; font-weight: 900; font-stretch: 62%; text-transform: uppercase; letter-spacing: -0.02em; max-width: 6.5em; margin-inline: auto; }
 
 /* Podcastcover gecentreerd */
 .pod-mid { align-items: center; text-align: center; }
