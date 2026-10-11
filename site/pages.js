@@ -121,6 +121,14 @@ window.PAGES = [
     caption: "‘Zijn er ook kluisjes?’ 🔒",
   },
   {
+    id: "lowlands-zondag", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Lowlands, zondag: Het is alleen vanavond",
+    video: "media/lowlands-zondag.mp4", poster: "img/lowlands-zondag-poster.jpg",
+    account: "dariogoldbach & @lowlands_fest", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Het is alleen vanavond, vanavond 👀",
+  },
+  {
     id: "spel", type: "game",
     bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
   },
