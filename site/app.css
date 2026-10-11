@@ -509,3 +509,7 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
     width: calc(var(--pw) * 0.32); height: calc(var(--pw) * 0.095); border-radius: 999px; background: #000;
   }
 }
+
+/* Tekstversie van de site voor zoekmachines en schermlezers: onzichtbaar, behalve een link die focus krijgt. */
+.tekstversie { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tekstversie a:focus { position: fixed; left: 12px; top: 12px; z-index: 100; padding: 8px 12px; background: #111; color: #fff; white-space: normal; }

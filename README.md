@@ -7,3 +7,7 @@ De website van Dario Goldbach. Je swipet alle kanten op, zoals op TikTok, en elk
 - `site/app.js` regelt het vegen, de 3D-boeken en het springspel. `site/app.css` is de vormgeving.
 - `python3 build_preview.py` maakt `preview/dario-goldbach.html`, de hele site in één bestand om als voorbeeld te delen.
 - Netlify publiceert de map `site/` (zie `netlify.toml`).
+
+## Tekstversie voor Google
+Onderaan `site/index.html` staat een onzichtbare tekstversie van alle pagina's (voor zoekmachines en schermlezers).
+Na een wijziging in `site/pages.js`: draai `node tekstversie.cjs` om die bij te werken.
