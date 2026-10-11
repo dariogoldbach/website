@@ -122,7 +122,7 @@
     club: function (p) {
       // Het beeld heeft dezelfde rode achtergrond als de pagina, dus het loopt naadloos over.
       return top(p.label, p) +
-        '<div class="mid club-mid"><img class="club-img" src="' + esc(p.image) + '" alt="' + esc(p.title) + ' bij Hito">' +
+        '<div class="mid club-mid"><img class="club-img" width="640" height="640" src="' + esc(p.image) + '" alt="' + esc(p.title) + ' bij Hito">' +
         '<p class="club-when">' + esc(p.when) + "</p>" +
         '<p class="txt">' + esc(p.text) + "</p>" +
         '<div class="icons">' + iconLink(p.link) + "</div></div>";
