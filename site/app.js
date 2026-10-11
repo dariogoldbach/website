@@ -178,21 +178,20 @@
       function set(x) { pos = Math.max(0, Math.min(maxPos(), x)); soon(); }
       var anim = null, idle = null;
       function centerOf(im) { return im.offsetLeft + im.offsetWidth / 2 - row.clientWidth / 2; }
-      // Uitglijden met ease-out, en zo snel beginnen als je vinger ging: geen stilstand of
-      // aanloopje na het loslaten, hij remt alleen nog af tot de cover in het midden staat.
+      // Uitglijden zoals een echte scroll: hij gaat bij het loslaten precies zo snel verder als je
+      // vinger ging en remt dan geleidelijk af (exponentieel, net als iOS), tot de cover in het midden staat.
+      // De tijd telt vanaf het moment van loslaten, dus ook op 120 Hz schermen geen sprongetje.
       function glide(to, v0) {
         cancelAnimationFrame(anim);
-        var from = pos, dist = to - from, dur = 420;
-        if (v0 && dist && (v0 > 0) === (dist > 0)) dur = Math.max(260, Math.min(1100, 3 * Math.abs(dist) / Math.abs(v0)));
-        var t0 = null;
-        // De eerste stap meteen in het eerstvolgende beeldje, alsof er al één beeldje verstreken is.
+        var from = pos, dist = to - from, tau = 130, t0 = performance.now();
+        if (v0 && dist && (v0 > 0) === (dist > 0)) tau = Math.max(90, Math.min(450, Math.abs(dist / v0)));
         anim = requestAnimationFrame(function tick(now) {
-          if (t0 === null) t0 = now - 16.7;
-          var k = Math.min(1, Math.max(0, (now - t0) / dur)), e = 1 - Math.pow(1 - k, 3);
-          pos = from + dist * e;
+          var left = dist * Math.exp(-Math.max(0, now - t0) / tau);
+          var done = Math.abs(left) < 0.4;
+          pos = done ? to : to - left;
           if (raf) { cancelAnimationFrame(raf); raf = null; }
           fit();
-          anim = k < 1 ? requestAnimationFrame(tick) : null;
+          anim = done ? null : requestAnimationFrame(tick);
         });
       }
       row._pos = function () { return pos; };
@@ -1210,7 +1209,7 @@
     var row = e.target.closest(".pod-covers");
     if (row && row._stop) row._stop();
     drag = { x: e.clientX, y: e.clientY, t: performance.now(), axis: null, next: null, id: e.pointerId,
-      row: row, left: row && row._pos ? row._pos() : 0, lx: e.clientX, lt: performance.now(), v: 0 };
+      row: row, left: row && row._pos ? row._pos() : 0, lx: e.clientX, lt: performance.now(), v: 0, s: [] };
     try { frame.setPointerCapture(e.pointerId); } catch (err) {}
   });
   frame.addEventListener("pointermove", function (e) {
@@ -1231,8 +1230,10 @@
         if (Math.abs(dx) > Math.abs(dy)) { drag.axis = "row"; drag.row._dragging = true; }
       }
       if (drag.axis === "row") {
-        var now = performance.now(), ddt = Math.max(1, now - drag.lt);
-        drag.v = 0.7 * drag.v + 0.3 * (e.clientX - drag.lx) / ddt; drag.lx = e.clientX; drag.lt = now;
+        var now = performance.now();
+        drag.lx = e.clientX; drag.lt = now;
+        drag.s.push([now, e.clientX]);
+        while (drag.s.length > 2 && now - drag.s[0][0] > 100) drag.s.shift();
         drag.row._move(drag.left - dx);
         return;
       }
@@ -1256,7 +1257,12 @@
     if (!drag || e.pointerId !== drag.id) return;
     var d = drag; drag = null;
     var dx = e.clientX - d.x, dy = e.clientY - d.y, dt = Math.max(1, performance.now() - d.t);
-    if (d.axis === "row") { d.row._dragging = false; d.row._snap(performance.now() - d.lt > 120 ? 0 : d.v); return; }
+    if (d.axis === "row") {
+      // Snelheid van je vinger over de laatste ~100 ms (geen naijlend gemiddelde, dat gaf een rem bij loslaten).
+      var now = performance.now(), s = d.s, v = 0;
+      if (s.length > 1 && now - d.lt < 100) { var a = s[0], z = s[s.length - 1]; if (z[0] - a[0] > 0) v = (z[1] - a[1]) / (z[0] - a[0]); }
+      d.row._dragging = false; d.row._snap(v); return;
+    }
     if (!d.axis) return;
     lastSwipe = performance.now();
     var dist = d.axis === "x" ? dx : dy, size = d.axis === "x" ? frame.clientWidth : frame.clientHeight;
