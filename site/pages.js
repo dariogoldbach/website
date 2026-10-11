@@ -129,12 +129,20 @@ window.PAGES = [
     caption: "Wat is er gebeurd in de shotjes-bar?!",
   },
   {
+    id: "lowlands-zaterdag", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Lowlands, zaterdag: Een mooi toneelbeeld",
+    video: "media/lowlands-zaterdag.mp4", poster: "img/lowlands-zaterdag-poster.jpg",
+    account: "dariogoldbach & @lowlands_fest", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Een mooi toneelbeeld 🎭",
+  },
+  {
     id: "lowlands-zondag", type: "video",
     bg: "#000000", fg: "#ffffff",
-    title: "Lowlands, zondag: Het is alleen vanavond",
+    title: "Lowlands, zondag: Maan vindt het weird",
     video: "media/lowlands-zondag.mp4", poster: "img/lowlands-zondag-poster.jpg",
     account: "dariogoldbach & @lowlands_fest", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
-    caption: "Het is alleen vanavond, vanavond 👀",
+    caption: "Maan vindt het weird...",
   },
   {
     id: "spel", type: "game",
