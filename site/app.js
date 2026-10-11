@@ -84,7 +84,7 @@
         '<div class="mid pod-mid">' + (p.covers
           // Een rij covers (één per aflevering) waar je zijwaarts doorheen veegt; de volgende piept rechts in beeld.
           ? '<div class="pod-covers" aria-label="Covers van alle afleveringen">' + p.covers.map(function (c, i) {
-              return '<img class="pod-img" src="' + esc(c) + '" alt="Cover van aflevering ' + (i + 1) + '"' + (i ? ' loading="lazy"' : "") + ">";
+              return '<img class="pod-img" src="' + esc(c) + '" alt="Cover van aflevering ' + (i + 1) + '" decoding="async">';
             }).join("") + "</div>"
           : p.image
           ? '<img class="pod-img" src="' + esc(p.image) + '" alt="Cover van de podcast ' + esc(p.title) + '">'
@@ -161,51 +161,57 @@
     podcast: function (card) {
       var row = card.querySelector(".pod-covers");
       if (!row) return null;
-      var imgs = row.querySelectorAll(".pod-img"), raf = null;
+      // Geen echte scroll: we schuiven de covers zelf met een transform. Dat schuiven en het
+      // groter/kleiner worden gebeurt dan in hetzelfde beeldje, dus niets loopt achter of schokt.
+      var imgs = row.querySelectorAll(".pod-img"), raf = null, pos = 0;
+      function maxPos() { var l = imgs[imgs.length - 1]; return Math.max(0, centerOf(l)); }
       function fit() {
         raf = null;
-        var mid = row.scrollLeft + row.clientWidth / 2;
+        var mid = pos + row.clientWidth / 2;
         imgs.forEach(function (im) {
           var w = im.offsetWidth, off = im.offsetLeft + w / 2 - mid, d = Math.min(1, Math.abs(off) / w), sc = 1 - 0.22 * d;
-          im.style.transform = "scale(" + sc.toFixed(3) + ")";
+          im.style.transform = "translate3d(" + (-pos).toFixed(2) + "px,0,0) scale(" + sc.toFixed(4) + ")";
           im.style.zIndex = String(Math.round((1 - d) * 10));
         });
       }
       function soon() { if (!raf) raf = requestAnimationFrame(fit); }
-      // Zelf naar het midden klikken: het vegen loopt via het frame, dus de browser doet het niet.
+      function set(x) { pos = Math.max(0, Math.min(maxPos(), x)); soon(); }
       var anim = null, idle = null;
       function centerOf(im) { return im.offsetLeft + im.offsetWidth / 2 - row.clientWidth / 2; }
       function glide(to) {
         cancelAnimationFrame(anim);
-        var from = row.scrollLeft, t0 = performance.now(), dur = 480 + Math.min(260, Math.abs(to - from) * 0.6);
+        var from = pos, t0 = performance.now(), dur = 480 + Math.min(260, Math.abs(to - from) * 0.6);
         (function tick(now) {
-          var k = Math.min(1, (now - t0) / dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-          row.scrollLeft = from + (to - from) * e;
+          var k = Math.min(1, Math.max(0, (now - t0) / dur)), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+          pos = from + (to - from) * e;
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          fit();
           anim = k < 1 ? requestAnimationFrame(tick) : null;
         })(t0);
       }
+      row._pos = function () { return pos; };
+      row._move = function (x, wheel) {
+        set(x);
+        // Trackpad of scrollwiel: na het scrollen netjes naar de dichtstbijzijnde cover.
+        if (wheel) { clearTimeout(idle); idle = setTimeout(function () { row._index = -1; row._snap(0); }, 140); }
+      };
       row._stop = function () { cancelAnimationFrame(anim); anim = null; clearTimeout(idle); };
       row._snap = function (v) {
-        var at = row.scrollLeft - (v || 0) * 60, best = 0, bd = Infinity;
+        var at = pos - (v || 0) * 60, best = 0, bd = Infinity;
         imgs.forEach(function (im, i) { var d = Math.abs(centerOf(im) - at); if (d < bd) { bd = d; best = i; } });
         // Een snelle veeg, of een stukje slepen, gaat altijd minstens één cover verder.
-        var cur = row._index || 0, moved = cur >= 0 ? row.scrollLeft - centerOf(imgs[cur]) : 0;
+        var cur = row._index || 0, moved = cur >= 0 ? pos - centerOf(imgs[cur]) : 0;
         if (cur >= 0 && best === cur && (Math.abs(v || 0) > 0.35 || Math.abs(moved) > imgs[0].offsetWidth * 0.15)) {
           var dir = Math.abs(v || 0) > 0.35 ? (v < 0 ? 1 : -1) : (moved > 0 ? 1 : -1);
           best = Math.max(0, Math.min(imgs.length - 1, cur + dir));
         }
         row._index = best;
-        glide(Math.max(0, Math.min(row.scrollWidth - row.clientWidth, centerOf(imgs[best]))));
+        glide(Math.max(0, Math.min(maxPos(), centerOf(imgs[best]))));
       };
-      row.addEventListener("scroll", function () {
-        soon();
-        // Trackpad of scrollwiel: na het scrollen netjes naar de dichtstbijzijnde cover.
-        if (anim || row._dragging) return;
-        clearTimeout(idle); idle = setTimeout(function () { row._index = -1; row._snap(0); }, 140);
-      }, { passive: true });
-      window.addEventListener("resize", soon);
+      function resize() { if (!anim) set(centerOf(imgs[Math.max(0, row._index || 0)])); }
+      window.addEventListener("resize", resize);
       requestAnimationFrame(fit);
-      return function () { window.removeEventListener("resize", soon); if (raf) cancelAnimationFrame(raf); row._stop(); };
+      return function () { window.removeEventListener("resize", resize); if (raf) cancelAnimationFrame(raf); row._stop(); };
     },
     boek: function (card, p) {
       var stop = book(card.querySelector(".book3d")), qs = card.querySelectorAll(".quote"), n = 0, timer;
@@ -277,6 +283,7 @@
       };
     },
     bio: function (card) {
+      var wide = window.matchMedia("(min-width: 701px) and (min-aspect-ratio: 751/1000), (min-width: 901px)");
       var sheet = card.querySelector(".sheet"), open = card.querySelector("[data-sheet]");
       var end = card.querySelector(".end"), name = card.querySelector(".end h1");
       // De naam glijdt mee omhoog en komt precies boven de tekst te staan; de foto wordt donkerder.
@@ -284,8 +291,18 @@
         sheet.classList.toggle("open", on); sheet.setAttribute("aria-hidden", String(!on));
         open.setAttribute("aria-expanded", String(on));
         card.classList.toggle("bio-open", on);
-        var below = end.getBoundingClientRect().bottom - name.getBoundingClientRect().bottom;
-        end.style.transform = on ? "translateY(" + -(sheet.offsetHeight - below) + "px)" : "";
+        // Waar de naam ook staat (onderaan op de telefoon, in het midden op de desktop): net boven de tekst.
+        var r = card.getBoundingClientRect(), nb = name.getBoundingClientRect(), h = sheet.offsetHeight, shift;
+        if (wide.matches) {
+          // Desktop: naam en tekst samen netjes in het midden van de rechterhelft.
+          var gap = Math.max(0, (r.height - nb.height - h) / 2);
+          sheet.style.bottom = gap + "px";
+          shift = r.bottom - gap - h - nb.bottom;
+        } else {
+          sheet.style.bottom = "";
+          shift = r.bottom - (parseFloat(getComputedStyle(card).paddingBottom) || 0) - h - nb.bottom;
+        }
+        end.style.transform = on ? "translateY(" + shift + "px)" : "";
       }
       open.addEventListener("click", function () { set(true); });
       card.querySelector("[data-sheet-close]").addEventListener("click", function () { set(false); });
@@ -1143,7 +1160,7 @@
     var row = e.target.closest(".pod-covers");
     if (row && row._stop) row._stop();
     drag = { x: e.clientX, y: e.clientY, t: performance.now(), axis: null, next: null, id: e.pointerId,
-      row: row, left: row ? row.scrollLeft : 0, lx: e.clientX, lt: performance.now(), v: 0 };
+      row: row, left: row && row._pos ? row._pos() : 0, lx: e.clientX, lt: performance.now(), v: 0 };
     try { frame.setPointerCapture(e.pointerId); } catch (err) {}
   });
   frame.addEventListener("pointermove", function (e) {
@@ -1166,7 +1183,7 @@
       if (drag.axis === "row") {
         var now = performance.now(), ddt = Math.max(1, now - drag.lt);
         drag.v = 0.7 * drag.v + 0.3 * (e.clientX - drag.lx) / ddt; drag.lx = e.clientX; drag.lt = now;
-        drag.row.scrollLeft = drag.left - dx;
+        drag.row._move(drag.left - dx);
         return;
       }
     }
@@ -1214,7 +1231,7 @@
     e.preventDefault();
     // Zijwaarts scrollen boven de covers schuift de carrousel, niet de pagina.
     var row = e.target.closest && e.target.closest(".pod-covers");
-    if (row && Math.abs(e.deltaX) > Math.abs(e.deltaY)) { row._stop(); row.scrollLeft += e.deltaX; return; }
+    if (row && Math.abs(e.deltaX) > Math.abs(e.deltaY)) { if (row._move) { row._stop(); row._move(row._pos() + e.deltaX, true); } return; }
     var now = performance.now();
     if (now < wheelLock || state.busy || state.locked) return;
     var ax = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? "x" : "y";
