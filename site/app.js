@@ -183,7 +183,7 @@
       function glide(to, v0) {
         cancelAnimationFrame(anim);
         var from = pos, dist = to - from, dur = 420;
-        if (v0 && dist && (v0 > 0) === (dist > 0)) dur = Math.max(220, Math.min(650, 3 * Math.abs(dist) / Math.abs(v0)));
+        if (v0 && dist && (v0 > 0) === (dist > 0)) dur = Math.max(260, Math.min(1100, 3 * Math.abs(dist) / Math.abs(v0)));
         var t0 = null;
         // De eerste stap meteen in het eerstvolgende beeldje, alsof er al één beeldje verstreken is.
         anim = requestAnimationFrame(function tick(now) {
@@ -203,7 +203,8 @@
       };
       row._stop = function () { cancelAnimationFrame(anim); anim = null; clearTimeout(idle); };
       row._snap = function (v) {
-        var at = pos - (v || 0) * 60, best = 0, bd = Infinity;
+        // Net als gewoon scrollen: met vaart glijdt hij door, ook langs meerdere covers, en loopt dan uit.
+        var at = pos - (v || 0) * 325, best = 0, bd = Infinity;
         imgs.forEach(function (im, i) { var d = Math.abs(centerOf(im) - at); if (d < bd) { bd = d; best = i; } });
         // Een snelle veeg, of een stukje slepen, gaat altijd minstens één cover verder.
         var cur = row._index || 0, moved = cur >= 0 ? pos - centerOf(imgs[cur]) : 0;
