@@ -1,7 +1,7 @@
 /*
   Alle pagina's van de site. Een nieuwe pagina toevoegen = een nieuw blok in deze lijst.
   "placeholder: true" zet het label "voorbeeldtekst" op de pagina tot de echte tekst erin staat.
-  Soorten (type): bio, platform, podcast, boek, contact, social, video, game.
+  Soorten (type): bio, platform, podcast, boek, club, contact, social, video, game.
 */
 window.PAGES = [
   {
@@ -65,6 +65,16 @@ window.PAGES = [
     ],
     link: { text: "Bestel nu", icon: "cart", href: "https://libris.nl/singeluitgeverijen/a/dario-goldbach/goldband/501657554#paperback-9789038815930" },
     listen: { text: "Luister het audioboek op Spotify", icon: "spotify", href: "https://open.spotify.com/show/2hzgSzA1pBO2rF0AHQau2m" },
+  },
+  {
+    id: "boekenclub", type: "club",
+    bg: "#b20000", fg: "#ffffff", accent: "#ffffff",
+    label: "Boekenclub",
+    title: "Boekenclub de Zachte Kern",
+    image: "img/boekenclub.jpg",
+    when: "Elke laatste donderdag van de maand bij Hito op Scheveningen",
+    text: "Iedereen mag meedoen. Alle info staat in de WhatsApp-groep.",
+    link: { text: "Naar de WhatsApp-groep", icon: "whatsapp", href: "https://chat.whatsapp.com/HAaYDJQZIsk9XC5xEf11To" },
   },
   {
     id: "volg-me", type: "social",

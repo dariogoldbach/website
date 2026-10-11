@@ -7,6 +7,7 @@ for(const p of P){
   if(p.type==='bio'){h.push(`<h1>${esc(p.title)}</h1>`,`<p>${esc(p.text)}</p>`);}
   else if(p.type==='platform'||p.type==='podcast'){h.push(`<h2>${esc(p.title)}</h2>`,`<p>${esc(p.text)}</p>`);(p.links||[p.link]).filter(Boolean).forEach(l=>h.push(`<p>${a(l)}</p>`));}
   else if(p.type==='boek'){h.push(`<h2>${esc(p.title)}</h2>`,`<p>${esc(p.text)}</p>`);[p.link,p.listen].filter(Boolean).forEach(l=>h.push(`<p>${a(l)}</p>`));}
+  else if(p.type==='club'){h.push(`<h2>${esc(p.title)}</h2>`,`<p>${esc(p.when)}. ${esc(p.text)}</p>`,`<p>${a(p.link)}</p>`);}
   else if(p.type==='social'){h.push('<h2>Volg Dario</h2>','<p>'+p.links.map(a).join(' · ')+'</p>');}
   else if(p.type==='contact'){h.push('<h2>Contact</h2>',`<p>${esc(p.text)} <a href="mailto:${esc(p.email)}">${esc(p.email)}</a></p>`);}
   else if(p.type==='video'){h.push(`<h2>${esc(p.title)}</h2>`,`<p>${esc(p.caption)}</p>`);}
