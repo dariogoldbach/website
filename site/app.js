@@ -127,7 +127,7 @@
       // De stilstaande afbeelding is een gewone <img> eronder: Safari tekent een video-poster soms klein
       // met zwarte randen. De video zelf wordt pas zichtbaar als het eerste beeldje echt getekend is.
       return (p.poster ? '<img class="vid-poster" src="' + esc(p.poster) + '" alt="">' : "") +
-        '<video class="vid" src="' + esc(p.video) + '"' +
+        '<video class="vid" data-src="' + esc(p.video) + '"' +
         ' loop playsinline preload="auto"></video>' +
         '<div class="vid-shade" aria-hidden="true"></div>' +
         '<div class="vid-play" aria-hidden="true">' + ICONS.play + "</div>" +
@@ -234,9 +234,9 @@
     game: function (card) { return runner(card); },
     video: function (card, p) {
       var v = card.querySelector("video"), b = card.querySelector("[data-sound]"), bar = card.querySelector(".vid-bar i");
-      // Staat deze video al klaar (vooraf geladen), dan die gebruiken: dan begint hij meteen.
-      var warm = VIDS[p.video];
-      if (warm && !warm.parentNode.closest(".card")) { warm.className = "vid"; v.replaceWith(warm); v = warm; }
+      // Altijd een video uit de vaste set gebruiken (zie POOL), het liefst eentje die deze video al geladen heeft.
+      var warm = vidFor(p.video);
+      if (warm) { warm.className = "vid"; v.replaceWith(warm); v = warm; } else v.src = p.video;
       var like = card.querySelector("[data-like]"), liked = false;
       try { liked = localStorage.getItem("dg-like-" + p.id) === "1"; } catch (e) {}
       function showLike() { like.classList.toggle("on", liked); like.setAttribute("aria-pressed", String(liked)); }
@@ -249,12 +249,12 @@
       // Meteen met geluid. Als de browser dat niet toestaat (nog niet op de site getikt), dan eerst zonder.
       // Alleen een echte weigering (NotAllowedError) zet het geluid uit, en alleen van de laatste poging:
       // een oudere play() die later alsnog afbreekt mag een nieuwere poging met geluid niet overrulen.
-      var tries = 0;
+      var tries = 0, alive = true;
       function withSound() {
         var my = ++tries;
         sound(true);
         v.play().catch(function (e) {
-          if (my !== tries) return;
+          if (my !== tries || !alive) return;
           if (e && e.name === "NotAllowedError") { sound(false); v.play().catch(function () {}); }
           else if (state.current && state.current.el === card) v.play().catch(function () {});
         });
@@ -295,17 +295,21 @@
         if (v.paused) v.play().catch(function () {}); else v.pause();
       }
       frame.addEventListener("click", tap);
-      function shown() { v.classList.add("on"); }
-      v.addEventListener("playing", function () {
-        if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(shown); else setTimeout(shown, 60);
-      });
-      v.addEventListener("play", function () { card.classList.remove("paused"); });
-      v.addEventListener("pause", function () { card.classList.add("paused"); });
-      v.addEventListener("timeupdate", function () { if (v.duration) bar.style.width = (v.currentTime / v.duration * 100) + "%"; });
+      function shown() { if (alive) v.classList.add("on"); }
+      // De spelers worden hergebruikt, dus de luisteraars gaan er bij het opruimen weer af.
+      var on = {
+        playing: function () { if (v.requestVideoFrameCallback) v.requestVideoFrameCallback(shown); else setTimeout(shown, 60); },
+        play: function () { card.classList.remove("paused"); },
+        pause: function () { card.classList.add("paused"); },
+        timeupdate: function () { if (v.duration) bar.style.width = (v.currentTime / v.duration * 100) + "%"; }
+      };
+      Object.keys(on).forEach(function (k) { v.addEventListener(k, on[k]); });
       return function () {
+        alive = false; tries++;
+        Object.keys(on).forEach(function (k) { v.removeEventListener(k, on[k]); });
         frame.removeEventListener("click", tap); v.pause();
         // Een vooraf geladen video gaat terug naar de wachtrij, zodat hij de volgende keer weer meteen begint.
-        if (VIDS[p.video] === v) { v.muted = true; v.className = "vid"; try { v.currentTime = 0; } catch (e) {} shelf.appendChild(v); }
+        if (POOL.indexOf(v) >= 0) { v.muted = true; v.className = "vid"; try { v.currentTime = 0; } catch (e) {} shelf.appendChild(v); }
         else { v.removeAttribute("src"); v.load(); }
       };
     },
@@ -1116,12 +1120,36 @@
   // ---------- Kaarten maken en wisselen ----------
   var state = { current: null, busy: false, locked: null, seen: {}, bag: [] };
   // Vooraf geladen video's, buiten beeld geparkeerd.
-  var VIDS = {}, shelf = document.createElement("div");
+  // Een vaste set van vijf video-spelers die steeds opnieuw gebruikt worden (alleen de bron wisselt).
+  // Op de iPhone mag een speler pas met geluid spelen als hij één keer tijdens een tik is gestart;
+  // die toestemming blijft bij de speler horen. Met steeds dezelfde spelers is één tik dus genoeg,
+  // in plaats van dat elke nieuwe video opnieuw toestemming nodig heeft.
+  var POOL = [], shelf = document.createElement("div");
   shelf.setAttribute("aria-hidden", "true");
   // Even groot als het scherm (maar onzichtbaar): verhuist een video van hier naar de pagina, dan heeft hij
   // al de goede maat. Op een iPhone tekende een video uit een piepklein vakje eerst nog even klein met zwarte rand.
   shelf.style.cssText = "position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;opacity:0;pointer-events:none;z-index:-1;--fit:cover";
   document.body.appendChild(shelf);
+  for (var pi = 0; pi < 5; pi++) {
+    var pv = document.createElement("video");
+    pv.className = "vid"; pv.muted = true; pv.loop = true; pv.playsInline = true;
+    pv.setAttribute("playsinline", ""); pv.preload = "auto";
+    shelf.appendChild(pv); POOL.push(pv);
+  }
+  function upcoming() {
+    return state.bag.slice(-2).filter(function (p) { return p.type === "video"; }).map(function (p) { return p.video; });
+  }
+  // Een vrije speler (niet op een pagina) voor deze video: eentje die hem al geladen heeft, anders een
+  // speler die niet nodig is voor de eerstvolgende video's.
+  function vidFor(src) {
+    var free = POOL.filter(function (v) { return v.parentNode === shelf; });
+    for (var i = 0; i < free.length; i++) if (free[i]._src === src) return free[i];
+    var soon = upcoming();
+    var pick = free.filter(function (v) { return !v._src || soon.indexOf(v._src) < 0; })[0] || free[0];
+    if (!pick) return null;
+    pick._src = src; pick.src = src; pick.load();
+    return pick;
+  }
 
   function make(page) {
     var el = document.createElement("section");
@@ -1168,14 +1196,9 @@
   function warmUp() {
     if (navigator.connection && navigator.connection.saveData) return;
     if (!state.bag.length) fill();
-    state.bag.slice(-2).forEach(function (p) {
-      if (p.type !== "video" || VIDS[p.video]) return;
-      var v = document.createElement("video");
-      v.className = "vid";
-      v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
-      v.preload = "auto";
-      v.src = p.video; shelf.appendChild(v); v.load();
-      VIDS[p.video] = v;
+    upcoming().forEach(function (src) {
+      if (POOL.some(function (v) { return v._src === src; })) return;
+      vidFor(src);
     });
   }
 
@@ -1304,20 +1327,24 @@
     }
   }
   frame.addEventListener("pointerup", release);
-  // iPhone: video's mogen alleen met geluid spelen als ze ooit tijdens een aanraking zijn gestart.
-  // Bij elke aanraking geven we de vooraf geladen video's die "zegen" (heel even stil starten en meteen
-  // weer stoppen), en na een veeg krijgt de nieuwe video nog een kans om met geluid te spelen.
-  document.addEventListener("touchend", function () {
-    Object.keys(VIDS).forEach(function (k) {
-      var w = VIDS[k];
-      if (w._blessed || w.parentNode !== shelf || !w.paused) return;
-      w._blessed = true;
-      var pr = w.play(); if (pr && pr.catch) pr.catch(function () {});
+  // iPhone: elke speler uit de set krijgt bij een tik toestemming voor geluid (heel even stil starten en
+  // meteen weer stoppen). Een veeg telt op de iPhone niet als tik, daarom bij elke aanraking opnieuw
+  // proberen tot er een echte tik tussen zit. Na een veeg krijgt de nieuwe video nog een kans met geluid.
+  function bless() {
+    POOL.forEach(function (w) {
+      if (w.parentNode !== shelf || !w.paused || !w._src) return;
+      var pr = w.play();
+      if (pr && pr.catch) pr.catch(function () {});
       w.pause();
     });
+  }
+  document.addEventListener("touchend", function () {
+    bless();
     var c = state.current && state.current.el;
     if (c && c._regain && performance.now() - lastSwipe < 200) c._regain();
   }, true);
+  document.addEventListener("click", bless, true);
+  document.addEventListener("keydown", bless, true);
   frame.addEventListener("pointercancel", release);
 
   var wheelAcc = 0, wheelAxis = null, wheelLock = 0;
