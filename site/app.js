@@ -360,7 +360,9 @@
   };
 
   function book(el) {
-    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, thrown = false, lastMove = 0, lx = 0, ly = 0, idle = 0, raf;
+    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, thrown = false, lastMove = 0, lx = 0, ly = 0, raf;
+    // Meteen al draaien als de pagina in beeld komt; alleen na een zwiep eerst even uitdraaien.
+    var idle = 121;
     function down(e) {
       e.stopPropagation(); dragging = true; thrown = false; vy = 0; vx = 0; lx = e.clientX; ly = e.clientY; lastMove = performance.now();
       el.classList.add("dragging");
