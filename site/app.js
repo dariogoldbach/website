@@ -99,7 +99,7 @@
           : '</div><div class="end"><div class="row">' + p.links.map(function (l, i) { return link(l, i ? "ghost" : ""); }).join("") + "</div></div>");
     },
     boek: function (p) {
-      return top("Boek", p) +
+      return top("Roman", p) +
         '<div class="mid"><div class="book-stage"><div class="book3d' + (p.images ? " has-img" : "") + '" tabindex="0" role="img" aria-label="' + esc(p.title) +
         ', als 3D-boek. Sleep om te draaien."' + bookStyle(p) + ">" +
         '<div class="f front"><b>' + (p.cover_title || esc(p.title)) + "</b><span>Dario Goldbach</span></div>" +
