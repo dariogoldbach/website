@@ -484,7 +484,7 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
   /* De behuizing en de knoppen aan de zijkant */
   .card:has(.vid)::before {
     content: ""; position: absolute; pointer-events: none;
-    --b: calc(var(--pw) * 0.045);
+    --b: calc(var(--pw) * 0.022);
     left: calc(var(--gut) - var(--b)); top: calc(var(--vb) - var(--b));
     width: calc(var(--pw) + 2 * var(--b)); height: calc(var(--sh) + 2 * var(--b));
     border-radius: calc(var(--pw) * 0.13 + var(--b)); background: #0b0b0c;
