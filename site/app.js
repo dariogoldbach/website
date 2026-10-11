@@ -120,7 +120,7 @@
         '<div class="icons"><a class="icon-btn" href="mailto:' + esc(p.email) + '" aria-label="Stuur een mail">' + ICONS.mail + "</a></div></div>";
     },
     club: function (p) {
-      return '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
+      return top("Community", p) + '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
         p.text.map(function (t) { return '<p class="txt">' + esc(t) + "</p>"; }).join("") +
         '<div class="icons">' + iconLink(p.link) + "</div></div>";
     },
@@ -360,7 +360,9 @@
   };
 
   function book(el) {
-    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, thrown = false, lastMove = 0, lx = 0, ly = 0, idle = 0, raf;
+    var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, thrown = false, lastMove = 0, lx = 0, ly = 0, raf;
+    // Meteen al draaien als de pagina in beeld komt; alleen na een zwiep eerst even uitdraaien.
+    var idle = 121;
     function down(e) {
       e.stopPropagation(); dragging = true; thrown = false; vy = 0; vx = 0; lx = e.clientX; ly = e.clientY; lastMove = performance.now();
       el.classList.add("dragging");
@@ -1201,6 +1203,8 @@
     el.style.setProperty("--bg", page.bg); el.style.setProperty("--fg", page.fg);
     el.style.setProperty("--accent", page.accent || page.fg);
     if (page.cover) { el.style.setProperty("--cover", page.cover); el.style.setProperty("--cover-ink", page.coverInk); }
+    // Eigen kleur voor de ronde knoppen (Goldband: roze als de kaft).
+    if (page.btn) { el.style.setProperty("--btn", page.btn); el.style.setProperty("--btn-ink", page.btnInk || page.fg); }
     el.innerHTML = TEMPLATES[page.type](page);
     var cleanup = MOUNT[page.type] ? MOUNT[page.type](el, page) : null;
     return { page: page, el: el, cleanup: cleanup };

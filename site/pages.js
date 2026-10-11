@@ -53,7 +53,7 @@ window.PAGES = [
   },
   {
     id: "goldband-net-echt", type: "boek",
-    bg: "#ffffff", fg: "#111111", cover: "#fde6ef", coverInk: "#111111",
+    bg: "#ffffff", fg: "#111111", cover: "#fde6ef", coverInk: "#111111", btn: "#fde6ef",
     title: "Goldband: Net Echt",
     images: { front: "img/goldband-front.jpg", spine: "img/goldband-spine.jpg", back: "img/goldband-back.jpg", ratio: 1.591, depth: 0.156 },
     text: "Een doorbraak als die van popsensatie Goldband komt zelden voor. Dat zo’n avontuur van binnenuit wordt opgeschreven is nog zeldzamer.",
@@ -71,7 +71,7 @@ window.PAGES = [
     bg: "#1c0303", fg: "#ff2b2b", accent: "#ff2b2b",
     title: "Boekenclub de Zachte Kern",
     text: [
-      "Elke laatste donderdag van de maand komt Boekenclub de Zachte Kern samen bij hito, de mooiste strandtent van Scheveningen. Iedereen is welkom, van literaire veteranen tot brainrot-lezers.",
+      "Elke laatste donderdag van de maand komt Boekenclub de Zachte Kern samen bij hito, de mooiste strandtent van Scheveningen. Iedereen is welkom, van literaire veteranen tot brainrot-lezers. Doe mee!",
       "Kom in de appgroep en zeg slimme dingen.",
     ],
     link: { text: "Naar de WhatsApp-groep", icon: "whatsapp", href: "https://chat.whatsapp.com/HAaYDJQZIsk9XC5xEf11To" },
