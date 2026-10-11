@@ -329,20 +329,24 @@
       ry += dx * 0.6; rx -= dy * 0.5; idle = 0;
       var now = performance.now();
       hist.push({ t: now, ry: ry, rx: rx });
-      while (hist.length > 2 && now - hist[0].t > 100) hist.shift();
+      while (hist.length > 2 && now - hist[0].t > 120) hist.shift();
     }
-    // Bij loslaten: de snelheid over de laatste ~100 ms, niet alleen de allerlaatste beweging.
-    // (Die laatste is bij een snelle zwiep vaak bijna nul, dan bleef het boek eerst even hangen.)
+    // Bij loslaten: de snelste beweging van de laatste ~60 ms (minstens zo hard als die beweging zelf).
+    // Zo draait hij net zo hard door als je zwiept, ook als de allerlaatste beweging klein was.
     function up() {
       if (!dragging) return;
       dragging = false; el.classList.remove("dragging");
-      var now = performance.now(), last = hist[hist.length - 1], first = hist[0];
+      var now = performance.now(), last = hist[hist.length - 1], by = 0, bx = 0;
       vy = vx = 0;
-      if (last && now - last.t < 80 && last.t > first.t) {
-        var f = 16.7 / (last.t - first.t);
-        vy = Math.max(-45, Math.min(45, (last.ry - first.ry) * f));
-        vx = Math.max(-30, Math.min(30, (last.rx - first.rx) * f));
+      if (!last || now - last.t > 250) return;
+      for (var i = hist.length - 1; i > 0 && last.t - hist[i].t < 60; i--) {
+        var a = hist[i - 1], b = hist[i], f = Math.max(1, 16.7 / Math.max(8, b.t - a.t));
+        var sy = (b.ry - a.ry) * f, sx = (b.rx - a.rx) * f;
+        if (Math.abs(sy) > Math.abs(by)) by = sy;
+        if (Math.abs(sx) > Math.abs(bx)) bx = sx;
       }
+      vy = Math.max(-60, Math.min(60, by));
+      vx = Math.max(-40, Math.min(40, bx));
     }
     function key(e) {
       var s = { ArrowLeft: -5, ArrowRight: 5 }[e.key];
