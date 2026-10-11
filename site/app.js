@@ -120,7 +120,7 @@
         '<div class="icons"><a class="icon-btn" href="mailto:' + esc(p.email) + '" aria-label="Stuur een mail">' + ICONS.mail + "</a></div></div>";
     },
     club: function (p) {
-      return '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
+      return top("Community", p) + '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
         p.text.map(function (t) { return '<p class="txt">' + esc(t) + "</p>"; }).join("") +
         '<div class="icons">' + iconLink(p.link) + "</div></div>";
     },

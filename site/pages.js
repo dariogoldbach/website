@@ -71,7 +71,7 @@ window.PAGES = [
     bg: "#1c0303", fg: "#ff2b2b", accent: "#ff2b2b",
     title: "Boekenclub de Zachte Kern",
     text: [
-      "Elke laatste donderdag van de maand komt Boekenclub de Zachte Kern samen bij hito, de mooiste strandtent van Scheveningen. Iedereen is welkom, van literaire veteranen tot brainrot-lezers.",
+      "Elke laatste donderdag van de maand komt Boekenclub de Zachte Kern samen bij hito, de mooiste strandtent van Scheveningen. Iedereen is welkom, van literaire veteranen tot brainrot-lezers. Doe mee!",
       "Kom in de appgroep en zeg slimme dingen.",
     ],
     link: { text: "Naar de WhatsApp-groep", icon: "whatsapp", href: "https://chat.whatsapp.com/HAaYDJQZIsk9XC5xEf11To" },
