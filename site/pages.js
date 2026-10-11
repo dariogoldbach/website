@@ -153,6 +153,22 @@ window.PAGES = [
     caption: "Maan vindt het weird...",
   },
   {
+    id: "sophie-kemperman-leest-goldband", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Sophie Kemperman leest Goldband",
+    video: "media/skate.mp4", poster: "img/skate-poster.jpg",
+    account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Skate, de beste plek om je beide polsen te breken.",
+  },
+  {
+    id: "vader-leest-goldband", type: "video",
+    bg: "#000000", fg: "#ffffff",
+    title: "Frits Goldbach leest Goldband",
+    video: "media/vader.mp4", poster: "img/vader-poster.jpg",
+    account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
+    caption: "Topservice! 👌",
+  },
+  {
     id: "spel", type: "game",
     bg: "#f2eee3", fg: "#1b1b1b", accent: "#ff5a36",
   },
