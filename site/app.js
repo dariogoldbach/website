@@ -1077,12 +1077,24 @@
   function drop(c) { if (c.cleanup) c.cleanup(); c.el.remove(); }
 
   // Trekzak: alle pagina's in willekeurige volgorde, zodat je ze allemaal ziet voordat er één terugkomt.
-  function fill() {
-    var cur = state.current && state.current.page.id;
-    state.bag = PAGES.filter(function (p) { return p.id !== cur; });
-    for (var i = state.bag.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1)), t = state.bag[i]; state.bag[i] = state.bag[j]; state.bag[j] = t;
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
     }
+    return a;
+  }
+  // Nooit twee video's na elkaar: eerst de andere pagina's schudden, dan elke video in een eigen gat
+  // daartussen zetten. De zak wordt van achteren geleegd, dus staat er nu een video in beeld,
+  // dan mag het laatste gat (de eerstvolgende pagina) geen video krijgen.
+  function fill() {
+    var cur = state.current && state.current.page, rest = PAGES.filter(function (p) { return p !== cur; });
+    var vids = shuffle(rest.filter(function (p) { return p.type === "video"; }));
+    var bag = shuffle(rest.filter(function (p) { return p.type !== "video"; }));
+    var gaps = [];
+    for (var g = 0; g <= bag.length; g++) if (!(g === bag.length && cur && cur.type === "video")) gaps.push(g);
+    gaps = shuffle(gaps).slice(0, vids.length).sort(function (x, y) { return y - x; });
+    gaps.forEach(function (g, k) { bag.splice(g, 0, vids[k]); });
+    state.bag = bag;
   }
   function pick() {
     if (!state.bag.length) fill();
