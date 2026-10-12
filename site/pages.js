@@ -1,7 +1,7 @@
 /*
   Alle pagina's van de site. Een nieuwe pagina toevoegen = een nieuw blok in deze lijst.
   "placeholder: true" zet het label "voorbeeldtekst" op de pagina tot de echte tekst erin staat.
-  Soorten (type): bio, platform, podcast, boek, club, contact, social, video, game.
+  Soorten (type): bio, platform, podcast, boek, club, agenda, contact, social, video, game.
 */
 window.PAGES = [
   {
@@ -79,11 +79,11 @@ window.PAGES = [
   {
     id: "agenda", type: "agenda",
     bg: "#3a7fe0", fg: "#071a45", accent: "#071a45", sky: "img/lucht.jpg",
-    // Optredens verdwijnen vanzelf de dag nadat ze geweest zijn.
+    // Een optreden verdwijnt vanzelf zodra het afgelopen is (end, Nederlandse tijd); zonder optredens verdwijnt de hele pagina.
     items: [
-      { date: "2026-10-16", when: "Vrijdag 16 okt | 17:30 - 18:30", what: "Haagse Media Awards", where: "INTER-CITY, Den Haag" },
-      { date: "2026-10-23", when: "Vrijdag 23 okt | 22:00 - 01:00", what: "The Beat Column", where: "NPO 3FM" },
-      { date: "2026-10-29", when: "Donderdag 29 okt | 20:00 - 21:30", what: "Boekenclub de Zachte Kern", where: "hito, Scheveningen" },
+      { end: "2026-10-16T18:30:00+02:00", when: "Vrijdag 16 okt | 17:30 - 18:30", what: "Haagse Media Awards", where: "INTER-CITY, Den Haag" },
+      { end: "2026-10-24T01:00:00+02:00", when: "Vrijdag 23 okt | 22:00 - 01:00", what: "The Beat Column", where: "NPO 3FM" },
+      { end: "2026-10-29T21:30:00+01:00", when: "Donderdag 29 okt | 20:00 - 21:30", what: "Boekenclub de Zachte Kern", where: "hito, Scheveningen" },
     ],
   },
   {

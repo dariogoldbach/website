@@ -2,6 +2,9 @@
 (function () {
   "use strict";
   var PAGES = window.PAGES || [];
+  // Agenda: een optreden verdwijnt zodra het afgelopen is; zonder optredens verdwijnt de hele pagina.
+  function nogTeGaan(p) { return (p.items || []).filter(function (it) { return !it.end || new Date(it.end) > new Date(); }); }
+  PAGES = PAGES.filter(function (p) { return p.type !== "agenda" || nogTeGaan(p).length; });
   // Knopstijl: "c" = halfvette schuine schreefletter met licht ronde hoeken (Dario koos C). "a" en "b" staan nog in app.css.
   if (!document.documentElement.dataset.knop) document.documentElement.dataset.knop = "1";
   var frame = document.getElementById("frame");
@@ -120,8 +123,7 @@
         '<div class="icons"><a class="icon-btn" href="mailto:' + esc(p.email) + '" aria-label="Stuur een mail">' + ICONS.mail + "</a></div></div>";
     },
     agenda: function (p) {
-      var today = new Date(), d = today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + ("0" + today.getDate()).slice(-2);
-      var items = p.items.filter(function (it) { return !it.date || it.date >= d; });
+      var items = nogTeGaan(p);
       return (p.sky ? '<div class="sky" style="background-image:url(' + p.sky + ')"></div>' : "") +
         top("Agenda", p) + '<div class="mid agenda-mid">' +
         (items.length ? '<ul class="agenda">' + items.map(function (it) {
