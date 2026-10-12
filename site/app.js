@@ -124,7 +124,8 @@
       var items = p.items.filter(function (it) { return !it.date || it.date >= d; });
       return top("Agenda", p) + '<div class="mid agenda-mid"><h2 class="club-title">Agenda</h2>' +
         (items.length ? '<ul class="agenda">' + items.map(function (it) {
-          return '<li><span class="ag-when">' + esc(it.when) + '</span><span class="ag-what">' + esc(it.what) + "</span></li>";
+          return '<li><span class="ag-when">' + esc(it.when) + '</span><span class="ag-what">' + esc(it.what) + "</span>" +
+            (it.where ? '<span class="ag-where">' + esc(it.where) + "</span>" : "") + "</li>";
         }).join("") + "</ul>" : '<p class="txt">Binnenkort meer.</p>') + "</div>";
     },
     club: function (p) {

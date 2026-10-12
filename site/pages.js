@@ -81,8 +81,9 @@ window.PAGES = [
     bg: "#ff5a36", fg: "#111111", accent: "#111111",
     // Optredens verdwijnen vanzelf de dag nadat ze geweest zijn.
     items: [
-      { date: "2026-10-16", when: "Vrijdag 16 oktober", what: "Haagse Media Awards" },
-      { date: "2026-10-23", when: "Vrijdag 23 oktober", what: "3FM Column | Amsterdam Dance Event" },
+      { date: "2026-10-16", when: "Vrijdag 16 okt | 17:30 - 18:30", what: "Haagse Media Awards", where: "INTER-CITY, Den Haag" },
+      { date: "2026-10-23", when: "Vrijdag 23 okt | 22:00 - 01:00", what: "The Beat Column", where: "NPO 3FM" },
+      { date: "2026-10-29", when: "Donderdag 29 okt | 20:00 - 21:30", what: "Boekenclub de Zachte Kern", where: "hito, Scheveningen" },
     ],
   },
   {

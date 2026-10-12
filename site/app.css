@@ -286,7 +286,8 @@ h1, h2, p { margin: 0; }
 .agenda { list-style: none; margin: calc(6 * var(--u)) 0 0; padding: 0; display: grid; gap: calc(5 * var(--u)); }
 .agenda li { display: grid; gap: calc(1 * var(--u)); }
 .ag-when { font-family: var(--mono, "JetBrains Mono", monospace); font-size: max(0.8rem, calc(3.4 * var(--u))); text-transform: uppercase; letter-spacing: 0.06em; }
-.ag-what { font-size: max(1.1rem, calc(6 * var(--u))); line-height: 1.1; font-weight: 800; max-width: 16em; margin-inline: auto; }
+.ag-what { font-size: max(1.1rem, calc(6 * var(--u))); line-height: 1; font-weight: 900; font-stretch: 62%; text-transform: uppercase; max-width: 16em; margin-inline: auto; }
+.ag-where { font-size: max(0.9rem, calc(3.8 * var(--u))); }
 /* Boekenclub: diep donkerrood met rode letters */
 .club-title { font-size: calc(17 * var(--u)); line-height: 0.85; font-weight: 900; font-stretch: 62%; text-transform: uppercase; letter-spacing: -0.02em; max-width: 6.5em; margin-inline: auto; }
 
