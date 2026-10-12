@@ -77,6 +77,15 @@ window.PAGES = [
     link: { text: "Naar de WhatsApp-groep", icon: "whatsapp", href: "https://chat.whatsapp.com/HAaYDJQZIsk9XC5xEf11To" },
   },
   {
+    id: "agenda", type: "agenda",
+    bg: "#ff5a36", fg: "#111111", accent: "#111111",
+    // Optredens verdwijnen vanzelf de dag nadat ze geweest zijn.
+    items: [
+      { date: "2026-10-16", when: "Vrijdag 16 oktober", what: "Haagse Media Awards" },
+      { date: "2026-10-23", when: "Vrijdag 23 oktober", what: "3FM Column | Amsterdam Dance Event" },
+    ],
+  },
+  {
     id: "volg-me", type: "social",
     bg: "#f5f1e8", fg: "#111111", accent: "#ff5a36",
     links: [

@@ -119,6 +119,14 @@
       return '<div class="mid"><p class="mail-big">Contact</p><p class="txt">' + esc(p.text) + "</p>" +
         '<div class="icons"><a class="icon-btn" href="mailto:' + esc(p.email) + '" aria-label="Stuur een mail">' + ICONS.mail + "</a></div></div>";
     },
+    agenda: function (p) {
+      var today = new Date(), d = today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + ("0" + today.getDate()).slice(-2);
+      var items = p.items.filter(function (it) { return !it.date || it.date >= d; });
+      return top("Agenda", p) + '<div class="mid agenda-mid"><h2 class="club-title">Agenda</h2>' +
+        (items.length ? '<ul class="agenda">' + items.map(function (it) {
+          return '<li><span class="ag-when">' + esc(it.when) + '</span><span class="ag-what">' + esc(it.what) + "</span></li>";
+        }).join("") + "</ul>" : '<p class="txt">Binnenkort meer.</p>') + "</div>";
+    },
     club: function (p) {
       return top("Community", p) + '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
         p.text.map(function (t) { return '<p class="txt">' + esc(t) + "</p>"; }).join("") +
