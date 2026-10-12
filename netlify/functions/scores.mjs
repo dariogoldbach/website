@@ -20,6 +20,15 @@ async function hash(text) {
   return Array.from(new Uint8Array(buf).slice(0, 8), (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+// Scores die eruit moeten (op verzoek van Dario). Alleen scores van vóór het verzoek, zodat een nieuwe
+// gelijke score gewoon blijft staan. Ze verdwijnen bij het eerstvolgende bezoek aan het scorebord.
+const REMOVE = [{ score: 985, before: Date.parse("2026-10-12T13:10:00Z") }];
+function prune(board) {
+  const n = board.top.length;
+  board.top = board.top.filter((e) => !REMOVE.some((r) => e.score === r.score && e.at < r.before));
+  return board.top.length !== n;
+}
+
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -32,7 +41,9 @@ export default async (req, context) => {
   const key = context.deploy && context.deploy.context === "production" ? "live" : "test";
 
   if (req.method === "GET") {
-    const board = (await store.get(key, { type: "json" })) || { top: [] };
+    const found = await store.getWithMetadata(key, { type: "json" });
+    const board = (found && found.data) || { top: [] };
+    if (found && prune(board)) await store.setJSON(key, board, { onlyIfMatch: found.etag });
     return json({ top: board.top.slice(0, SHOW) });
   }
   if (req.method !== "POST") return json({ error: "Alleen GET of POST" }, 405);
@@ -53,6 +64,7 @@ export default async (req, context) => {
     const found = await store.getWithMetadata(key, { type: "json" });
     const board = (found && found.data) || { top: [], recent: {} };
     board.recent = board.recent || {};
+    prune(board);
     for (const k of Object.keys(board.recent)) if (now - board.recent[k] > 10 * 60 * 1000) delete board.recent[k];
     if (board.recent[who] && now - board.recent[who] < 5000) return json({ error: "Even rustig aan" }, 429);
     board.recent[who] = now;
