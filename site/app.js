@@ -127,7 +127,7 @@
       return (p.sky ? '<div class="sky" style="background-image:url(' + p.sky + ')"></div>' : "") +
         top("Agenda", p) + '<div class="mid agenda-mid">' +
         (items.length ? '<ul class="agenda">' + items.map(function (it) {
-          return '<li><span class="ag-when">' + esc(it.when) + '</span><span class="ag-what">' + esc(it.what) + "</span>" +
+          return "<li>" + (it.tag ? '<span class="ag-tag">' + esc(it.tag) + "</span>" : "") + '<span class="ag-when">' + esc(it.when) + '</span><span class="ag-what">' + esc(it.what) + "</span>" +
             (it.where ? '<span class="ag-where">' + esc(it.where) + "</span>" : "") + "</li>";
         }).join("") + "</ul>" : '<p class="txt">Binnenkort meer.</p>') + "</div>";
     },
