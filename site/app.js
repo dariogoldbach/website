@@ -2,6 +2,9 @@
 (function () {
   "use strict";
   var PAGES = window.PAGES || [];
+  // Agenda: een optreden verdwijnt zodra het afgelopen is; zonder optredens verdwijnt de hele pagina.
+  function nogTeGaan(p) { return (p.items || []).filter(function (it) { return !it.end || new Date(it.end) > new Date(); }); }
+  PAGES = PAGES.filter(function (p) { return p.type !== "agenda" || nogTeGaan(p).length; });
   // Knopstijl: "c" = halfvette schuine schreefletter met licht ronde hoeken (Dario koos C). "a" en "b" staan nog in app.css.
   if (!document.documentElement.dataset.knop) document.documentElement.dataset.knop = "1";
   var frame = document.getElementById("frame");
@@ -118,6 +121,15 @@
     contact: function (p) {
       return '<div class="mid"><p class="mail-big">Contact</p><p class="txt">' + esc(p.text) + "</p>" +
         '<div class="icons"><a class="icon-btn" href="mailto:' + esc(p.email) + '" aria-label="Stuur een mail">' + ICONS.mail + "</a></div></div>";
+    },
+    agenda: function (p) {
+      var items = nogTeGaan(p);
+      return (p.sky ? '<div class="sky" style="background-image:url(' + p.sky + ')"></div>' : "") +
+        top("Agenda", p) + '<div class="mid agenda-mid">' +
+        (items.length ? '<ul class="agenda">' + items.map(function (it) {
+          return '<li><span class="ag-when">' + esc(it.when) + '</span><span class="ag-what">' + esc(it.what) + "</span>" +
+            (it.where ? '<span class="ag-where">' + esc(it.where) + "</span>" : "") + "</li>";
+        }).join("") + "</ul>" : '<p class="txt">Binnenkort meer.</p>') + "</div>";
     },
     club: function (p) {
       return top("Community", p) + '<div class="mid club-mid"><h2 class="club-title">' + esc(p.title) + "</h2>" +
@@ -1480,7 +1492,7 @@
   function preload() {
     var urls = {};
     PAGES.forEach(function (p) {
-      [p.image, p.poster, p.avatar].concat(p.covers || []).forEach(function (u) { if (u) urls[u] = 1; });
+      [p.image, p.poster, p.avatar, p.sky].concat(p.covers || []).forEach(function (u) { if (u) urls[u] = 1; });
       if (p.images) ["front", "spine", "back"].forEach(function (k) { if (p.images[k]) urls[p.images[k]] = 1; });
     });
     // Boeken eerst, die zijn het grootst en worden in 3D getekend.
