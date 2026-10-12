@@ -78,7 +78,7 @@ window.PAGES = [
   },
   {
     id: "agenda", type: "agenda",
-    bg: "#ff5a36", fg: "#111111", accent: "#111111",
+    bg: "#3a7fe0", fg: "#071a45", accent: "#071a45", sky: "img/lucht.jpg",
     // Optredens verdwijnen vanzelf de dag nadat ze geweest zijn.
     items: [
       { date: "2026-10-16", when: "Vrijdag 16 okt | 17:30 - 18:30", what: "Haagse Media Awards", where: "INTER-CITY, Den Haag" },
