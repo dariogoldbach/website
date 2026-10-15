@@ -1412,20 +1412,30 @@
   document.addEventListener("keydown", bless, true);
   frame.addEventListener("pointercancel", release);
 
-  var wheelAcc = 0, wheelAxis = null, wheelLock = 0;
+  // Een trackpad of Magic Mouse blijft na een veeg nog een tijd uitrollen (momentum).
+  // Die naslepende events tellen niet als nieuwe veeg: het slot blijft dicht zolang ze
+  // binnenkomen, tot er even stilte is of je duidelijk opnieuw (harder) veegt.
+  var wheelAcc = 0, wheelAxis = null, wheelLock = 0, wheelLast = 0, wheelRecent = [], wheelHeld = false;
   window.addEventListener("wheel", function (e) {
     e.preventDefault();
     // Zijwaarts scrollen boven de covers schuift de carrousel, niet de pagina.
     var row = e.target.closest && e.target.closest(".pod-covers");
     if (row && Math.abs(e.deltaX) > Math.abs(e.deltaY)) { if (row._move) { row._stop(); row._move(row._pos() + e.deltaX, true); } return; }
-    var now = performance.now();
-    if (now < wheelLock || state.busy || state.locked) return;
+    var now = performance.now(), mag = Math.max(Math.abs(e.deltaX), Math.abs(e.deltaY)), gap = now - wheelLast;
+    var prev = wheelRecent.length ? Math.max.apply(null, wheelRecent) : 0;
+    wheelLast = now; wheelRecent.push(mag); if (wheelRecent.length > 6) wheelRecent.shift();
+    if (wheelHeld) {
+      if (gap > 220 && now > wheelLock) wheelHeld = false;
+      else if (now > wheelLock && mag >= 12 && mag > prev * 2.5) wheelHeld = false;
+      else return;
+    }
+    if (state.busy || state.locked) return;
     var ax = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? "x" : "y";
     if (ax !== wheelAxis) { wheelAxis = ax; wheelAcc = 0; }
     wheelAcc += ax === "x" ? e.deltaX : e.deltaY;
     if (Math.abs(wheelAcc) > 45) {
       go(ax === "x" ? (wheelAcc > 0 ? "left" : "right") : (wheelAcc > 0 ? "up" : "down"));
-      wheelAcc = 0; wheelLock = now + 750;
+      wheelAcc = 0; wheelLock = now + 600; wheelHeld = true;
     }
   }, { passive: false });
 
