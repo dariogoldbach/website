@@ -1157,7 +1157,15 @@
   }
 
   // ---------- Kaarten maken en wisselen ----------
-  var state = { current: null, busy: false, locked: null, seen: {}, bag: [] };
+  var state = { current: null, busy: false, locked: null, seen: {}, bag: [], back: null };
+  // Net te ver geveegd? Eén keer direct terug de weg die je kwam brengt je naar de vorige pagina.
+  var OPP = { up: "down", down: "up", left: "right", right: "left" };
+  function nextFor(d) {
+    var back = !!(state.back && state.back.dir === d);
+    var c = make(back ? state.back.page : pick());
+    c._back = back;
+    return c;
+  }
   // Vooraf geladen video's, buiten beeld geparkeerd.
   // Een vaste set van vijf video-spelers die steeds opnieuw gebruikt worden (alleen de bron wisselt).
   // Op de iPhone mag een speler pas met geluid spelen als hij één keer tijdens een tik is gestart;
@@ -1294,12 +1302,14 @@
     hideHint();
     var v = VEC[d], W = frame.clientWidth, H = frame.clientHeight;
     var old = state.current;
+    if (next && next._back && !(state.back && state.back.dir === d)) next._back = false;
     if (!next) {
-      next = make(pick());
+      next = nextFor(d);
       setPos(next.el, -v[0] * W, -v[1] * H, false);
       frame.appendChild(next.el);
       next.el.getBoundingClientRect();
     }
+    state.back = next._back ? null : { page: old.page, dir: OPP[d] };
     setPos(old.el, v[0] * W, v[1] * H, true);
     setPos(next.el, 0, 0, true);
     show(next);
@@ -1353,7 +1363,13 @@
     if (!drag.axis) {
       if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
       drag.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
-      drag.next = make(pick());
+    }
+    // Welke pagina eraan komt hangt af van de richting: terug de weg die je kwam is de vorige pagina.
+    var dir = drag.axis === "x" ? (dx < 0 ? "left" : "right") : (dy < 0 ? "up" : "down");
+    var wantBack = !!(state.back && state.back.dir === dir);
+    if (!drag.next || drag.next._back !== wantBack) {
+      if (drag.next) { if (!drag.next._back) state.bag.push(drag.next.page); drop(drag.next); }
+      drag.next = nextFor(dir);
       frame.appendChild(drag.next.el);
     }
     var W = frame.clientWidth, H = frame.clientHeight;
@@ -1387,7 +1403,7 @@
       setPos(state.current.el, 0, 0, true);
       var W = frame.clientWidth, H = frame.clientHeight, sign = dist < 0 ? 1 : -1;
       setPos(d.next.el, d.axis === "x" ? sign * W : 0, d.axis === "y" ? sign * H : 0, true);
-      state.bag.push(d.next.page);
+      if (!d.next._back) state.bag.push(d.next.page);
       setTimeout(function () { drop(d.next); state.current.el.classList.remove("moving"); state.busy = false; }, 360);
     }
   }
