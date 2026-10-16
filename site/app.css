@@ -87,6 +87,12 @@ button { font: inherit; color: inherit; }
   .frame { --u: 1cqw; --gut: 0px; --fit: cover; }
   .dpad { display: none; }
 }
+/* Tablet rechtop (iPad, iPad mini): niet de telefoonopmaak opblazen, maar de inhoud in een kolom ter breedte van een grote telefoon.
+   Achtergronden, de bio-foto en video's blijven het hele scherm vullen. */
+@media (min-width: 560px) and (max-aspect-ratio: 3/4) and (max-width: 900px) {
+  .frame { --u: 4.6px; --gut: calc((100cqw - 100 * var(--u)) / 2); }
+  .card:has(.vid) { --gut: 0px; }
+}
 
 /* Gedeelde kaartonderdelen */
 .top { display: flex; justify-content: space-between; align-items: center; gap: calc(3 * var(--u)); }
