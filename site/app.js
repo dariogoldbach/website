@@ -953,6 +953,7 @@
       var dpr = Math.min(window.devicePixelRatio || 1, 3);
       canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
       k = canvas.width / VW; VH = canvas.height / k; ground = Math.round(VH * 0.68);
+      layers = null;
       draw();
     }
     function reset() {
@@ -1044,47 +1045,66 @@
       x = Math.round(x * R) / R; y = Math.round(y * R) / R;
       ctx.drawImage(a.c, x - 1 / R, y - 1 / R, a.c.width / R, a.c.height / R);
     }
+    // De achtergrond één keer tekenen op losse canvasjes, op de schermresolutie, en daarna alleen nog verschuiven.
+    var layers = null;
+    function layer(w, h, paint) {
+      var c = document.createElement("canvas"); c.width = Math.ceil(w * k); c.height = Math.ceil(h * k);
+      var g = c.getContext("2d"); g.setTransform(k, 0, 0, k, 0, 0); paint(g); return c;
+    }
+    function hill(g, base, cx, h, c1, c2) {
+      for (var hy = 0; hy < h; hy++) {
+        var hw = Math.round(Math.sqrt(1 - Math.pow(hy / h, 2)) * h * 1.25);
+        g.fillStyle = hy === h - 1 ? c2 : c1; g.fillRect(cx - hw, base - hy - 1, hw * 2, 1);
+        g.fillStyle = c2; g.fillRect(cx - hw - 1, base - hy - 1, 1, 1); g.fillRect(cx + hw, base - hy - 1, 1, 1);
+      }
+    }
+    function makeLayers() {
+      layers = {
+        // Groene heuvels in de verte.
+        far: layer(140, 26, function (g) {
+          hill(g, 26, 32, 24, "#a6e8ae", "#6cc07a");
+          g.fillStyle = "#6cc07a"; g.fillRect(26, 10, 2, 4); g.fillRect(36, 13, 2, 4); g.fillRect(31, 6, 2, 3);
+          hill(g, 26, 98, 12, "#a6e8ae", "#6cc07a");
+          g.fillStyle = "#6cc07a"; g.fillRect(96, 18, 2, 3);
+        }),
+        // Struikjes, iets dichterbij.
+        near: layer(120, 8, function (g) {
+          hill(g, 8, 62, 5, "#d4f5b0", "#9ed27a"); hill(g, 8, 69, 7, "#d4f5b0", "#9ed27a"); hill(g, 8, 76, 5, "#d4f5b0", "#9ed27a");
+        }),
+        // Grond: oranjebruine blokken met lichte en donkere randjes.
+        ground: layer(VW + 8, VH - ground, function (g) {
+          g.fillStyle = "#c84c0c"; g.fillRect(0, 0, VW + 8, VH - ground);
+          for (var ty = 1; ty < VH - ground; ty += 8) for (var tx = 0; tx < VW + 8; tx += 8) {
+            g.fillStyle = "#fcbcb0"; g.fillRect(tx, ty, 7, 1); g.fillRect(tx, ty, 1, 7);
+            g.fillStyle = "#4a1a04"; g.fillRect(tx + 7, ty, 1, 8); g.fillRect(tx, ty + 7, 8, 1);
+            g.fillRect(tx + 4, ty + 2, 1, 3); g.fillRect(tx + 2, ty + 5, 2, 1);
+          }
+          g.fillStyle = "#1b1b1b"; g.fillRect(0, 0, VW + 8, 1);
+        }),
+        // Wit wolkje.
+        cloud: layer(16, 9, function (g) {
+          g.fillStyle = "#ffffff";
+          g.fillRect(0, 4, 16, 4); g.fillRect(2, 2, 5, 2); g.fillRect(7, 0, 6, 4);
+          g.fillStyle = "#dceeff"; g.fillRect(1, 8, 14, 1); g.fillRect(3, 6, 3, 1); g.fillRect(10, 6, 3, 1);
+        })
+      };
+    }
     function draw() {
       if (!canvas.width) return;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.fillStyle = BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.setTransform(k, 0, 0, k, 0, 0); ctx.imageSmoothingEnabled = false;
-      // Groene heuvels en struikjes in de verte, die langzaam meeschuiven.
-      function hill(cx, h, c1, c2) {
-        for (var hy = 0; hy < h; hy++) {
-          var hw = Math.round(Math.sqrt(1 - Math.pow(hy / h, 2)) * h * 1.25);
-          ctx.fillStyle = hy === h - 1 ? c2 : c1; ctx.fillRect(cx - hw, ground - hy - 1, hw * 2, 1);
-          ctx.fillStyle = c2; ctx.fillRect(cx - hw - 1, ground - hy - 1, 1, 1); ctx.fillRect(cx + hw, ground - hy - 1, 1, 1);
-        }
-      }
+      // Heuvels, struikjes, grond en wolkjes staan als kant-en-klare plaatjes klaar (zie layers), dat scheelt per beeldje
+      // honderden losse tekenopdrachten en houdt het springen soepel.
+      if (!layers) makeLayers();
       var far = ((dist || 0) * 0.15) % 140;
-      for (var fx = -far; fx < VW + 40; fx += 140) {
-        hill(fx + 32, 24, "#a6e8ae", "#6cc07a");
-        ctx.fillStyle = "#6cc07a";
-        ctx.fillRect(fx + 26, ground - 16, 2, 4); ctx.fillRect(fx + 36, ground - 13, 2, 4); ctx.fillRect(fx + 31, ground - 20, 2, 3);
-        hill(fx + 98, 12, "#a6e8ae", "#6cc07a");
-        ctx.fillStyle = "#6cc07a"; ctx.fillRect(fx + 96, ground - 8, 2, 3);
-      }
+      for (var fx = -far; fx < VW + 40; fx += 140) ctx.drawImage(layers.far, fx, ground - 26, 140, 26);
       var near = ((dist || 0) * 0.3) % 120;
-      for (var bx = -near; bx < VW + 30; bx += 120) {
-        hill(bx + 62, 5, "#d4f5b0", "#9ed27a"); hill(bx + 69, 7, "#d4f5b0", "#9ed27a"); hill(bx + 76, 5, "#d4f5b0", "#9ed27a");
-      }
-      // Grond: oranjebruine blokken met lichte en donkere randjes, die meeschuiven.
-      ctx.fillStyle = "#c84c0c"; ctx.fillRect(0, ground, VW, VH - ground);
-      var tile = (dist || 0) % 8;
-      for (var ty = ground + 1; ty < VH; ty += 8) for (var tx = -tile; tx < VW; tx += 8) {
-        ctx.fillStyle = "#fcbcb0"; ctx.fillRect(tx, ty, 7, 1); ctx.fillRect(tx, ty, 1, 7);
-        ctx.fillStyle = "#4a1a04"; ctx.fillRect(tx + 7, ty, 1, 8); ctx.fillRect(tx, ty + 7, 8, 1);
-        ctx.fillRect(tx + 4, ty + 2, 1, 3); ctx.fillRect(tx + 2, ty + 5, 2, 1);
-      }
-      ctx.fillStyle = "#1b1b1b"; ctx.fillRect(0, ground, VW, 1);
-      // Witte wolkjes.
+      for (var bx = -near; bx < VW + 30; bx += 120) ctx.drawImage(layers.near, bx, ground - 8, 120, 8);
+      ctx.drawImage(layers.ground, -((dist || 0) % 8), ground, VW + 8, VH - ground);
       for (var n = 0; n < 2; n++) {
         var nx = ((n * 55 + 30) - (dist || 0) * 0.25) % (VW + 30); if (nx < -16) nx += VW + 30;
-        var ny = ground - 64 - n * 18;
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(nx, ny + 3, 16, 4); ctx.fillRect(nx + 2, ny + 1, 5, 2); ctx.fillRect(nx + 7, ny - 1, 6, 4); ctx.fillRect(nx + 1, ny + 7, 14, 1);
-        ctx.fillStyle = "#dceeff"; ctx.fillRect(nx + 1, ny + 7, 14, 1); ctx.fillRect(nx + 3, ny + 5, 3, 1); ctx.fillRect(nx + 10, ny + 5, 3, 1);
+        ctx.drawImage(layers.cloud, nx, ground - 65 - n * 18, 16, 9);
       }
       (obs || []).forEach(function (o) { put(o.img, o.x, o.y); });
       if (!me) me = { y: 0, vy: 0 };
