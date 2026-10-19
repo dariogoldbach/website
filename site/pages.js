@@ -1,7 +1,7 @@
 /*
   Alle pagina's van de site. Een nieuwe pagina toevoegen = een nieuw blok in deze lijst.
   "placeholder: true" zet het label "voorbeeldtekst" op de pagina tot de echte tekst erin staat.
-  Soorten (type): bio, platform, podcast, boek, club, agenda, contact, social, video, game.
+  Soorten (type): bio, platform, podcast, boek, club, agenda, contact, social, video, game, hoofdjes.
 */
 window.PAGES = [
   {
@@ -187,6 +187,12 @@ window.PAGES = [
     video: "media/vader.mp4", poster: "img/vader-poster.jpg",
     account: "dariogoldbach", profile: "https://www.tiktok.com/@dariogoldbach", avatar: "img/avatar.jpg",
     caption: "Topservice! 👌",
+  },
+  {
+    id: "hoofdjes", type: "hoofdjes",
+    bg: "#e8b4a4", fg: "#111111",
+    title: "Hoofdjes",
+    image: "img/hoofdje.webp",
   },
   {
     id: "spel", type: "game",

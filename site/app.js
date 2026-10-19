@@ -174,6 +174,10 @@
         '<button class="run-sound" type="button" data-music aria-pressed="true" aria-label="Muziek uit">' + ICONS.sound + "</button></div>" +
         '<p class="small" data-best>Je record: 0</p><p class="small run-credit">Muziek door Sjamsoedin</p>';
     },
+    // Geen functie: alleen hoofdjes, zoals op het deelplaatje.
+    hoofdjes: function (p) {
+      return '<canvas class="heads" role="img" aria-label="Heel veel hoofdjes van Dario"></canvas>';
+    },
   };
 
   // ---------- Interactieve onderdelen per pagina ----------
@@ -250,6 +254,7 @@
       return function () { stop(); clearInterval(timer); };
     },
     game: function (card) { return runner(card); },
+    hoofdjes: function (card, p) { return heads(card, p); },
     video: function (card, p) {
       var v = card.querySelector("video"), b = card.querySelector("[data-sound]"), bar = card.querySelector(".vid-bar i");
       // Altijd een video uit de vaste set gebruiken (zie POOL), het liefst eentje die deze video al geladen heeft.
@@ -370,6 +375,182 @@
       return function () { frame.removeEventListener("click", outside); };
     },
   };
+
+  // Hoofdjes: een overlappend patroon van ronde gezichtjes in allerlei formaten, met één groot gezicht in
+  // het midden. Beweeg of veeg je eroverheen, dan draaien en schuiven de hoofdjes onder je vinger even mee.
+  // Het vegen naar een andere pagina werkt gewoon: we luisteren alleen mee, we houden niets tegen.
+  function heads(card, p) {
+    var cv = card.querySelector(".heads"), ctx = cv.getContext("2d");
+    var face = new Image(), sprite = null, bigSprite = null;
+    var list = [], W = 0, H = 0, dpr = 1, raf = 0, last = {}, kicks = 0, alive = true;
+    face.src = p.image;
+    // Gezichtje met een zachte schaduw, één keer getekend, daarna alleen nog gekopieerd (snel op de telefoon).
+    function bake(size, d, blur, alpha) {
+      var c = document.createElement("canvas"), x = c.getContext("2d");
+      c.width = c.height = size;
+      x.shadowColor = "rgba(60,20,10," + alpha + ")"; x.shadowBlur = blur; x.shadowOffsetY = blur / 4;
+      x.drawImage(face, (size - d) / 2, (size - d) / 2, d, d);
+      c._k = size / d;
+      return c;
+    }
+    face.onload = function () {
+      sprite = bake(256, 228, 8, 0.28);
+      bigSprite = bake(560, 440, 44, 0.4);
+      draw();
+    };
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    function layout() {
+      var base = Math.sqrt(W * H), step = 12, pts = [], cols = Math.ceil(W / step) + 1, rows = Math.ceil(H / step) + 1;
+      for (var j = 0; j < rows; j++) for (var i = 0; i < cols; i++) pts.push([i * step, j * step]);
+      list = [];
+      function add(x, y, r) {
+        list.push({ x: x, y: y, r: r, rot: rnd(-0.6, 0.6), a: 0, va: 0, ox: 0, oy: 0, vx: 0, vy: 0, m: 1, kick: 0 });
+        pts = pts.filter(function (q) { var dx = q[0] - x, dy = q[1] - y; return dx * dx + dy * dy > r * r * 0.8; });
+      }
+      // Net zo lang hoofdjes neerleggen tot er nergens meer achtergrond te zien is.
+      while (pts.length && list.length < 700) {
+        var q = pts[Math.floor(Math.random() * pts.length)], k = Math.random();
+        var r = base * (k < 0.68 ? rnd(0.03, 0.052) : k < 0.92 ? rnd(0.052, 0.085) : rnd(0.085, 0.14));
+        add(q[0] + rnd(-r, r) * 0.4, q[1] + rnd(-r, r) * 0.4, r);
+      }
+      // Nog wat kleintjes erbovenop, zodat het druk en speels blijft.
+      for (var n = Math.round(list.length * 0.25); n > 0; n--) add(rnd(0, W), rnd(0, H), base * rnd(0.028, 0.048));
+      // Grote eerst, kleine erbovenop, maar niet te netjes.
+      list.forEach(function (h) { h.z = h.r * rnd(0.6, 1.4); });
+      list.sort(function (a, b) { return b.z - a.z; });
+      // Het grote gezicht in het midden, licht naar links gedraaid.
+      var big = { x: W / 2, y: H / 2, r: Math.min(W * 0.44, H * 0.34), rot: -0.14, a: 0, va: 0, ox: 0, oy: 0, vx: 0, vy: 0, m: 0.3, kick: 0, big: true };
+      list.push(big);
+    }
+    // Alleen het stukje tekenen waar iets beweegt (box), anders het hele scherm.
+    function draw(box) {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.save();
+      if (box) {
+        box = [Math.floor(box[0]), Math.floor(box[1]), Math.ceil(box[2]), Math.ceil(box[3])];
+        ctx.beginPath(); ctx.rect(box[0], box[1], box[2] - box[0], box[3] - box[1]); ctx.clip();
+        ctx.clearRect(box[0], box[1], box[2] - box[0], box[3] - box[1]);
+      } else ctx.clearRect(0, 0, W, H);
+      if (sprite) list.forEach(function (h) {
+        var x = h.x + h.ox, y = h.y + h.oy, e = reach(h);
+        if (box && (x + e < box[0] || x - e > box[2] || y + e < box[1] || y - e > box[3])) return;
+        var s = h.img || (h.img = sized(h)), d = s.width;
+        ctx.setTransform(1, 0, 0, 1, x * dpr, y * dpr);
+        ctx.rotate(h.rot + h.a);
+        ctx.drawImage(s, -d / 2, -d / 2);
+      });
+      ctx.restore();
+    }
+    // Hoe ver een gedraaid hoofdje (met schaduw) maximaal reikt vanaf zijn midden.
+    function reach(h) { return h.r * (h.big ? 1.28 : 1.13) * 1.42 + 1; }
+    function grow(box, h) {
+      var x = h.x + h.ox, y = h.y + h.oy, e = reach(h);
+      box[0] = Math.min(box[0], x - e); box[1] = Math.min(box[1], y - e);
+      box[2] = Math.max(box[2], x + e); box[3] = Math.max(box[3], y + e);
+    }
+    // Elk formaat één keer verkleind klaarzetten: telkens een groot plaatje verkleinen is te traag op de telefoon.
+    var sizes = {};
+    function sized(h) {
+      var s = h.big ? bigSprite : sprite, d = Math.ceil(2 * h.r * s._k * dpr / 2) * 2, key = (h.big ? "b" : "") + d;
+      if (!sizes[key]) {
+        var c = document.createElement("canvas"), x = c.getContext("2d");
+        c.width = c.height = d; x.imageSmoothingQuality = "high";
+        x.drawImage(s, 0, 0, d, d);
+        sizes[key] = c;
+      }
+      return sizes[key];
+    }
+    // Veren: elk hoofdje wiebelt na en komt vanzelf weer op zijn plek.
+    // De veren rekenen in stapjes van 1/60 seconde, zodat het op elk scherm (60 of 120 Hz) even snel gaat.
+    var lastT = 0, acc = 0;
+    function tick(now) {
+      raf = 0;
+      acc = Math.min(acc + (lastT ? (now - lastT) / 16.7 : 1), 4); lastT = now;
+      var moving = false, did = false, box = [Infinity, Infinity, -Infinity, -Infinity];
+      for (; acc >= 1; acc--) { moving = step(now, box); did = true; }
+      if (box[0] < box[2]) draw([Math.max(0, box[0]), Math.max(0, box[1]), Math.min(W, box[2]), Math.min(H, box[3])]);
+      if ((moving || !did) && alive) raf = requestAnimationFrame(tick);
+      else lastT = acc = 0;
+    }
+    function step(now, box) {
+      var moving = false;
+      list.forEach(function (h) {
+        if (h.kick && now >= h.kick) { h.va += h.kickA; h.vx += h.kickX; h.vy += h.kickY; h.kick = 0; }
+        if (h.kick) moving = true;
+        if (!(h.a || h.va || h.ox || h.oy || h.vx || h.vy)) return;
+        grow(box, h);
+        h.va = (h.va - h.a * 0.05) * 0.9; h.a += h.va;
+        h.vx = (h.vx - h.ox * 0.05) * 0.88; h.ox += h.vx;
+        h.vy = (h.vy - h.oy * 0.05) * 0.88; h.oy += h.vy;
+        if (Math.abs(h.a) + Math.abs(h.va) > 0.0005 || Math.abs(h.ox) + Math.abs(h.oy) + Math.abs(h.vx) + Math.abs(h.vy) > 0.03) moving = true;
+        else { h.a = h.va = h.ox = h.oy = h.vx = h.vy = 0; }
+        grow(box, h);
+      });
+      return moving;
+    }
+    function wake() { if (!raf && !still && alive) raf = requestAnimationFrame(tick); }
+    function clamp(v, m) { return Math.max(-m, Math.min(m, v)); }
+    // Je vinger of muis duwt en draait de hoofdjes die eronder liggen, in de richting waarin je beweegt.
+    function move(e) {
+      if (still || !card.isConnected || !W) return;
+      var l = last[e.pointerId];
+      last[e.pointerId] = { x: e.clientX, y: e.clientY };
+      if (!l) return;
+      var mx = clamp(e.clientX - l.x, 60), my = clamp(e.clientY - l.y, 60);
+      if (!mx && !my) return;
+      var b = cv.getBoundingClientRect(), px = e.clientX - b.left, py = e.clientY - b.top;
+      var R = e.pointerType === "mouse" ? 50 : 80, hit = false;
+      list.forEach(function (h) {
+        var dx = h.x + h.ox - px, dy = h.y + h.oy - py, reach = h.r + R;
+        if (dx * dx + dy * dy > reach * reach) return;
+        var f = (1 - Math.sqrt(dx * dx + dy * dy) / reach) * h.m;
+        h.va = clamp(h.va + (dx * my - dy * mx) / (reach * reach) * 1.6 * f, 0.25);
+        h.vx = clamp(h.vx + mx * f * 0.12, h.r * 0.12);
+        h.vy = clamp(h.vy + my * f * 0.12, h.r * 0.12);
+        hit = true;
+      });
+      if (hit) wake();
+    }
+    function down(e) { last[e.pointerId] = { x: e.clientX, y: e.clientY }; }
+    function up(e) { delete last[e.pointerId]; }
+    window.addEventListener("pointerdown", down, true);
+    window.addEventListener("pointermove", move, true);
+    window.addEventListener("pointerup", up, true);
+    window.addEventListener("pointercancel", up, true);
+    // Bij binnenkomst gaat er een golfje vanuit het midden door alle hoofdjes, zodat je ziet dat ze leven.
+    card._activate = function () {
+      resize();
+      if (still || !W) return;
+      var now = performance.now();
+      list.forEach(function (h) {
+        var dx = h.x - W / 2, dy = h.y - H / 2, d = Math.sqrt(dx * dx + dy * dy) || 1;
+        h.kick = now + 120 + d * 0.9;
+        h.kickA = (h.big ? 0.025 : 0.06) * (Math.random() < 0.5 ? -1 : 1);
+        h.kickX = dx / d * h.r * 0.06; h.kickY = dy / d * h.r * 0.06;
+      });
+      wake();
+    };
+    function resize() {
+      var w = cv.clientWidth, hh = cv.clientHeight;
+      if (!w || !hh || (w === W && hh === H)) return;
+      W = w; H = hh; dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      sizes = {}; layout(); draw();
+    }
+    var ro = window.ResizeObserver ? new ResizeObserver(resize) : null;
+    if (ro) ro.observe(cv);
+    window.addEventListener("resize", resize);
+    requestAnimationFrame(resize);
+    return function () {
+      alive = false; cancelAnimationFrame(raf);
+      if (ro) ro.disconnect();
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointerdown", down, true);
+      window.removeEventListener("pointermove", move, true);
+      window.removeEventListener("pointerup", up, true);
+      window.removeEventListener("pointercancel", up, true);
+    };
+  }
 
   function book(el) {
     var ry = 28, rx = 8, vy = 0, vx = 0, dragging = false, thrown = false, lastMove = 0, lx = 0, ly = 0, raf;
