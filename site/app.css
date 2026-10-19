@@ -289,6 +289,10 @@ h1, h2, p { margin: 0; }
 .icon-btn:active { transform: scale(0.95); }
 
 /* Agenda: datum klein erboven, wat het is groot eronder */
+/* Hoofdjes: het canvas vult de hele kaart */
+.card:has(.heads) { padding: 0; }
+.heads { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
 /* Blauwe lucht met wolken achter de agenda (zoals de kaft van Infinite Jest) */
 .sky { position: absolute; inset: 0; background-size: cover; background-position: center; z-index: 0; }
 .card:has(.sky) > :not(.sky) { position: relative; z-index: 1; }

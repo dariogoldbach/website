@@ -17,7 +17,7 @@ def inline_media(text):
     return re.sub(r"media/[\w.-]+\.mp4", rep, text)
 def inline_images(text):
     # Afbeeldingen uit site/img/ meebakken, zodat het losse previewbestand ze ook toont.
-    return re.sub(r"img/[\w.-]+\.(?:jpg|png)", lambda m: "data:image/" + ("png" if m.group(0).endswith("png") else "jpeg") +
+    return re.sub(r"img/[\w.-]+\.(?:jpg|png|webp)", lambda m: "data:image/" + (m.group(0).rsplit(".", 1)[1].replace("jpg", "jpeg")) +
                   ";base64," + base64.b64encode((site / m.group(0)).read_bytes()).decode(), text)
 out.parent.mkdir(exist_ok=True)
 out.write_text(
