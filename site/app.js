@@ -163,7 +163,7 @@
       var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       return '<div class="top"><span class="label">Game</span></div>' +
         '<div class="snake-wrap run-wrap"><canvas></canvas><span class="score run-score" data-score>score 0</span><div class="snake-over">' +
-        '<canvas class="logo" data-logo role="img" aria-label="Dario\'s Great Adventure"></canvas>' +
+        '<canvas class="logo" data-logo role="img" aria-label="Superdario 64"></canvas>' +
         '<div class="go" data-go hidden><canvas class="go-title" data-go-title role="img" aria-label="Game over"></canvas><canvas class="go-img" data-go-img></canvas><span class="go-name" data-go-name></span></div>' +
         '<p class="small" data-msg>' +
         (fine ? "Spatie of pijltje omhoog om te springen, omlaag om te bukken." : "Tik of veeg omhoog om te springen, veeg omlaag om te bukken.") +
@@ -418,7 +418,7 @@
   // ---------- Ren, Dario! Een springspel zoals het dino-spel van Chrome ----------
   // 16-bit plaatjes: elk plaatje wordt op dubbele resolutie getekend (R pixels per spel-eenheid),
   // met schaduw, glimlichtjes en een donkere rand eromheen.
-  var R = 2, INK = "#1b1b1b", BG = "#f2eee3";
+  var R = 2, INK = "#1b1b1b", BG = "#5c94fc";
   var C = {
     hair: "#2a1a10", hair2: "#4a2e1a", hair3: "#74502f", skin: "#f0c39c", skin2: "#d49a74", skin3: "#fbdcc0",
     lens: "#bfe0f2", mouth: "#a8483c", shirt: "#1d1d1f", shirt2: "#38383c", pants: "#34344a", pants2: "#1c1c22",
@@ -790,7 +790,7 @@
     schilderij: "kunst" };
   var IMG = null;
 
-  // Titellogo in 16-bit letters: geel naar rood, donkere rand en een schaduw eronder.
+  // Titellogo in 16-bit letters, donkere rand en een schaduw eronder.
   var FONT = {
     D: ["11110", "11011", "11011", "11011", "11011", "11011", "11110"],
     A: ["01110", "11011", "11011", "11111", "11011", "11011", "11011"],
@@ -808,43 +808,76 @@
     U: ["11011", "11011", "11011", "11011", "11011", "11011", "01110"],
     " ": ["000", "000", "000", "000", "000", "000", "000"]
   };
+  FONT.P = ["11110", "11011", "11011", "11110", "11000", "11000", "11000"];
+  FONT["6"] = ["01110", "11000", "11000", "11110", "11011", "11011", "01110"];
+  FONT["4"] = ["00011", "00111", "01111", "11011", "11111", "00011", "00011"];
   var LOGO_COLS = ["#fff6c2", "#ffe066", "#ffc93c", "#ff9f1c", "#ff6b1a", "#f2392b", "#c81d25"];
-  function logo(lines) {
-    function width(t, sc) { var w = 0; for (var i = 0; i < t.length; i++) w += (FONT[t[i]][0].length + 1) * sc; return w - sc; }
+  // Superdario-letters: elke letter een eigen kleur (licht, midden, donker), om en om scheef en op en neer.
+  var MARIO_COLS = [["#8fbcff", "#2a64f0", "#163f9e"], ["#ff8a80", "#e3242b", "#96121a"],
+    ["#fff38a", "#ffc800", "#c98a00"], ["#9cea84", "#25ac3e", "#126b2a"]];
+  function logo(lines, mario) {
+    var sp = mario ? 3 : 1;
+    function width(t, sc) { var w = 0; for (var i = 0; i < t.length; i++) w += (FONT[t[i]][0].length + sp) * sc; return w - sp * sc; }
     var W = 0; lines.forEach(function (l) { W = Math.max(W, width(l[0], l[1])); });
-    var pad = 4, gap = 6, H = pad * 2 + 2 - gap;
+    var pad = mario ? 8 : 4, gap = mario ? 9 : 6, H = pad * 2 + 2 - gap;
     lines.forEach(function (l) { H += 7 * l[1] + gap; });
     W += pad * 2;
     var c = document.createElement("canvas"); c.width = W; c.height = H;
-    var x = c.getContext("2d"), y = pad;
+    var x = c.getContext("2d"), y = pad, n = 0;
     lines.forEach(function (l) {
       var t = l[0], sc = l[1], cx = Math.round((W - width(t, sc)) / 2);
       for (var i = 0; i < t.length; i++) {
-        var gl = FONT[t[i]];
+        var gl = FONT[t[i]], tilt = n % 2 ? -1 : 1, col = MARIO_COLS[n % 4];
+        var bob = mario ? Math.round((n % 2 ? 1 : -1) * sc / 2) : 0;
         for (var r = 0; r < 7; r++) for (var q = 0; q < gl[r].length; q++) if (gl[r][q] === "1") {
           for (var sy = 0; sy < sc; sy++) {
-            // Kleur per pixelrij: bovenaan licht, onderaan rood.
-            x.fillStyle = LOGO_COLS[Math.min(6, Math.floor((r * sc + sy) * 7 / (7 * sc)))];
-            x.fillRect(cx + q * sc, y + r * sc + sy, sc, 1);
+            var row = r * sc + sy;
+            if (mario) {
+              // Licht bovenin, donker onderin, en per pixelrij een stukje opzij zodat de letter schuin staat.
+              var f = row / (7 * sc);
+              x.fillStyle = f < 0.22 ? col[0] : f < 0.82 ? col[1] : col[2];
+              x.fillRect(cx + q * sc + Math.round((3.5 * sc - row) * 0.12 * tilt), y + row + bob, sc, 1);
+            } else {
+              // Kleur per pixelrij: bovenaan licht, onderaan rood.
+              x.fillStyle = LOGO_COLS[Math.min(6, Math.floor(row * 7 / (7 * sc)))];
+              x.fillRect(cx + q * sc, y + row, sc, 1);
+            }
           }
         }
-        cx += (gl[0].length + 1) * sc;
+        cx += (gl[0].length + sp) * sc;
+        if (t[i] !== " ") n++;
       }
       y += 7 * sc + gap;
     });
-    // Donkere rand rondom (ook schuin), daarna een schaduw twee pixels lager.
-    var im = x.getImageData(0, 0, W, H), d = im.data, o = new Uint8ClampedArray(d);
-    function on(a, b) { return a >= 0 && b >= 0 && a < W && b < H && d[(b * W + a) * 4 + 3]; }
-    for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
-      var k = (yy * W + xx) * 4;
-      if (d[k + 3]) continue;
-      if (on(xx - 1, yy) || on(xx + 1, yy) || on(xx, yy - 1) || on(xx, yy + 1) || on(xx - 1, yy - 1) || on(xx + 1, yy - 1) || on(xx - 1, yy + 1) || on(xx + 1, yy + 1)) {
-        o[k] = 27; o[k + 1] = 27; o[k + 2] = 27; o[k + 3] = 255;
-      } else if (on(xx, yy - 2) || on(xx - 1, yy - 2) || on(xx - 1, yy - 3)) {
-        o[k] = 110; o[k + 1] = 14; o[k + 2] = 20; o[k + 3] = 255;
+    // Donkere rand rondom (ook schuin), daarna een schaduw eronder.
+    var im = x.getImageData(0, 0, W, H), d = im.data;
+    function ring(rgb) {
+      var o = new Uint8ClampedArray(d);
+      function on(a, b) { return a >= 0 && b >= 0 && a < W && b < H && d[(b * W + a) * 4 + 3]; }
+      for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+        var k = (yy * W + xx) * 4;
+        if (d[k + 3]) continue;
+        if (on(xx - 1, yy) || on(xx + 1, yy) || on(xx, yy - 1) || on(xx, yy + 1) || on(xx - 1, yy - 1) || on(xx + 1, yy - 1) || on(xx - 1, yy + 1) || on(xx + 1, yy + 1)) {
+          o[k] = rgb[0]; o[k + 1] = rgb[1]; o[k + 2] = rgb[2]; o[k + 3] = 255;
+        }
       }
+      d.set(o);
     }
-    im.data.set(o); x.putImageData(im, 0, 0);
+    function shadow(rgb, dx, dy) {
+      var o = new Uint8ClampedArray(d);
+      for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+        var k = (yy * W + xx) * 4;
+        if (d[k + 3]) continue;
+        for (var s = 1; s <= dy; s++) {
+          var a = xx - Math.round(s * dx / dy), b = yy - s;
+          if (a >= 0 && b >= 0 && d[(b * W + a) * 4 + 3]) { o[k] = rgb[0]; o[k + 1] = rgb[1]; o[k + 2] = rgb[2]; o[k + 3] = 255; break; }
+        }
+      }
+      d.set(o);
+    }
+    if (mario) { ring([17, 17, 17]); ring([17, 17, 17]); shadow([10, 24, 70], 2, 4); ring([255, 255, 255]); }
+    else { ring([27, 27, 27]); shadow([110, 14, 20], 1, 2); }
+    x.putImageData(im, 0, 0);
     return c;
   }
 
@@ -1005,33 +1038,42 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.fillStyle = BG; ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.setTransform(k, 0, 0, k, 0, 0); ctx.imageSmoothingEnabled = false;
-      // Festivalterrein in de verte: podium, tenten en lichtmasten, die langzaam meeschuiven.
-      var far = ((dist || 0) * 0.15) % 140;
-      for (var fx = -far; fx < VW; fx += 140) {
-        ctx.fillStyle = "#e7e0cf";
-        ctx.fillRect(fx + 8, ground - 30, 44, 30); ctx.fillRect(fx + 4, ground - 34, 52, 5);
-        ctx.fillRect(fx + 70, ground - 12, 24, 12); ctx.fillRect(fx + 74, ground - 16, 16, 4); ctx.fillRect(fx + 79, ground - 19, 6, 3);
-        ctx.fillRect(fx + 110, ground - 44, 2, 44); ctx.fillRect(fx + 106, ground - 46, 10, 3);
-        ctx.fillStyle = "#ddd4bf";
-        ctx.fillRect(fx + 14, ground - 26, 32, 14); ctx.fillRect(fx + 98, ground - 9, 30, 9); ctx.fillRect(fx + 102, ground - 12, 22, 3);
-        ctx.fillStyle = "#f3c9b8";
-        for (var lx = 0; lx < 5; lx++) ctx.fillRect(fx + 10 + lx * 10, ground - 33, 2, 2);
-        ctx.fillRect(fx + 107, ground - 45, 2, 1); ctx.fillRect(fx + 113, ground - 45, 2, 1);
+      // Groene heuvels en struikjes in de verte, die langzaam meeschuiven.
+      function hill(cx, h, c1, c2) {
+        for (var hy = 0; hy < h; hy++) {
+          var hw = Math.round(Math.sqrt(1 - Math.pow(hy / h, 2)) * h * 1.25);
+          ctx.fillStyle = hy === h - 1 ? c2 : c1; ctx.fillRect(cx - hw, ground - hy - 1, hw * 2, 1);
+          ctx.fillStyle = c2; ctx.fillRect(cx - hw - 1, ground - hy - 1, 1, 1); ctx.fillRect(cx + hw, ground - hy - 1, 1, 1);
+        }
       }
-      // Grond: een randje, een band met een ruitjespatroon en steentjes die meeschuiven.
-      ctx.fillStyle = "#e3dbc7"; ctx.fillRect(0, ground, VW, VH - ground);
-      var off = (dist || 0) % 40, tile = (dist || 0) % 4;
-      ctx.fillStyle = "#d6ccb4";
-      for (var tx = -tile; tx < VW; tx += 4) { ctx.fillRect(tx, ground + 1, 2, 1.5); ctx.fillRect(tx + 2, ground + 2.5, 2, 1.5); }
+      var far = ((dist || 0) * 0.15) % 140;
+      for (var fx = -far; fx < VW + 40; fx += 140) {
+        hill(fx + 32, 24, "#00a844", "#005a24");
+        ctx.fillStyle = "#005a24";
+        ctx.fillRect(fx + 26, ground - 16, 2, 4); ctx.fillRect(fx + 36, ground - 13, 2, 4); ctx.fillRect(fx + 31, ground - 20, 2, 3);
+        hill(fx + 98, 12, "#00a844", "#005a24");
+        ctx.fillStyle = "#005a24"; ctx.fillRect(fx + 96, ground - 8, 2, 3);
+      }
+      var near = ((dist || 0) * 0.3) % 120;
+      for (var bx = -near; bx < VW + 30; bx += 120) {
+        hill(bx + 62, 5, "#7fd63a", "#2c7a10"); hill(bx + 69, 7, "#7fd63a", "#2c7a10"); hill(bx + 76, 5, "#7fd63a", "#2c7a10");
+      }
+      // Grond: oranjebruine blokken met lichte en donkere randjes, die meeschuiven.
+      ctx.fillStyle = "#c84c0c"; ctx.fillRect(0, ground, VW, VH - ground);
+      var tile = (dist || 0) % 8;
+      for (var ty = ground + 1; ty < VH; ty += 8) for (var tx = -tile; tx < VW; tx += 8) {
+        ctx.fillStyle = "#fcbcb0"; ctx.fillRect(tx, ty, 7, 1); ctx.fillRect(tx, ty, 1, 7);
+        ctx.fillStyle = "#4a1a04"; ctx.fillRect(tx + 7, ty, 1, 8); ctx.fillRect(tx, ty + 7, 8, 1);
+        ctx.fillRect(tx + 4, ty + 2, 1, 3); ctx.fillRect(tx + 2, ty + 5, 2, 1);
+      }
       ctx.fillStyle = "#1b1b1b"; ctx.fillRect(0, ground, VW, 1);
-      ctx.fillStyle = "#b9ae95";
-      for (var x = -off; x < VW; x += 40) { ctx.fillRect(x + 6, ground + 6, 3, 1); ctx.fillRect(x + 25, ground + 10, 2, 1); ctx.fillRect(x + 34, ground + 7, 1, 1); }
-      // Muzieknootjes als wolken.
-      ctx.fillStyle = "#c9c2b0";
+      // Witte wolkjes.
       for (var n = 0; n < 2; n++) {
-        var nx = ((n * 55 + 30) - (dist || 0) * 0.25) % (VW + 30); if (nx < -10) nx += VW + 30;
-        var ny = ground - 60 - n * 16;
-        ctx.fillRect(nx, ny + 6, 3, 2); ctx.fillRect(nx + 2, ny, 1, 7); ctx.fillRect(nx + 3, ny, 3, 1); ctx.fillRect(nx + 5, ny, 1, 3);
+        var nx = ((n * 55 + 30) - (dist || 0) * 0.25) % (VW + 30); if (nx < -16) nx += VW + 30;
+        var ny = ground - 64 - n * 18;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(nx, ny + 3, 16, 4); ctx.fillRect(nx + 2, ny + 1, 5, 2); ctx.fillRect(nx + 7, ny - 1, 6, 4); ctx.fillRect(nx + 1, ny + 7, 14, 1);
+        ctx.fillStyle = "#bfe0ff"; ctx.fillRect(nx + 1, ny + 7, 14, 1); ctx.fillRect(nx + 3, ny + 5, 3, 1); ctx.fillRect(nx + 10, ny + 5, 3, 1);
       }
       (obs || []).forEach(function (o) { put(o.img, o.x, o.y); });
       if (!me) me = { y: 0, vy: 0 };
@@ -1121,7 +1163,7 @@
       over.hidden = false;
     }
     // Game over: groot in beeld waar je over struikelde, met de naam erbij.
-    var logoEl = card.querySelector("[data-logo]"), lg = logo([["DARIO'S", 4], ["GREAT ADVENTURE", 2]]);
+    var logoEl = card.querySelector("[data-logo]"), lg = logo([["SUPER", 3], ["DARIO 64", 4]], true);
     logoEl.width = lg.width; logoEl.height = lg.height; logoEl.getContext("2d").drawImage(lg, 0, 0);
     logoEl.style.aspectRatio = lg.width + " / " + lg.height;
     var goT = card.querySelector("[data-go-title]"), gt = logo([["GAME OVER", 4]]);
