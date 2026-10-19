@@ -418,7 +418,7 @@
   // ---------- Ren, Dario! Een springspel zoals het dino-spel van Chrome ----------
   // 16-bit plaatjes: elk plaatje wordt op dubbele resolutie getekend (R pixels per spel-eenheid),
   // met schaduw, glimlichtjes en een donkere rand eromheen.
-  var R = 2, INK = "#1b1b1b", BG = "#5c94fc";
+  var R = 2, INK = "#1b1b1b", BG = "#b4dcff";
   var C = {
     hair: "#2a1a10", hair2: "#4a2e1a", hair3: "#74502f", skin: "#f0c39c", skin2: "#d49a74", skin3: "#fbdcc0",
     lens: "#bfe0f2", mouth: "#a8483c", shirt: "#1d1d1f", shirt2: "#38383c", pants: "#34344a", pants2: "#1c1c22",
@@ -1059,15 +1059,15 @@
       }
       var far = ((dist || 0) * 0.15) % 140;
       for (var fx = -far; fx < VW + 40; fx += 140) {
-        hill(fx + 32, 24, "#00a844", "#005a24");
-        ctx.fillStyle = "#005a24";
+        hill(fx + 32, 24, "#a6e8ae", "#6cc07a");
+        ctx.fillStyle = "#6cc07a";
         ctx.fillRect(fx + 26, ground - 16, 2, 4); ctx.fillRect(fx + 36, ground - 13, 2, 4); ctx.fillRect(fx + 31, ground - 20, 2, 3);
-        hill(fx + 98, 12, "#00a844", "#005a24");
-        ctx.fillStyle = "#005a24"; ctx.fillRect(fx + 96, ground - 8, 2, 3);
+        hill(fx + 98, 12, "#a6e8ae", "#6cc07a");
+        ctx.fillStyle = "#6cc07a"; ctx.fillRect(fx + 96, ground - 8, 2, 3);
       }
       var near = ((dist || 0) * 0.3) % 120;
       for (var bx = -near; bx < VW + 30; bx += 120) {
-        hill(bx + 62, 5, "#7fd63a", "#2c7a10"); hill(bx + 69, 7, "#7fd63a", "#2c7a10"); hill(bx + 76, 5, "#7fd63a", "#2c7a10");
+        hill(bx + 62, 5, "#d4f5b0", "#9ed27a"); hill(bx + 69, 7, "#d4f5b0", "#9ed27a"); hill(bx + 76, 5, "#d4f5b0", "#9ed27a");
       }
       // Grond: oranjebruine blokken met lichte en donkere randjes, die meeschuiven.
       ctx.fillStyle = "#c84c0c"; ctx.fillRect(0, ground, VW, VH - ground);
@@ -1084,7 +1084,7 @@
         var ny = ground - 64 - n * 18;
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(nx, ny + 3, 16, 4); ctx.fillRect(nx + 2, ny + 1, 5, 2); ctx.fillRect(nx + 7, ny - 1, 6, 4); ctx.fillRect(nx + 1, ny + 7, 14, 1);
-        ctx.fillStyle = "#bfe0ff"; ctx.fillRect(nx + 1, ny + 7, 14, 1); ctx.fillRect(nx + 3, ny + 5, 3, 1); ctx.fillRect(nx + 10, ny + 5, 3, 1);
+        ctx.fillStyle = "#dceeff"; ctx.fillRect(nx + 1, ny + 7, 14, 1); ctx.fillRect(nx + 3, ny + 5, 3, 1); ctx.fillRect(nx + 10, ny + 5, 3, 1);
       }
       (obs || []).forEach(function (o) { put(o.img, o.x, o.y); });
       if (!me) me = { y: 0, vy: 0 };
