@@ -936,6 +936,17 @@
       } catch (e) {}
     }
 
+    // Springen: een kort 8-bit fluitje dat omhoog glijdt, zoals in de oude spelletjes.
+    function jumpSound() {
+      if (!musicOn || !actx) return;
+      try {
+        var at = actx.currentTime, o = actx.createOscillator(), gn = actx.createGain();
+        o.type = "square"; o.frequency.setValueAtTime(260, at); o.frequency.exponentialRampToValueAtTime(880, at + 0.16);
+        gn.gain.setValueAtTime(0.09, at); gn.gain.setValueAtTime(0.09, at + 0.14); gn.gain.linearRampToValueAtTime(0, at + 0.2);
+        o.connect(gn); gn.connect(actx.destination); o.start(at); o.stop(at + 0.22);
+      } catch (e) {}
+    }
+
     function size() {
       var r = canvas.getBoundingClientRect();
       if (!r.width) return;
@@ -949,7 +960,7 @@
       scoreEl.textContent = "score 0";
     }
     function onGround() { return me.y >= 0; }
-    function jump() { if (playing && onGround() && performance.now() > duckUntil) me.vy = -178; }
+    function jump() { if (playing && onGround() && performance.now() > duckUntil) { me.vy = -178; jumpSound(); } }
     function duck() { if (!playing) return; duckUntil = performance.now() + 520; if (!onGround()) me.vy = Math.max(me.vy, 260); }
     function spawn() {
       var kinds = ["boeken", "wijnglas", "fles", "microfoon", "plaat", "draaitafel", "speaker", "vuur", "usb", "stuc", "vunk", "robijn", "steen", "schilderij"];
