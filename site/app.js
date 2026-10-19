@@ -1070,11 +1070,11 @@
         hill(bx + 62, 5, "#d4f5b0", "#9ed27a"); hill(bx + 69, 7, "#d4f5b0", "#9ed27a"); hill(bx + 76, 5, "#d4f5b0", "#9ed27a");
       }
       // Grond: oranjebruine blokken met lichte en donkere randjes, die meeschuiven.
-      ctx.fillStyle = "#f6c79e"; ctx.fillRect(0, ground, VW, VH - ground);
+      ctx.fillStyle = "#c84c0c"; ctx.fillRect(0, ground, VW, VH - ground);
       var tile = (dist || 0) % 8;
       for (var ty = ground + 1; ty < VH; ty += 8) for (var tx = -tile; tx < VW; tx += 8) {
-        ctx.fillStyle = "#ffe6d2"; ctx.fillRect(tx, ty, 7, 1); ctx.fillRect(tx, ty, 1, 7);
-        ctx.fillStyle = "#dca07a"; ctx.fillRect(tx + 7, ty, 1, 8); ctx.fillRect(tx, ty + 7, 8, 1);
+        ctx.fillStyle = "#fcbcb0"; ctx.fillRect(tx, ty, 7, 1); ctx.fillRect(tx, ty, 1, 7);
+        ctx.fillStyle = "#4a1a04"; ctx.fillRect(tx + 7, ty, 1, 8); ctx.fillRect(tx, ty + 7, 8, 1);
         ctx.fillRect(tx + 4, ty + 2, 1, 3); ctx.fillRect(tx + 2, ty + 5, 2, 1);
       }
       ctx.fillStyle = "#1b1b1b"; ctx.fillRect(0, ground, VW, 1);
