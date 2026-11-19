@@ -83,7 +83,6 @@ window.PAGES = [
     items: [
       { end: "2026-11-26T21:30:00+01:00", tag: "Community", when: "Donderdag 26 nov | 20:00 - 21:30", what: "Boekenclub de Zachte Kern", where: "hito, Scheveningen" },
       { end: "2026-11-28T01:00:00+01:00", tag: "Radio", when: "Vrijdag 27 nov | 22:00 - 01:00", what: "The Beat Column", where: "NPO 3FM" },
-      { end: "2026-12-10T23:59:00+01:00", tag: "Column", when: "Donderdag 10 dec", what: "FHM Column", where: "FHM" },
       { end: "2026-12-12T01:00:00+01:00", tag: "Radio", when: "Vrijdag 11 dec | 22:00 - 01:00", what: "The Beat Column", where: "NPO 3FM" },
       { end: "2026-12-29T21:30:00+01:00", tag: "Community", when: "Dinsdag 29 dec | 20:00 - 21:30", what: "Boekenclub de Zachte Kern", where: "hito, Scheveningen" },
     ],
