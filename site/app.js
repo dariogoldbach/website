@@ -80,6 +80,8 @@
         '<div class="pod-covers sit-slides" aria-label="Open Call van De Situatie">' + p.slides.map(function (c, i) {
           return '<img class="pod-img" src="' + esc(c) + '" alt="Open Call, slide ' + (i + 1) + ' van ' + p.slides.length + '" decoding="async">';
         }).join("") + "</div>" +
+        // Puntjes zoals bij een Instagram-carrousel: welke slide je ziet.
+        '<div class="sit-dots" aria-hidden="true">' + p.slides.map(function (c, i) { return "<i" + (i ? "" : ' class="on"') + "></i>"; }).join("") + "</div>" +
         // Rechthoekige knop in de stijl van de slides: blauw vlak, zwarte rand, schuine brede letters.
         '<div class="icons sit-icons"><a class="sit-join" href="' + esc(p.join.href) + '" target="_blank" rel="noopener">' + esc(p.join.text) + "</a></div></div>";
       return top(p.label, p) +
@@ -202,6 +204,7 @@
           im.style.transform = "translate3d(" + (-pos).toFixed(2) + "px,0,0) scale(" + sc.toFixed(4) + ")";
           im.style.zIndex = String(Math.round((1 - d) * 10));
         });
+        if (row._onpos) row._onpos(pos);
       }
       function soon() { if (!raf) raf = requestAnimationFrame(fit); }
       function set(x) { pos = Math.max(0, Math.min(maxPos(), x)); soon(); }
@@ -257,7 +260,18 @@
       }, 4000);
       return function () { stop(); clearInterval(timer); };
     },
-    platform: function (card) { return MOUNT.podcast(card); },
+    platform: function (card) {
+      var row = card.querySelector(".pod-covers"), dots = card.querySelectorAll(".sit-dots i"), on = 0;
+      if (row && dots.length) row._onpos = function (pos) {
+        var best = 0, bd = Infinity;
+        row.querySelectorAll(".pod-img").forEach(function (im, i) {
+          var d = Math.abs(im.offsetLeft + im.offsetWidth / 2 - row.clientWidth / 2 - pos);
+          if (d < bd) { bd = d; best = i; }
+        });
+        if (best !== on) { dots[on].classList.remove("on"); dots[best].classList.add("on"); on = best; }
+      };
+      return MOUNT.podcast(card);
+    },
     game: function (card) { return runner(card); },
     video: function (card, p) {
       var v = card.querySelector("video"), b = card.querySelector("[data-sound]"), bar = card.querySelector(".vid-bar i");
