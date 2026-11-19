@@ -1487,6 +1487,9 @@
       if (s.length > 1 && now - d.lt < 100) { var a = s[0], z = s[s.length - 1]; if (z[0] - a[0] > 0) v = (z[1] - a[1]) / (z[0] - a[0]); }
       d.row._dragging = false; d.row._snap(v); return;
     }
+    // Aanraken stopt een glijdende carrousel. Werd het geen zijwaartse veeg (alleen een tik, of omhoog/omlaag),
+    // dan alsnog naar de dichtstbijzijnde cover, zodat hij nooit half tussen twee beelden blijft hangen.
+    if (d.row && d.row._snap) { d.row._index = -1; d.row._snap(0); }
     if (!d.axis) return;
     lastSwipe = performance.now();
     var dist = d.axis === "x" ? dx : dy, size = d.axis === "x" ? frame.clientWidth : frame.clientHeight;
