@@ -14,11 +14,13 @@ window.PAGES = [
   },
   {
     id: "de-situatie", type: "platform",
-    bg: "#deff94", fg: "#4a4128", accent: "#ffaae9",
+    bg: "#fff436", fg: "#111111", accent: "#75dcff",
     label: "Literair platform",
     title: "De Situatie",
-    tag: "(wij zoeken schrijftalent)",
+    // Open Call 2026-27: de slides uit de Instagram-post, om doorheen te vegen.
+    slides: ["img/open-call-1.jpg", "img/open-call-2.jpg", "img/open-call-3.jpg", "img/open-call-4.jpg", "img/open-call-5.jpg", "img/open-call-6.jpg"],
     text: "De Situatie is het literaire platform van PIP Den Haag. We organiseerden avonden met o.a. Connie Palmen & Sef, en zijn een springplank voor literair talent. Bij onze jaarlijkse Open Call verzamelen we alles: van poëzie tot proza, van woeste manifesten tot boze appjes aan je ex.",
+    join: { text: "Doe mee", href: "https://de-situatie.nl/open-call" },
     link: { text: "Naar De Situatie", icon: "arrow", href: "https://de-situatie.nl/" },
   },
   {
