@@ -80,7 +80,8 @@
         '<div class="pod-covers sit-slides" aria-label="Open Call van De Situatie">' + p.slides.map(function (c, i) {
           return '<img class="pod-img" src="' + esc(c) + '" alt="Open Call, slide ' + (i + 1) + ' van ' + p.slides.length + '" decoding="async">';
         }).join("") + "</div>" +
-        '<div class="icons sit-icons">' + iconLink(p.join) + "</div></div>";
+        // Rechthoekige knop in de stijl van de slides: blauw vlak, zwarte rand, schuine brede letters.
+        '<div class="icons sit-icons"><a class="sit-join" href="' + esc(p.join.href) + '" target="_blank" rel="noopener">' + esc(p.join.text) + "</a></div></div>";
       return top(p.label, p) +
         '<div class="mid"><p class="situatie-mark" aria-label="' + esc(p.title) + '"><span class="sit-de">De</span>' +
         '<span class="sit-word">Situatie</span></p>' +
