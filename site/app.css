@@ -546,7 +546,7 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 .sit-slides .pod-img { box-shadow: none; aspect-ratio: 3 / 4; flex-basis: calc(74 * var(--u)); width: calc(74 * var(--u)); }
 @font-face { font-family: "Gauche Situatie"; src: url("fonts/gauche-situatie-italic.woff2") format("woff2"); font-display: swap; }
 .sit-join { font-family: "Gauche Situatie", var(--display, sans-serif); display: inline-block; background: var(--accent); color: #000; border: max(1.5px, calc(0.5 * var(--u))) solid #000;
-  padding: calc(2 * var(--u)) calc(6.5 * var(--u)); font-weight: 400; text-transform: uppercase;
+  padding: calc(2 * var(--u)) calc(6.5 * var(--u)); font-weight: 400;
   font-size: calc(5.4 * var(--u)); letter-spacing: -0.02em; line-height: 1; text-decoration: none; }
 .sit-join:active { transform: scale(0.97); }
 /* Telefoon: de slide waar je naar kijkt iets groter */
