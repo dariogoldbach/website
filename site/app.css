@@ -386,7 +386,7 @@ html[data-knop="1"] .row { column-gap: 1.6em; }
 .vid-bar i { display: block; height: 100%; width: 0; background: #fff; }
 
 /* De Situatie: tekst links, maar kopje en knop in het midden */
-.card:has(.situatie-mark) .top { justify-content: center; }
+.card:has(.situatie-mark) .top, .card:has(.sit-slides) .top { justify-content: center; }
 .card:has(.situatie-mark) .end .row, .sit-icons { justify-content: center; }
 .sit-icons { align-self: stretch; margin-top: calc(2 * var(--u)); }
 
@@ -537,3 +537,20 @@ svg.mail .heart { transform-origin: 12px 8.5px; animation: mail-heart 4.6s ease-
 /* Tekstversie van de site voor zoekmachines en schermlezers: onzichtbaar, behalve een link die focus krijgt. */
 .tekstversie { position: absolute; top: 0; left: 0; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .tekstversie a:focus { position: fixed; left: 12px; top: 12px; z-index: 100; padding: 8px 12px; background: #111; color: #fff; white-space: normal; }
+
+/* De Situatie, Open Call: staande slides */
+.sit-slides { margin-top: calc(3 * var(--u)); padding-bottom: 0; }
+.sit-dots { display: flex; justify-content: center; gap: calc(1.6 * var(--u)); margin-top: calc(2 * var(--u)); align-self: stretch; }
+.sit-dots i { width: max(6px, calc(1.6 * var(--u))); height: max(6px, calc(1.6 * var(--u))); border-radius: 50%; background: #000; opacity: .22; }
+.sit-dots i.on { opacity: 1; }
+.sit-slides .pod-img { box-shadow: none; aspect-ratio: 3 / 4; flex-basis: calc(74 * var(--u)); width: calc(74 * var(--u)); }
+@font-face { font-family: "Gauche Situatie"; src: url("fonts/gauche-situatie-italic.woff2") format("woff2"); font-display: swap; }
+.sit-join { font-family: "Gauche Situatie", var(--display, sans-serif); display: inline-block; background: var(--accent); color: #000; border: max(1.5px, calc(0.5 * var(--u))) solid #000;
+  padding: calc(2 * var(--u)) calc(6.5 * var(--u)); font-weight: 400;
+  font-size: calc(5.4 * var(--u)); letter-spacing: -0.02em; line-height: 1; text-decoration: none; }
+.sit-join:active { transform: scale(0.97); }
+/* Telefoon: de slide waar je naar kijkt iets groter */
+@media (max-width: 700px) {
+  .sit-slides { padding-left: calc(50% + var(--gut) - 36 * var(--u)); padding-right: calc(50% + var(--gut) - 36 * var(--u)); }
+  .sit-slides .pod-img { flex-basis: calc(84 * var(--u)); width: calc(84 * var(--u)); max-width: none; }
+}

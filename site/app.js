@@ -74,6 +74,16 @@
         (p.credit ? '<p class="small">' + esc(p.credit) + "</p>" : "") + "</div>";
     },
     platform: function (p) {
+      if (p.slides) return top(p.label, p) +
+        '<div class="mid">' +
+        // Dezelfde veeg-carrousel als bij de podcasts, maar met staande slides.
+        '<div class="pod-covers sit-slides" aria-label="Open Call van De Situatie">' + p.slides.map(function (c, i) {
+          return '<img class="pod-img" src="' + esc(c) + '" alt="Open Call, slide ' + (i + 1) + ' van ' + p.slides.length + '" decoding="async">';
+        }).join("") + "</div>" +
+        // Puntjes zoals bij een Instagram-carrousel: welke slide je ziet.
+        '<div class="sit-dots" aria-hidden="true">' + p.slides.map(function (c, i) { return "<i" + (i ? "" : ' class="on"') + "></i>"; }).join("") + "</div>" +
+        // Rechthoekige knop in de stijl van de slides: blauw vlak, zwarte rand, schuine brede letters.
+        '<div class="icons sit-icons"><a class="sit-join" href="' + esc(p.join.href) + '" target="_blank" rel="noopener">' + esc(p.join.text) + "</a></div></div>";
       return top(p.label, p) +
         '<div class="mid"><p class="situatie-mark" aria-label="' + esc(p.title) + '"><span class="sit-de">De</span>' +
         '<span class="sit-word">Situatie</span></p>' +
@@ -194,6 +204,7 @@
           im.style.transform = "translate3d(" + (-pos).toFixed(2) + "px,0,0) scale(" + sc.toFixed(4) + ")";
           im.style.zIndex = String(Math.round((1 - d) * 10));
         });
+        if (row._onpos) row._onpos(pos);
       }
       function soon() { if (!raf) raf = requestAnimationFrame(fit); }
       function set(x) { pos = Math.max(0, Math.min(maxPos(), x)); soon(); }
@@ -248,6 +259,18 @@
         qs[n].classList.add("on"); qs[n].removeAttribute("aria-hidden");
       }, 4000);
       return function () { stop(); clearInterval(timer); };
+    },
+    platform: function (card) {
+      var row = card.querySelector(".pod-covers"), dots = card.querySelectorAll(".sit-dots i"), on = 0;
+      if (row && dots.length) row._onpos = function (pos) {
+        var best = 0, bd = Infinity;
+        row.querySelectorAll(".pod-img").forEach(function (im, i) {
+          var d = Math.abs(im.offsetLeft + im.offsetWidth / 2 - row.clientWidth / 2 - pos);
+          if (d < bd) { bd = d; best = i; }
+        });
+        if (best !== on) { dots[on].classList.remove("on"); dots[best].classList.add("on"); on = best; }
+      };
+      return MOUNT.podcast(card);
     },
     game: function (card) { return runner(card); },
     video: function (card, p) {
@@ -1464,6 +1487,9 @@
       if (s.length > 1 && now - d.lt < 100) { var a = s[0], z = s[s.length - 1]; if (z[0] - a[0] > 0) v = (z[1] - a[1]) / (z[0] - a[0]); }
       d.row._dragging = false; d.row._snap(v); return;
     }
+    // Aanraken stopt een glijdende carrousel. Werd het geen zijwaartse veeg (alleen een tik, of omhoog/omlaag),
+    // dan alsnog naar de dichtstbijzijnde cover, zodat hij nooit half tussen twee beelden blijft hangen.
+    if (d.row && d.row._snap) { d.row._index = -1; d.row._snap(0); }
     if (!d.axis) return;
     lastSwipe = performance.now();
     var dist = d.axis === "x" ? dx : dy, size = d.axis === "x" ? frame.clientWidth : frame.clientHeight;
